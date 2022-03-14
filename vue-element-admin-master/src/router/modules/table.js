@@ -3,38 +3,27 @@
 import Layout from '@/layout'
 
 const tableRouter = {
-  path: '/table',
+  path: '/productadmin',
   component: Layout,
-  redirect: '/table/complex-table',
-  name: 'Table',
+  redirect: '/productadmin/complex-table',
+  name: 'ProductAdmin',
   meta: {
-    title: 'Table',
+    title: '产品管理',
     icon: 'table'
   },
   children: [
-    {
-      path: 'dynamic-table',
-      component: () => import('@/views/table/dynamic-table/index'),
-      name: 'DynamicTable',
-      meta: { title: 'Dynamic Table' }
-    },
-    {
-      path: 'drag-table',
-      component: () => import('@/views/table/drag-table'),
-      name: 'DragTable',
-      meta: { title: 'Drag Table' }
-    },
+
     {
       path: 'inline-edit-table',
-      component: () => import('@/views/table/inline-edit-table'),
+      component: () => import('@/views/productadmin/inline-edit-table'),
       name: 'InlineEditTable',
       meta: { title: 'Inline Edit' }
     },
     {
       path: 'complex-table',
-      component: () => import('@/views/table/complex-table'),
+      component: () => import('@/views/productadmin/tourism-admin'),
       name: 'ComplexTable',
-      meta: { title: 'Complex Table' }
+      meta: { title: '旅游套餐管理' }
     }
   ]
 }
