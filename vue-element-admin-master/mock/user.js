@@ -1,4 +1,5 @@
 
+// 这里保存的时有关使用者的数据
 const tokens = {
   admin: {
     token: 'admin-token'
@@ -8,6 +9,7 @@ const tokens = {
   }
 }
 
+// 根据token 返回不同的数据
 const users = {
   'admin-token': {
     roles: ['admin'],
@@ -25,6 +27,7 @@ const users = {
 
 module.exports = [
   // user login
+  // 当收到/vue-element-admin/user/login这个请求时应该返回的数据
   {
     url: '/vue-element-admin/user/login',
     type: 'post',
@@ -40,6 +43,7 @@ module.exports = [
         }
       }
 
+      // 返回tooken和状态吗
       return {
         code: 20000,
         data: token

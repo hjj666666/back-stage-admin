@@ -1,9 +1,12 @@
 import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
+
+// 引入我们获取Token的方法
 import { getToken } from '@/utils/auth'
 
 // create an axios instance
+// 这里封装一个axios实例
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
@@ -11,10 +14,14 @@ const service = axios.create({
 })
 
 // request interceptor
+// 请求拦截器
 service.interceptors.request.use(
   config => {
     // do something before request is sent
-
+    // 判断vuex中的token是否存在 
+    // 存在的话就放在http header当中的X-Token
+    // 就是说在header中加了个X-Token
+    // 但这里我们是看不了http请求的因为mock拦截了
     if (store.getters.token) {
       // let each request carry token
       // ['X-Token'] is a custom headers key
@@ -31,6 +38,7 @@ service.interceptors.request.use(
 )
 
 // response interceptor
+// 响应拦截器
 service.interceptors.response.use(
   /**
    * If you want to get http information such as headers or status
@@ -46,6 +54,8 @@ service.interceptors.response.use(
   response => {
     const res = response.data
     // if the custom code is not 20000, it is judged as an error.
+    //逻辑就是判断是不是20000 不是20000再细分 判断是否失效
+    //到最后也是 return Promise.reject(error) 交给我们自行处理
     if (res.code !== 20000) {
       Message({
         message: res.message || 'Error',
@@ -61,6 +71,7 @@ service.interceptors.response.use(
           cancelButtonText: 'Cancel',
           type: 'warning'
         }).then(() => {
+          // 如果请求成功
           store.dispatch('user/resetToken').then(() => {
             location.reload()
           })

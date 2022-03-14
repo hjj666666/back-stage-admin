@@ -11,18 +11,22 @@ const state = {
 }
 
 const mutations = {
+  // 将tooken保存到vuex中
   SET_TOKEN: (state, token) => {
     state.token = token
   },
+  // 设置使用者的简介
   SET_INTRODUCTION: (state, introduction) => {
     state.introduction = introduction
   },
+   // 设置使用者的姓名
   SET_NAME: (state, name) => {
     state.name = name
   },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
   },
+   // 设置使用者的身份
   SET_ROLES: (state, roles) => {
     state.roles = roles
   }
@@ -33,6 +37,7 @@ const actions = {
   login({ commit }, userInfo) {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
+      // 向后台发送登陆请求
       login({ username: username.trim(), password: password }).then(response => {
         const { data } = response
         commit('SET_TOKEN', data.token)
