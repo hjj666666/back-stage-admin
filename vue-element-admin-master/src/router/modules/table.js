@@ -12,18 +12,17 @@ const tableRouter = {
     icon: 'table'
   },
   children: [
-
     {
-      path: 'inline-edit-table',
-      component: () => import('@/views/productadmin/inline-edit-table'),
-      name: 'InlineEditTable',
-      meta: { title: 'Inline Edit' }
+      path: 'tourism-admin',
+      component: () => import('@/views/productadmin/tourism-admin'),
+      name: 'TourismAdmin',
+      meta: { title: '旅游套餐管理' }
     },
     {
-      path: 'complex-table',
-      component: () => import('@/views/productadmin/tourism-admin'),
-      name: 'ComplexTable',
-      meta: { title: '旅游套餐管理' }
+      path: 'table-ck',
+      component: () => import('@/views/productadmin/table-ck'),
+      name: 'TableCk',
+      meta: { title: '参考模版' }
     }
   ]
 }
