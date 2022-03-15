@@ -7,12 +7,12 @@
        
       <!-- 类型选择框 -->
       <el-select v-model="listQuery.type" placeholder="类型限制" clearable class="filter-item" style="width: 130px;margin-right:20px">
-        <el-option v-for="item in typeOptions" :key="item.key" :label="item" :value="item" />
+        <el-option v-for="item in typeOptions" :key="item.key" :label="item" :value="item.key" />
       </el-select>
 
       <!-- 搜索按钮 -->
       <!--饿了么的button 组件   v-waves使用水波纹特效 type设置样式  icon设置图标 @click触发方法 -->
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" style="margin-right:40vw" @click="handleFilter" >
+      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" style="margin-right:650px" @click="handleFilter" >
         搜索
       </el-button>
 
@@ -172,7 +172,7 @@
 
 <script>
  // 从api中引入与后台交互的请求方法
-import { fetchList} from '@/api/travel'
+import { fetchList, createArticle, updateArticle } from '@/api/travel'
     // 引入水波纹
 import waves from '@/directive/waves' // waves directive
     // 格式化时间
@@ -210,8 +210,7 @@ export default {
       list: [
         {
         id:1,
-        // timestamp应该以字符串的形式表示
-        timestamp:'2019-10-1',
+        timestamp:2019-10-1,
         intro:111,
         price:999,
         status:"可购买",
@@ -222,12 +221,11 @@ export default {
       },
       {
         id:2,
-        timestamp:'2020-10-2',
+        timestamp:2020-10-2,
         intro:'111',
         price:99,
         status:"可购买",
-        type:"约游",
-        schedu:"行程的详情介绍可通过点击简介进行观看"
+        type:"约游"
       }
       ],
       // 目前中list中数据的条数
@@ -240,7 +238,7 @@ export default {
         limit: 20,
         intro: "",
         // 添加一个类型限定条件
-        type:"",
+        type:"约游",
         // 控制后端发送过来的数据的升降
         sort: '+id'
       },
@@ -254,7 +252,7 @@ export default {
         id: undefined,
         intro:"",
         price: '',
-        timestamp:"",
+        timestamp: "",
         schedu: '',
         status: '可购买'
       },
@@ -278,15 +276,11 @@ export default {
   },
   // 钩子函数，当界面创建的时候调用.getList() 获取列表数据
   created() {
-    this.getList()
+    // 接口出了问题先不用
+    // this.getList()
   },
   methods: {
-    textjk(){
-      let result=fetchList();
-      console.log(result);
-    },
      // 接口不知到为什么错了先不使用mock中的数据
-     //解决了接口的问题，创建js文件后需要在index中注册文件
      // 获取列表数据
     getList() {
         // 将table设置 载入效果
@@ -377,11 +371,11 @@ export default {
         //按照降序排序
         if(order == "descending"){
           // 这里需要将时间转化为时间撮
-            this.list = this.list.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime() );
+            this.list = this.list.sort((a, b) => new Date(b.timestamp)*1 - new Date(a.timestamp)*1);
         }
         //按照升序排序
         else{
-            this.list = this.list.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime() );
+            this.list = this.list.sort((a, b) => new Date(a.timestamp*1) - new Date(b.timestamp*1));
         }
     },
 
