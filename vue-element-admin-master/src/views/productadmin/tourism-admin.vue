@@ -3,17 +3,16 @@
     <div class="filter-container">
       <!-- 上面的根据标题进行收索搜索框 -->
       <!-- 当回车按键弹起的时候触发handleFilter方法，native阻止input默认事情--> 
-      <el-input v-model="listQuery.intro" placeholder="简介" style="width: 300px;" class="filter-item" @keyup.enter.native="handleFilter" />
-
-      <!-- 根据id进行升降处理 -->
-      <!-- listQuery.sort与 item.key进行绑定从而改变listQuery中的参数-->
-      <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
-        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
+      <el-input v-model="listQuery.intro" placeholder="根据简介搜索" style="width: 200px;margin-right:20px" class="filter-item" @keyup.enter.native="handleFilter" />
+       
+      <!-- 类型选择框 -->
+      <el-select v-model="listQuery.type" placeholder="类型限制" clearable class="filter-item" style="width: 130px;margin-right:20px">
+        <el-option v-for="item in typeOptions" :key="item.key" :label="item" :value="item.key" />
       </el-select>
 
       <!-- 搜索按钮 -->
       <!--饿了么的button 组件   v-waves使用水波纹特效 type设置样式  icon设置图标 @click触发方法 -->
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" style="margin-right:810px" @click="handleFilter" >
         搜索
       </el-button>
 
@@ -56,7 +55,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="日期" width="150px" align="center">
+      <el-table-column label="日期" prop="time" width="150px" align="center" sortable="custom">
         <template slot-scope="{row}">
           <span>{{ row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
@@ -68,9 +67,14 @@
           <span class="link-type" @click="handleUpdate(row)">{{ row.intro}}</span>
         </template>
       </el-table-column>
+       
+      <el-table-column label="类型" align="center" width="95">
+        <template slot-scope="{row}">
+          <span>{{ row.type }}</span>
+        </template>
+      </el-table-column>
 
-
-      <el-table-column label="价格" align="center" width="95">
+      <el-table-column label="价格" prop="price" :sortable="'custom'" align="center" width="95">
         <template slot-scope="{row}">
           <span>{{ row.price }}</span>
         </template>
@@ -121,7 +125,7 @@
     ref  给表单起个别名dataForm 下面可以用this.$ref.dataForm获取表单dom
     rules设置表单数据校验规则为rules，rules在下面vue中声明  label-position标题对齐方式
 -->
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
+      <el-form ref="dataForm" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
 
         <el-form-item label="简介">
             <el-input v-model="temp.intro" placeholder="请输入简介"></el-input>
@@ -136,13 +140,19 @@
             <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
           </el-select>
         </el-form-item>
+
+        <el-form-item label="类型">
+          <el-select v-model="temp.type" class="filter-item" placeholder="请选择类型">
+            <el-option v-for="item in typeOptions" :key="item" :label="item" :value="item" />
+          </el-select>
+        </el-form-item>
          
           <el-form-item label="价格">
             <el-input v-model="temp.price" placeholder="请输入价格"></el-input>
         </el-form-item>
 
         <el-form-item label="行程介绍">
-          <el-input v-model="temp.schedu" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />
+          <el-input v-model="temp.schedu" :autosize="{ minRows: 3, maxRows: 5}" type="textarea" placeholder="Please input" />
         </el-form-item>
       </el-form>
 
@@ -170,19 +180,8 @@ import { parseTime } from '@/utils'
    // 分页组件
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
- // calendarTypeOptions  选择框中的下拉数组
-const calendarTypeOptions = [
-  { key: 'CN', display_name: 'China' },
-  { key: 'US', display_name: 'USA' },
-  { key: 'JP', display_name: 'Japan' },
-  { key: 'EU', display_name: 'Eurozone' }
-]
 
-// arr to obj, such as { CN : "China", US : "USA" }
-const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
-  acc[cur.key] = cur.display_name
-  return acc
-}, {})
+const typeOptions=["美食","约游","玩好","乐享","纯味"]
 
 export default {
   name: 'TableCk',
@@ -200,9 +199,6 @@ export default {
         deleted: 'danger'
       }
       return statusMap[status]
-    },
-    typeFilter(type) {
-      return calendarTypeKeyValue[type]
     }
   },
     // 定义基础数据
@@ -218,15 +214,18 @@ export default {
         intro:111,
         price:999,
         status:"可购买",
-        schedu:111
+        // 添加一个类型选型方便进行搜索
+        // 乐品，美食，纯味，玩好，约游
+        type:"美食",
+        schedu:"行程的详情介绍可通过点击简介进行观看"
       },
       {
-        id:1,
-        timestamp:2019-10-1,
+        id:2,
+        timestamp:2020-10-2,
         intro:'111',
-        price:999,
+        price:99,
         status:"可购买",
-        schedu:'111'
+        type:"约游"
       }
       ],
       // 目前中list中数据的条数
@@ -238,6 +237,8 @@ export default {
         // 请求数据的多少
         limit: 20,
         intro: "",
+        // 添加一个类型限定条件
+        type:"约游",
         // 控制后端发送过来的数据的升降
         sort: '+id'
       },
@@ -251,7 +252,7 @@ export default {
         id: undefined,
         intro:"",
         price: '',
-        timestamp: new Date(),
+        timestamp: "",
         schedu: '',
         status: '可购买'
       },
@@ -269,7 +270,8 @@ export default {
       dialogStatus: '',
       pvData: [],
       // 控制导出按钮的loing?
-      downloadLoading: false
+      downloadLoading: false,
+      typeOptions
     }
   },
   // 钩子函数，当界面创建的时候调用.getList() 获取列表数据
@@ -326,16 +328,57 @@ export default {
       if (prop === 'id') {
         this.sortByID(order)
       }
+      if (prop === 'price') {
+        this.sortByPrice(order)
+      }
+      if (prop === 'time') {
+        this.sortByTime(order)
+      }
     },
     sortByID(order) {
+      /*
+      这是项目自带的通过后端接口，重新抓取数据实现
       if (order === 'ascending') {
         this.listQuery.sort = '+id'
       } else {
         this.listQuery.sort = '-id'
       }
-      // 先不用后端接口
-      //this.handleFilter()
+      this.handleFilter()
+      */
+       //按照降序排序
+        if(order == "descending"){
+            this.list = this.list.sort((a, b) => b.id - a.id);
+        }
+        //按照升序排序
+        else{
+            this.list = this.list.sort((a, b) => a.id - b.id);
+        }
     },
+
+// 直接在前端实现排序，不使用后端
+    sortByPrice(order){
+         //按照降序排序
+        if(order == "descending"){
+            this.list = this.list.sort((a, b) => b.price - a.price);
+        }
+        //按照升序排序
+        else{
+            this.list = this.list.sort((a, b) => a.price - b.price);
+        }
+
+    },
+    sortByTime(order){
+        //按照降序排序
+        if(order == "descending"){
+          // 这里需要将时间转化为时间撮
+            this.list = this.list.sort((a, b) => new Date(b.timestamp)*1 - new Date(a.timestamp)*1);
+        }
+        //按照升序排序
+        else{
+            this.list = this.list.sort((a, b) => new Date(a.timestamp*1) - new Date(b.timestamp*1));
+        }
+    },
+
 
   // 重置temp缓存数据 在每次点击新增和修改时调用，避免数据出错
     resetTemp() {
@@ -403,6 +446,11 @@ export default {
       })
     },
 
+//validate：
+
+//对整个表单进行校验的方法，参数为一个回调函数。
+//该回调函数会在校验结束后被调用，并传入两个参数：是否校验成功和未通过校验的字段。
+//若不传入回调函数，则会返回一个 promise
     // 修改页面中确认按钮绑定的回调函数
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
