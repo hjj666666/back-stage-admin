@@ -12,7 +12,7 @@
 
       <!-- 搜索按钮 -->
       <!--饿了么的button 组件   v-waves使用水波纹特效 type设置样式  icon设置图标 @click触发方法 -->
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" style="margin-right:810px" @click="handleFilter" >
+      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" style="margin-right:650px" @click="handleFilter" >
         搜索
       </el-button>
 

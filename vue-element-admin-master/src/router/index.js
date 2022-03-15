@@ -68,6 +68,13 @@ export const constantRoutes = [
     component: () => import('@/views/error-page/401'),
     hidden: true
   },
+]
+
+/**
+ * asyncRoutes
+ * the routes that need to be dynamically loaded based on user roles
+ */
+export const asyncRoutes = [
   {
     path: '/',
     component: Layout,
@@ -82,18 +89,18 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/documentation',
+    path: '/orderadmin',
     component: Layout,
     children: [
       {
         path: 'index',
-        component: () => import('@/views/ticketadmin/index'),
-        name: 'Documentation',
-        meta: { title: '订单管理页面', icon: 'documentation', affix: true }
+        component: () => import('@/views/orderadmin/index'),
+        name: 'OrderAdmin',
+        meta: { title: '订单管理', icon: 'documentation', affix: true }
       }
     ]
   },
- 
+  tableRouter,
   {
     path: '/profile',
     component: Layout,
@@ -107,16 +114,8 @@ export const constantRoutes = [
         meta: { title: 'Profile', icon: 'user', noCache: true }
       }
     ]
-  }
-]
-
-/**
- * asyncRoutes
- * the routes that need to be dynamically loaded based on user roles
- */
-export const asyncRoutes = [
+  },
   /** when your routing map is too long, you can split it into small modules **/
-  tableRouter,
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]

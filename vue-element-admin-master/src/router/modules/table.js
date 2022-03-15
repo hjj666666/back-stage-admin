@@ -19,6 +19,12 @@ const tableRouter = {
       meta: { title: '旅游套餐管理' }
     },
     {
+      path: 'ticket-admin',
+      component: () => import('@/views/productadmin/ticket-admin'),
+      name: 'TicketAdmin',
+      meta: { title: '门票管理' }
+    },
+    {
       path: 'table-ck',
       component: () => import('@/views/productadmin/table-ck'),
       name: 'TableCk',
