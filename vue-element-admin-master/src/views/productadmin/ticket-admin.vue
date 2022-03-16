@@ -7,7 +7,7 @@
        
       <!-- 搜索按钮 -->
       <!--饿了么的button 组件   v-waves使用水波纹特效 type设置样式  icon设置图标 @click触发方法 -->
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" style="margin-right:50vw" @click="handleFilter" >
+      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter" >
         搜索
       </el-button>
 
@@ -80,8 +80,8 @@
         <template slot-scope="{row}">
           <span>{{`${row.type.join(" ")}`}}</span>
         </template>
-
       </el-table-column>
+      
        <!-- 状态栏 -->
       <el-table-column label="套餐状态" class-name="status-col" width="100">
         <template slot-scope="{row}">
@@ -89,6 +89,13 @@
           <el-tag :type="row.status | statusFilter">
             {{ row.status }}
           </el-tag>
+        </template>
+      </el-table-column>
+
+       <!-- 数量栏 -->
+      <el-table-column label="剩余数量" class-name="status-col" width="100">
+        <template slot-scope="{row}">
+            {{ row.amount }}
         </template>
       </el-table-column>
 
@@ -152,6 +159,10 @@
                 </el-checkbox-group>
               </el-form-item>
             
+            <el-form-item label="数量">
+                <el-input v-model="temp.amount" placeholder="请输入数量"></el-input>
+            </el-form-item>
+
               <el-form-item label="原价格">
                 <el-input v-model="temp.price" placeholder="请输入价格"></el-input>
             </el-form-item>
@@ -254,6 +265,7 @@ export default {
         type:["默认套餐"],
         limitprice:9.9,
         price:999,
+        amount:0,
         status:"可购买",
         schedu:"行程的详情介绍可通过点击简介进行观看"
       },
@@ -264,6 +276,7 @@ export default {
         limitprice:9.9,
         price:99,
         status:"可购买",
+        amount:0,
         type:["其他套餐"],
         schedu:"行程的详情介绍可通过点击简介进行观看"
       }
@@ -294,7 +307,8 @@ export default {
         limitprice: '',
         timestamp:"",
         schedu: '',
-        status: '可购买'
+        status: '可购买',
+        amount:0,
       },
       // 对话框展示控制属性
       dialogFormVisible: false,
