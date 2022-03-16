@@ -161,6 +161,18 @@
         <el-form-item label="行程介绍">
           <el-input v-model="temp.schedu" :autosize="{ minRows: 3, maxRows: 5}" type="textarea" placeholder="Please input" />
         </el-form-item>
+
+        <!-- ElementUI的上传图片的组件 -->
+        <el-upload
+          class="upload-demo"
+          action="#"
+          :before-remove="beforeRemove"
+          :file-list="picFileList"
+          list-type="picture">
+          <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+          <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button>
+          <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+        </el-upload>
       </el-form>
 
       <div slot="footer" class="dialog-footer">
@@ -211,6 +223,13 @@ export default {
     // 定义基础数据
   data() {
     return {
+      //ElementUI的上传图片的URL列表
+      picFileList: [
+        {name: 'demo.gif',
+         url: 'https://my.wulvxinchen.cn/pictures/things/hutaoloading.gif'
+         },
+      ],
+
       tableKey: 0,
       // 获取过来的数据
       // 先让页面显示这些静态的数据
@@ -288,6 +307,17 @@ export default {
     // this.getList()
   },
   methods: {
+      //ElementUI的上传图片的URL
+      submitUpload() {
+        this.$refs.upload.submit();
+      },
+      handleExceed(files, fileList) {
+        this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+      },
+      beforeRemove(file) {
+        return this.$confirm(`确定移除 ${ file.name }?`);
+      },
+
      // 接口不知到为什么错了先不使用mock中的数据
      //解决了接口的问题，创建js文件后需要在index中注册文件
      // 获取列表数据
