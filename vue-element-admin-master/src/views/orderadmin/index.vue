@@ -11,7 +11,7 @@
       </el-select>
       <!-- 搜索按钮 -->
       <!--饿了么的button 组件   v-waves使用水波纹特效 type设置样式  icon设置图标 @click触发方法 -->
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" style="margin-right:35vw" @click="handleFilter" >
+      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter" >
         搜索
       </el-button>
 
@@ -48,7 +48,7 @@
     >
 
  <!-- 表单的列组件  label  显示的标题  prop  对应列内容的字段名  sortable 对应列是否可以排序  align 对齐方式 -->
-      <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
+      <el-table-column label="订单号" prop="id" sortable="custom" align="center" width="160" :class-name="getSortClass('id')">
         <template slot-scope="{row}">
           <span>{{ row.id }}</span>
         </template>
