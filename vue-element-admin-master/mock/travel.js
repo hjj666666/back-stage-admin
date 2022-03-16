@@ -12,12 +12,11 @@ for (let i = 0; i < count; i++) {
   List.push(Mock.mock({
     id: '@increment',//id
     intro: '@title(5, 10)',//简介
-    display_time: '@datetime',//时间
     timestamp: +Mock.Random.date('T'),//生成随机事件撮
     price: '@integer(3000, 5000)',//价格
     schedu: '@title(10, 20)',//行程介绍
-    'status|1': ['已售完', '可购买'],//status等于数组中的随机一个字符状态
-    image_uri,
+    'status|1': ['售罄', '可购买'],//status等于数组中的随机一个字符状态
+    'type|1': ['乐品', '美食','玩好','约定'],
   }))
 }
 
@@ -26,12 +25,13 @@ module.exports = [
     url: '/vue-element-admin/travel/list',
     type: 'get',
     response: config => {
-      const {intro,page = 1, limit = 20, sort } = config.query
+      const {intro,type,page = 1,limit = 20,sort } = config.query
 
       // 经总数据根据返送过来的参数进行过滤，通过filter函数返回满足条件的数据
       // 这里的筛选参数就是指的是我们表格上面的参数
       let mockList = List.filter(item => {
-        // if (intro && item.intro.indexOf(title) < 0) return false
+        if (type &&  item.type !== type) return false
+        if (intro && item.intro.indexOf(intro) < 0) return false
         return true
       })
 

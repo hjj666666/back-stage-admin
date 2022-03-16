@@ -7,12 +7,12 @@
        
       <!-- 类型选择框 -->
       <el-select v-model="listQuery.type" placeholder="类型限制" clearable class="filter-item" style="width: 130px;margin-right:20px">
-        <el-option v-for="item in typeOptions" :key="item.key" :label="item" :value="item.key" />
+        <el-option v-for="item in typeOptions" :key="item.key" :label="item" :value="item" />
       </el-select>
 
       <!-- 搜索按钮 -->
       <!--饿了么的button 组件   v-waves使用水波纹特效 type设置样式  icon设置图标 @click触发方法 -->
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" style="margin-right:650px" @click="handleFilter" >
+      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" style="margin-right:40vw" @click="handleFilter" >
         搜索
       </el-button>
 
@@ -210,7 +210,7 @@ export default {
       list: [
         {
         id:1,
-        timestamp:2019-10-1,
+        timestamp:'2019-10-1',
         intro:111,
         price:999,
         status:"可购买",
@@ -221,7 +221,7 @@ export default {
       },
       {
         id:2,
-        timestamp:2020-10-2,
+        timestamp:'2020-10-2',
         intro:'111',
         price:99,
         status:"可购买",
@@ -238,7 +238,7 @@ export default {
         limit: 20,
         intro: "",
         // 添加一个类型限定条件
-        type:"约游",
+        type:"",
         // 控制后端发送过来的数据的升降
         sort: '+id'
       },
@@ -277,8 +277,7 @@ export default {
   },
   // 钩子函数，当界面创建的时候调用.getList() 获取列表数据
   created() {
-    // 接口出了问题先不用
-    // this.getList()
+    this.getList()
   },
   methods: {
      // 接口不知到为什么错了先不使用mock中的数据
@@ -376,7 +375,7 @@ export default {
         }
         //按照升序排序
         else{
-            this.list = this.list.sort((a, b) => new Date(a.timestamp*1) - new Date(b.timestamp*1));
+            this.list = this.list.sort((a, b) => new Date(a.timestamp)*1- new Date(b.timestamp)*1);
         }
     },
 
