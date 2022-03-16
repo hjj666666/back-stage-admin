@@ -91,12 +91,12 @@
             编辑
           </el-button>
           <!-- 已经完善 -->
-          <el-button v-if="row.status!='已支付'" size="mini" type="success" @click="handleModifyStatus(row,'已支付')">
+          <!-- <el-button v-if="row.status!='已支付'" size="mini" type="success" @click="handleModifyStatus(row,'已支付')">
             已支付
           </el-button>
           <el-button v-if="row.status!='待支付'" size="mini" @click="handleModifyStatus(row,'待支付')">
             待支付
-          </el-button>
+          </el-button> -->
           <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
             删除
           </el-button>
@@ -166,7 +166,7 @@ import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
 
-const statusOptions=["已支付","待支付"]
+const statusOptions=['待付款','待处理','处理中','待评价','已完成']
 
 export default {
   name: 'TableCk',
