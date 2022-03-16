@@ -127,53 +127,62 @@
     ref  给表单起个别名dataForm 下面可以用this.$ref.dataForm获取表单dom
     rules设置表单数据校验规则为rules，rules在下面vue中声明  label-position标题对齐方式
 -->
-      <el-form ref="dataForm" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
+      <el-tabs v-model="activeName" @tab-click="handleClick">
+        <el-tab-pane label="基础数据" name="basedata">
+          <el-form ref="dataForm" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
 
-        <el-form-item label="简介">
-            <el-input v-model="temp.intro" placeholder="请输入简介"></el-input>
-        </el-form-item>
+            <el-form-item label="简介">
+                <el-input v-model="temp.intro" placeholder="请输入简介"></el-input>
+            </el-form-item>
 
-        <el-form-item label="结束日期" >
-          <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="选择一个日期" />
-        </el-form-item>
+            <el-form-item label="结束日期" >
+              <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="选择一个日期" />
+            </el-form-item>
 
-        <el-form-item label="状态">
-          <el-select v-model="temp.status" class="filter-item" placeholder="请选择一个状态">
-            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
-          </el-select>
-        </el-form-item>
+            <el-form-item label="状态">
+              <el-select v-model="temp.status" class="filter-item" placeholder="请选择一个状态">
+                <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
+              </el-select>
+            </el-form-item>
 
-          <el-form-item label="套餐选项">
-            <el-checkbox-group v-model="temp.type">
-              <el-checkbox label="默认套餐" name="type"></el-checkbox>
-              <el-checkbox label="其他套餐" name="type"></el-checkbox>
-            </el-checkbox-group>
-          </el-form-item>
-         
-          <el-form-item label="原价格">
-            <el-input v-model="temp.price" placeholder="请输入价格"></el-input>
-        </el-form-item>
+              <el-form-item label="套餐选项">
+                <el-checkbox-group v-model="temp.type">
+                  <el-checkbox label="默认套餐" name="type"></el-checkbox>
+                  <el-checkbox label="其他套餐" name="type"></el-checkbox>
+                </el-checkbox-group>
+              </el-form-item>
+            
+              <el-form-item label="原价格">
+                <el-input v-model="temp.price" placeholder="请输入价格"></el-input>
+            </el-form-item>
 
-          <el-form-item label="抢购价格">
-            <el-input v-model="temp.limitprice" placeholder="请输入价格"></el-input>
-        </el-form-item>
+              <el-form-item label="抢购价格">
+                <el-input v-model="temp.limitprice" placeholder="请输入价格"></el-input>
+            </el-form-item>
 
-        <el-form-item label="行程介绍">
-          <el-input v-model="temp.schedu" :autosize="{ minRows: 3, maxRows: 5}" type="textarea" placeholder="Please input" />
-        </el-form-item>
-
-        <!-- ElementUI的上传图片的组件 -->
-        <el-upload
-          class="upload-demo"
-          action="#"
-          :before-remove="beforeRemove"
-          :file-list="picFileList"
-          list-type="picture">
-          <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-          <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button>
-          <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
-        </el-upload>
-      </el-form>
+            <el-form-item label="行程介绍">
+              <el-input v-model="temp.schedu" :autosize="{ minRows: 3, maxRows: 5}" type="textarea" placeholder="Please input" />
+            </el-form-item>
+          </el-form>
+        </el-tab-pane>
+        <el-tab-pane label="图文管理" name="textpic">
+          <!-- ElementUI的上传图片的组件 -->
+            <el-upload
+              class="upload-demo"
+              action="#"
+              :before-remove="beforeRemove"
+              :file-list="picFileList"
+              list-type="picture">
+              <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+              <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button>
+              <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+            </el-upload>
+        </el-tab-pane>
+        <el-tab-pane label="暂时未知" name="unknown">
+          我也不知道这里放点啥，但是既然写了，就放点啥吧。
+        </el-tab-pane>
+      </el-tabs>
+      
 
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
@@ -223,6 +232,9 @@ export default {
     // 定义基础数据
   data() {
     return {
+      //ElemenUI的切换菜单首先显示的
+      activeName: 'basedata',
+
       //ElementUI的上传图片的URL列表
       picFileList: [
         {name: 'demo.gif',
