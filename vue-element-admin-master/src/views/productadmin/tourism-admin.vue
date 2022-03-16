@@ -256,6 +256,7 @@ export default {
         price: '',
         timestamp:"",
         schedu: '',
+        type:'',
         status: '可购买'
       },
       // 对话框展示控制属性
