@@ -13,6 +13,7 @@
         </div>
       </div>
     </el-col>
+    <!-- 本来这里应该放没有处理的订单的，但是后端还没有写好暂时先放着吧 -->
     <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
       <div class="card-panel" @click="changePage('../orderadmin/index')">
         <div class="card-panel-icon-wrapper icon-message">
