@@ -12,16 +12,20 @@
 
         <screenfull id="screenfull" class="right-menu-item hover-effect" />
 
-        <el-tooltip content="Global Size" effect="dark" placement="bottom">
+        <el-tooltip content="字号尺寸" effect="dark" placement="bottom">
           <size-select id="size-select" class="right-menu-item hover-effect" />
         </el-tooltip>
 
+        <el-tooltip content="退出登录" effect="dark" placement="bottom">
+          <svg-icon icon-class="logout" class="right-menu-item hover-effect" class-name="card-panel-icon" style="width:1.8em" @click.native="logout"/>
+        </el-tooltip>
+         
       </template>
 
-      <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click" >
+      <!--<el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click" >
         <svg-icon icon-class="logout" class-name="card-panel-icon" @click.native="logout"/>
-        <!-- 原来的菜单页面，现在不用了 -->
-        <!-- <div class="avatar-wrapper">
+         原来的菜单页面，现在不用了 
+         <div class="avatar-wrapper">
           <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
           <i class="el-icon-caret-bottom" />
         </div>
@@ -41,8 +45,8 @@
           <el-dropdown-item divided @click.native="logout">
             <span style="display:block;">Log Out</span>
           </el-dropdown-item>
-        </el-dropdown-menu> -->
-      </el-dropdown>
+        </el-dropdown-menu> 
+      </el-dropdown>-->
     </div>
   </div>
 </template>
