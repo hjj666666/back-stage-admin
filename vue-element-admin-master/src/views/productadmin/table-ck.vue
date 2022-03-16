@@ -328,7 +328,7 @@ export default {
         }, 1.5 * 1000)
       })
     },
-     
+       // 重置temp缓存数据 在每次点击新增和修改时调用，避免数据出错
     handleFilter() {
       this.listQuery.page = 1
       this.getList()
@@ -356,8 +356,6 @@ export default {
       }
       this.handleFilter()
     },
-
-      // 重置temp缓存数据 在每次点击新增和修改时调用，避免数据出错
     resetTemp() {
       this.temp = {
         id: undefined,
