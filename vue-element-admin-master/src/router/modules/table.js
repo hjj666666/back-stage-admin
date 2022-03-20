@@ -29,6 +29,12 @@ const tableRouter = {
       component: () => import('@/views/productadmin/table-ck'),
       name: 'TableCk',
       meta: { title: '参考模版' }
+    },
+    {
+      path: 'tableedit',
+      component: () => import('@/views/productadmin/TicketEdit'),
+      name: 'TicketEdit',
+      meta: { title: '门票编辑'}
     }
   ]
 }

@@ -12,7 +12,7 @@
       </el-button>
 
       <!-- 添加按钮 -->
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
+      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="totickeditedit">
         增加
       </el-button>
 
@@ -342,6 +342,12 @@ export default {
       },
       beforeRemove(file) {
         return this.$confirm(`确定移除 ${ file.name }?`);
+      },
+      // 创建一个点击登陆按钮跳转到增加页面的回调函数
+      totickeditedit(){
+          this.$router.push({
+             path:"/productadmin/tableedit"
+          });
       },
 
      // 接口不知到为什么错了先不使用mock中的数据
