@@ -142,7 +142,7 @@
 
                 <div class="additem" v-if="isshowaddintro">
                     <el-input v-model="addintrotemp" placeholder="请输入要添加的信息"></el-input>
-                    <el-button type="success" size="small" @click=" handleintroAdd">确认添加</el-button>
+                    <el-button type="success" size="small" @click="handleintroleAdd">确认添加</el-button>
                     <el-button type="success" size="small" @click="isshowintroAdd">取消</el-button>
                 </div>   
             </div>
@@ -192,7 +192,7 @@
                 </el-table> 
 
                 <div class="additem" v-if="isshowaddorder">
-                    <el-input v-model="addintrotemp" placeholder="请输入要添加的信息"></el-input>
+                    <el-input v-model="addordertemp" placeholder="请输入要添加的信息"></el-input>
                     <el-button type="success" size="small" @click=" handleorderAdd">确认添加</el-button>
                     <el-button type="success" size="small" @click="isshoworderAdd">取消</el-button>
                 </div>   
@@ -245,14 +245,13 @@
 export default {
     data() {
         return {
-<<<<<<< HEAD
             // 创建变量保存临时添加的数据
             addintrotemp:"",
             addordertemp:"",
             // 创建一个变量控制是否显示添加文本框
             isshowaddintro:false,
             isshowaddorder:false,
-=======
+
             //可选城市列表
             cityList: ['东莞', '广州', '深圳'],
             inputVisible: false,
@@ -262,7 +261,6 @@ export default {
             fits: ['fill', 'fill','fill','fill','fill','fill'],
             // ui的自带图片
              url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
->>>>>>> 7b9c80854fa4be9917c4969c0753ac92a45d6aaa
             list:{
                 intro:"11",
                 price: '11',
@@ -313,7 +311,6 @@ export default {
     },
 
     methods: {
-<<<<<<< HEAD
         // 创建一个删除图片的回调函数
         deleteimg(index){
             // 如果删除成功，弹出一个消息框
@@ -325,7 +322,7 @@ export default {
             })
              this.list.imglist.splice(index,1);
         },
-=======
+
         //加城市列表的方法
         handleClose(city) {
         this.cityList.splice(this.cityList.indexOf(city), 1);
@@ -347,7 +344,6 @@ export default {
         this.inputValue = '';
         },
 
->>>>>>> 7b9c80854fa4be9917c4969c0753ac92a45d6aaa
         // 下面的是上传文件的自带方法
         handleRemove(file, fileList) {
             console.log(file, fileList);
@@ -381,7 +377,7 @@ export default {
             this.isshowaddorder=!this.isshowaddorder;
         },
         handleorderAdd(){
-            this.list.exactintro.push({order:this.addordertemp,isshow:true});
+            this.list.exactorder.push({order:this.addordertemp,isshow:true});
         },
         handleorderEdit(index, row) {
             row.isshow=!row.isshow;
