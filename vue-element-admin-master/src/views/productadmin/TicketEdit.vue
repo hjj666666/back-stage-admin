@@ -70,6 +70,32 @@
                     
            </div>     
 
+            <!-- 添加选择城市 -->
+            <div class="citylist">
+                <div class="cityChoose">
+                    <span class="">出发城市：</span>
+                    <el-tag
+                        :key="city"
+                        v-for="city in cityList"
+                        closable
+                        :disable-transitions="false"
+                        @close="handleClose(city)">
+                        {{city}}
+                    </el-tag>
+                    <el-input
+                        class="input-new-city"
+                        v-if="inputVisible"
+                        v-model="inputValue"
+                        ref="saveCityInput"
+                        size="small"
+                        @keyup.enter.native="handleInputConfirm"
+                        @blur="handleInputConfirm">
+                    </el-input>
+                    <el-button v-else class="button-new-city" size="small" @click="showInput">增加城市</el-button>
+                </div>
+            </div>          
+
+
             <!-- 下面是产品介绍列表部分-->
             <div id="introitem">
                 <el-table
@@ -219,12 +245,24 @@
 export default {
     data() {
         return {
+<<<<<<< HEAD
             // 创建变量保存临时添加的数据
             addintrotemp:"",
             addordertemp:"",
             // 创建一个变量控制是否显示添加文本框
             isshowaddintro:false,
             isshowaddorder:false,
+=======
+            //可选城市列表
+            cityList: ['东莞', '广州', '深圳'],
+            inputVisible: false,
+            inputValue: '',
+
+            // 这个是样式的显示数组，后期删掉
+            fits: ['fill', 'fill','fill','fill','fill','fill'],
+            // ui的自带图片
+             url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
+>>>>>>> 7b9c80854fa4be9917c4969c0753ac92a45d6aaa
             list:{
                 intro:"11",
                 price: '11',
@@ -275,6 +313,7 @@ export default {
     },
 
     methods: {
+<<<<<<< HEAD
         // 创建一个删除图片的回调函数
         deleteimg(index){
             // 如果删除成功，弹出一个消息框
@@ -286,6 +325,29 @@ export default {
             })
              this.list.imglist.splice(index,1);
         },
+=======
+        //加城市列表的方法
+        handleClose(city) {
+        this.cityList.splice(this.cityList.indexOf(city), 1);
+        },
+
+        showInput() {
+        this.inputVisible = true;
+        this.$nextTick(_ => {
+          this.$refs.saveCityInput.$refs.input.focus();
+            });
+        },
+
+        handleInputConfirm() {
+        let inputValue = this.inputValue;
+        if (inputValue) {
+          this.cityList.push(inputValue);
+        }
+        this.inputVisible = false;
+        this.inputValue = '';
+        },
+
+>>>>>>> 7b9c80854fa4be9917c4969c0753ac92a45d6aaa
         // 下面的是上传文件的自带方法
         handleRemove(file, fileList) {
             console.log(file, fileList);
@@ -425,6 +487,33 @@ export default {
     display: flex;
     
 }
+
+/* 城市列表的样式 */
+.citylist{
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+}
+.cityChoose{
+    margin-left:4.5em;
+}
+.el-tag + .el-tag {
+    margin-left: 10px;
+  }
+  .button-new-city {
+    margin-left: 10px;
+    height: 32px;
+    line-height: 30px;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .input-new-city{
+    width: 90px;
+    margin-left: 10px;
+    vertical-align: bottom;
+  }
 
 /* 下面的是列表部分的样式*/
 #ticketedit #form #introitem{
