@@ -1,18 +1,19 @@
 <template>
    <div id="ticketedit">
        <!-- 这部分是上面的图片部分 -->
+       <!-- 删除图片功能已经完善，但图片上传功能还未实现 -->
        <div id="imgadmin">
            <div id="imgcontrol">
-               <div id="item"  v-for="(fit,index) in fits" :key="index">
+               <div id="item"  v-for="(item,index) in list.imglist" :key="index">
                     <!-- 显示图片 -->
                     <el-image
                         style="width: 100px; height: 100px"
-                        :src="url"
-                        :fit="fit">
+                        :src="item.img"
+                        fit="fill">
                     </el-image>
                     <!-- 显示删除按钮 -->
                     <div id="button">
-                        <el-button type="danger" icon="el-icon-delete" circle></el-button>
+                        <el-button type="danger" icon="el-icon-delete" circle @click="deleteimg(index)"></el-button>
                     </div>
                </div>
            </div>
@@ -38,17 +39,19 @@
         <!-- 完善下面的表单部分 -->
        <div id="form">
            <!-- 这部分是上面的四个输入框 -->
+           <!-- 数据已经和v-modle中的数据进行双向绑定 -->
            <div id="div1">
                <div id="inda">
                     <div id="intro">
                         <span class="span1">简介:</span>
-                        <el-input  placeholder="请输入内容"></el-input>
+                        <el-input  v-model="list.intro" placeholder="请输入内容"></el-input>
                     </div>
 
                     <div id="date">
                         <span class="span1">结束时间:</span>
                         <el-date-picker
                         type="datetime"
+                         v-model="list.timestamp"
                         placeholder="选择日期时间">
                         </el-date-picker>
                     </div>
@@ -57,11 +60,11 @@
                 <div id="ptli">
                     <div id="price">
                         <span class="span1">原价格:</span>
-                        <el-input  placeholder="请输入内容"></el-input>
+                        <el-input  placeholder="请输入内容"  v-model="list.price"></el-input>
                     </div>
                     <div id="limitprice">
                         <span class="span1">限时价格:</span>
-                        <el-input  placeholder="请输入内容"></el-input>
+                        <el-input  placeholder="请输入内容"  v-model="list.limitprice"></el-input>
                     </div>
                 </div>
                     
@@ -70,73 +73,106 @@
             <!-- 下面是产品介绍列表部分-->
             <div id="introitem">
                 <el-table
-                :data="tableData"
+                :data="list.exactintro"
                 style="width: 100%">
                 <el-table-column
                 label="顺序"
-                prop="date">
+                width="50"
+                type="index">
                 </el-table-column>
 
                 <el-table-column
                 label="产品介绍详情"
-                prop="name">
+                prop="intro">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.isshow">{{scope.row.intro}}</span>
+                    <el-input v-model="scope.row.intro"  v-else></el-input>
+                 </template>   
                 </el-table-column>
                 
                 <el-table-column
                 align="right">
-                <template slot="header" >
-                     <el-button type="primary">增加</el-button>
+                <template slot="header">
+                     <el-button type="primary"  @click="isshowintroAdd">增加</el-button>
                 </template>
                 <template slot-scope="scope">
                     <el-button
                     size="mini"
-                    @click="handleEdit(scope.$index, scope.row)">Edit</el-button>
+                    v-if="scope.row.isshow"
+                    @click="handleintroEdit(scope.$index, scope.row)">编辑</el-button>
+
+                    <el-button
+                    size="mini"
+                    v-else
+                    @click=" handleintroEdit(scope.$index, scope.row)">确认</el-button>
 
                     <el-button
                     size="mini"
                     type="danger"
-                    @click="handleDelete(scope.$index, scope.row)">Delete</el-button>
+                    @click=" handleintroDelete(scope.$index, scope.row)">删除</el-button>
                 </template>
                 </el-table-column>
-            </el-table>
-                
+                </el-table> 
+
+                <div class="additem" v-if="isshowaddintro">
+                    <el-input v-model="addintrotemp" placeholder="请输入要添加的信息"></el-input>
+                    <el-button type="success" size="small" @click=" handleintroAdd">确认添加</el-button>
+                    <el-button type="success" size="small" @click="isshowintroAdd">取消</el-button>
+                </div>   
             </div>
 
            <!-- 下面是预定需知部分 -->
             <div id="orderitem">
                 <el-table
-                :data="tableData"
+                :data="list.exactorder"
                 style="width: 100%">
                 <el-table-column
                 label="顺序"
-                prop="date">
+                width="50"
+                type="index">
                 </el-table-column>
 
                 <el-table-column
                 label="预定须知"
-                prop="name">
+                prop="intro">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.isshow">{{scope.row.order}}</span>
+                    <el-input v-model="scope.row.order"  v-else></el-input>
+                 </template>   
                 </el-table-column>
                 
                 <el-table-column
                 align="right">
-                <template slot="header" >
-                     <el-button type="primary">增加</el-button>
+                <template slot="header">
+                     <el-button type="primary"  @click="isshoworderAdd">增加</el-button>
                 </template>
                 <template slot-scope="scope">
                     <el-button
                     size="mini"
-                    @click="handleEdit(scope.$index, scope.row)">Edit</el-button>
+                    v-if="scope.row.isshow"
+                    @click="handleintroEdit(scope.$index, scope.row)">编辑</el-button>
+
+                    <el-button
+                    size="mini"
+                    v-else
+                    @click=" handleorderEdit(scope.$index, scope.row)">确认</el-button>
 
                     <el-button
                     size="mini"
                     type="danger"
-                    @click="handleDelete(scope.$index, scope.row)">Delete</el-button>
+                    @click=" handleorderDelete(scope.$index, scope.row)">删除</el-button>
                 </template>
                 </el-table-column>
-            </el-table>  
+                </el-table> 
+
+                <div class="additem" v-if="isshowaddorder">
+                    <el-input v-model="addintrotemp" placeholder="请输入要添加的信息"></el-input>
+                    <el-button type="success" size="small" @click=" handleorderAdd">确认添加</el-button>
+                    <el-button type="success" size="small" @click="isshoworderAdd">取消</el-button>
+                </div>   
             </div>
 
-            <!-- 下面是预定需知部分 -->
+            <!-- 下面是费用说明部分 -->
             <div id="costitem">
                 <el-table
                 :data="tableData"
@@ -183,17 +219,36 @@
 export default {
     data() {
         return {
-            // 这个是样式的显示数组，后期删掉
-            fits: ['fill', 'fill','fill','fill','fill','fill'],
-            // ui的自带图片
-             url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
+            // 创建变量保存临时添加的数据
+            addintrotemp:"",
+            addordertemp:"",
+            // 创建一个变量控制是否显示添加文本框
+            isshowaddintro:false,
+            isshowaddorder:false,
             list:{
                 intro:"11",
                 price: '11',
                 limitprice: '11',
-                timestamp:"11",
-                exactintro:["1111111111111","1111111111111","1111111111111","1111111111111"],
-                exactorder:["1111111111111","1111111111111","1111111111111","1111111111111"],       
+                timestamp:"2022-3-20 12:00:00",
+                // 下面的图片是从网上搜索的图片，获取后端数据后，直接替换就行
+                imglist:[
+                    {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
+                    {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
+                    {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
+                    {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
+                ],
+                exactintro:[
+                    {intro:"大岭山风景好",isshow:true},
+                    {intro:"大岭山风景秒",isshow:true},
+                    {intro:"大岭山风景呱呱叫",isshow:true},
+                    {intro:"大岭山风景棒",isshow:true},
+                ],
+                exactorder:[         
+                    {order:"记得看车",isshow:true},
+                    {order:"记得买票",isshow:true},
+                    {order:"记得看人",isshow:true},
+                    {order:"记得带伞",isshow:true},
+                ],       
                 exactcost:["1111111111111","1111111111111","1111111111111","1111111111111"],                   
             },
             fileList: [{name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}, {name: 'food2.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}],
@@ -220,6 +275,17 @@ export default {
     },
 
     methods: {
+        // 创建一个删除图片的回调函数
+        deleteimg(index){
+            // 如果删除成功，弹出一个消息框
+            this.$notify({
+                title: 'Success',
+                message: '删除成功',
+                type: 'success',
+                duration: 2000
+            })
+             this.list.imglist.splice(index,1);
+        },
         // 下面的是上传文件的自带方法
         handleRemove(file, fileList) {
             console.log(file, fileList);
@@ -234,14 +300,35 @@ export default {
             return this.$confirm(`确定移除 ${ file.name }？`);
         },
 
-        // 表单的原有方法
-        handleEdit(index, row) {
-            console.log(index, row);
+        // 产品详情表单的方法
+        isshowintroAdd(){
+            this.isshowaddintro=!this.isshowaddintro;
         },
-        handleDelete(index, row) {
-            console.log(index, row);
+        handleintroleAdd(){
+            this.list.exactintro.push({intro:this.addintrotemp,isshow:true});
+        },
+        handleintroEdit(index, row) {
+            row.isshow=!row.isshow;
+        },
+        handleintroDelete(index, row) {
+            this.list.exactintro.splice(index,1);
+        },
+
+        // 须知详情表单的方法
+        isshoworderAdd(){
+            this.isshowaddorder=!this.isshowaddorder;
+        },
+        handleorderAdd(){
+            this.list.exactintro.push({order:this.addordertemp,isshow:true});
+        },
+        handleorderEdit(index, row) {
+            row.isshow=!row.isshow;
+        },
+        handleorderDelete(index, row) {
+            this.list.exactorder.splice(index,1);
         }
-        }
+
+    }
 }
 </script>
 
@@ -309,6 +396,7 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-top: 20px;
 }
 #ticketedit #form #div1 #inda{
     display: flex;
@@ -343,13 +431,17 @@ export default {
     margin-top: 20px;
     width: 90%;
 }
-
+#ticketedit #form #introitem .additem{
+    display: flex;
+}
 /* 下面的是预定需知的样式*/
 #ticketedit #form #orderitem{
     margin-top: 20px;
     width: 90%;
 }
-
+#ticketedit #form #orderitem .additem{
+    display: flex;
+}
 /* 下面的是费用说明的样式*/
 #ticketedit #form #costitem{
     margin-top: 20px;
