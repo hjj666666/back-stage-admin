@@ -251,7 +251,8 @@
 
             <!-- 下面是取消和确认连个按钮 -->
             <div id="footer">
-                <el-button type="primary" @click="nativecreateData">确认</el-button>
+                <!-- 通过methstatus来判断执行那个方法 -->
+                <el-button type="primary" @click='nativemeth'>确认</el-button>
                 <el-button type="success">取消</el-button>
             </div>
         </div>
@@ -260,8 +261,11 @@
 
 <script>
 export default {
+    name: 'TicketEdit',
     data() {
         return {
+            // 创建一个状态点击确定后触发的是增加函数，修改函数
+            methstatus:"",
             // 创建变量保存临时添加的数据
             addintrotemp:"",
             addordertemp:"",
@@ -316,9 +320,17 @@ export default {
 
         }
     },
-   mounted() {
-    //    判断是否能接受到我们的create函数,可以输出
-    // console.log(this.$route.query.createData);
+    activated(){
+    //    判断是否能接受到我们的create函数,可以输出,成功获取
+     // console.log(this.$route.query.methstatus);
+
+    // 一旦进入立马更新methstatus，方便后面判断是执行修改方法还是增加方法
+    this.methstatus=this.$route.query.methstatus;
+    // 对接受到的参数进行判断：如果this.$route.query.list!=undefined,则替换掉目前的list
+    // 目前测试可行
+    if(this.$route.query.list!=undefined){
+        this.list=this.$route.query.list;
+    }
    },
     methods: {
         // 创建一个删除图片的回调函数
@@ -410,17 +422,29 @@ export default {
         },
         handlecostDelete(index, row) {
             this.list.exactcost.splice(index,1);
-        },
-
+        },    
         // 为整个表单的确认按钮绑定一个回调函数，用来触发我们接受过来的createData函数
         // 接受方法好像不太性，那么就使用全局事件总线，促发busCreateData
         nativecreateData(){
-           this.$bus.$emit("busCreateData",this.list);
+         this.$bus.$emit("busCreateData",this.list);
            this.$router.push({
                path:"/productadmin/ticket-admin"
            });
-        }
-
+        },
+        nativeupData(){
+           this.$bus.$emit("busupData",this.list);
+           this.$router.push({
+               path:"/productadmin/ticket-admin"
+           });
+        },
+        // 创建一个方法根据我们目前表单的methstatus执行相应的方法
+        nativemeth(){
+            if(this.methstatus==="createdata"){
+                this.nativecreateData();
+            }else{
+                this.nativeupData();
+            }
+        },
     }
 }
 </script>

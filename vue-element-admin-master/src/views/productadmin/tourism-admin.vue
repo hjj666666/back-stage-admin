@@ -184,7 +184,7 @@ import Pagination from '@/components/Pagination' // secondary package based on e
 const typeOptions=["美食","约游","玩好","乐享","纯味"]
 
 export default {
-  name: 'TableCk',
+  name: 'TourismAdmin',
      // 引用的组件
   components: { Pagination },
      // 自定义组件引入水波纹特效

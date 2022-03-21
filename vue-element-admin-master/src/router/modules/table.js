@@ -22,7 +22,7 @@ const tableRouter = {
       path: 'ticket-admin',
       component: () => import('@/views/productadmin/ticket-admin'),
       name: 'TicketAdmin',
-      meta: { title: '门票管理' }
+      meta: { title: '门票管理', noCache: false}
     },
     {
       path: 'table-ck',
