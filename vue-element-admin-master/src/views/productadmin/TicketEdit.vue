@@ -201,35 +201,52 @@
             <!-- 下面是费用说明部分 -->
             <div id="costitem">
                 <el-table
-                :data="tableData"
+                :data="list.exactcost"
                 style="width: 100%">
                 <el-table-column
                 label="顺序"
-                prop="date">
+                width="50"
+                type="index">
                 </el-table-column>
 
                 <el-table-column
                 label="费用说明"
-                prop="name">
+                prop="intro">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.isshow">{{scope.row.cost}}</span>
+                    <el-input v-model="scope.row.cost"  v-else></el-input>
+                 </template>   
                 </el-table-column>
                 
                 <el-table-column
                 align="right">
-                <template slot="header" >
-                     <el-button type="primary">增加</el-button>
+                <template slot="header">
+                     <el-button type="primary"  @click="isshowcostAdd">增加</el-button>
                 </template>
                 <template slot-scope="scope">
                     <el-button
                     size="mini"
-                    @click="handleEdit(scope.$index, scope.row)">Edit</el-button>
+                    v-if="scope.row.isshow"
+                    @click="handleintroEdit(scope.$index, scope.row)">编辑</el-button>
+
+                    <el-button
+                    size="mini"
+                    v-else
+                    @click=" handlecostEdit(scope.$index, scope.row)">确认</el-button>
 
                     <el-button
                     size="mini"
                     type="danger"
-                    @click="handleDelete(scope.$index, scope.row)">Delete</el-button>
+                    @click=" handlecostDelete(scope.$index, scope.row)">删除</el-button>
                 </template>
                 </el-table-column>
-            </el-table>  
+                </el-table> 
+
+                <div class="additem" v-if="isshowaddcost">
+                    <el-input v-model="addcosttemp" placeholder="请输入要添加的信息"></el-input>
+                    <el-button type="success" size="small" @click="handlecostAdd">确认添加</el-button>
+                    <el-button type="success" size="small" @click="isshowcostAdd">取消</el-button>
+                </div>   
             </div>
 
             <!-- 下面是取消和确认连个按钮 -->
@@ -248,10 +265,11 @@ export default {
             // 创建变量保存临时添加的数据
             addintrotemp:"",
             addordertemp:"",
+            addcosttemp:"",
             // 创建一个变量控制是否显示添加文本框
             isshowaddintro:false,
             isshowaddorder:false,
-
+            isshowaddcost:false,
             //可选城市列表
             cityList: ['东莞', '广州', '深圳'],
             inputVisible: false,
@@ -285,28 +303,16 @@ export default {
                     {order:"记得看人",isshow:true},
                     {order:"记得带伞",isshow:true},
                 ],       
-                exactcost:["1111111111111","1111111111111","1111111111111","1111111111111"],                   
+                exactcost:[
+                    {cost:"门票费用",isshow:true},
+                    {cost:"游玩项目费用",isshow:true},
+                    {cost:"吃饭费用",isshow:true},
+                    {cost:"其他费用",isshow:true},
+                    ],                   
             },
+            // 这个数据是上传文本框的数据
             fileList: [{name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}, {name: 'food2.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}],
-           
-        //    表单部分原来就有的数据
-            tableData: [{
-            date: '1',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-            date: '2',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1517 弄'
-            }, {
-            date: '3',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1519 弄'
-            }, {
-            date: '4',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1516 弄'
-            }],
+
         }
     },
 
@@ -364,6 +370,7 @@ export default {
         },
         handleintroleAdd(){
             this.list.exactintro.push({intro:this.addintrotemp,isshow:true});
+            this.addintrotemp="";
         },
         handleintroEdit(index, row) {
             row.isshow=!row.isshow;
@@ -378,12 +385,27 @@ export default {
         },
         handleorderAdd(){
             this.list.exactorder.push({order:this.addordertemp,isshow:true});
+            this.addordertemp="";
         },
         handleorderEdit(index, row) {
             row.isshow=!row.isshow;
         },
         handleorderDelete(index, row) {
             this.list.exactorder.splice(index,1);
+        },
+        // 费用说明的方法
+        isshowcostAdd(){
+            this.isshowaddcost=!this.isshowaddcost;
+        },
+        handlecostAdd(){
+            this.list.exactcost.push({cost:this.addcosttemp,isshow:true});
+            this.addcosttemp="";
+        },
+        handlecostEdit(index, row) {
+            row.isshow=!row.isshow;
+        },
+        handlecostDelete(index, row) {
+            this.list.exactcost.splice(index,1);
         }
 
     }
@@ -531,6 +553,9 @@ export default {
 #ticketedit #form #costitem{
     margin-top: 20px;
     width: 90%;
+}
+#ticketedit #form #costitem .additem{
+    display: flex;
 }
 
 /* 下面两个按钮的样式 */
