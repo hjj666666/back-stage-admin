@@ -35,6 +35,12 @@ const tableRouter = {
       component: () => import('@/views/productadmin/TicketEdit'),
       name: 'TicketEdit',
       meta: { title: '门票编辑'}
+    },
+    {
+      path: 'tourismEdit',
+      component: () => import('@/views/productadmin/TourismEdit'),
+      name: 'TourismEdit',
+      meta: { title: '旅游产品编辑'}
     }
   ]
 }
