@@ -251,7 +251,7 @@
 
             <!-- 下面是取消和确认连个按钮 -->
             <div id="footer">
-                <el-button type="primary">确认</el-button>
+                <el-button type="primary" @click="nativecreateData">确认</el-button>
                 <el-button type="success">取消</el-button>
             </div>
         </div>
@@ -275,15 +275,16 @@ export default {
             inputVisible: false,
             inputValue: '',
 
-            // 这个是样式的显示数组，后期删掉
-            fits: ['fill', 'fill','fill','fill','fill','fill'],
-            // ui的自带图片
-             url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
             list:{
                 intro:"11",
                 price: '11',
                 limitprice: '11',
                 timestamp:"2022-3-20 12:00:00",
+                // 列表那边需要有的数据
+                type:["默认套餐"],
+                amount:0,
+                status:"可购买",
+                schedu:"行程的详情介绍可通过点击简介进行观看",
                 // 下面的图片是从网上搜索的图片，获取后端数据后，直接替换就行
                 imglist:[
                     {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
@@ -315,7 +316,10 @@ export default {
 
         }
     },
-
+   mounted() {
+    //    判断是否能接受到我们的create函数,可以输出
+    // console.log(this.$route.query.createData);
+   },
     methods: {
         // 创建一个删除图片的回调函数
         deleteimg(index){
@@ -406,6 +410,15 @@ export default {
         },
         handlecostDelete(index, row) {
             this.list.exactcost.splice(index,1);
+        },
+
+        // 为整个表单的确认按钮绑定一个回调函数，用来触发我们接受过来的createData函数
+        // 接受方法好像不太性，那么就使用全局事件总线，促发busCreateData
+        nativecreateData(){
+           this.$bus.$emit("busCreateData",this.list);
+           this.$router.push({
+               path:"/productadmin/ticket-admin"
+           });
         }
 
     }

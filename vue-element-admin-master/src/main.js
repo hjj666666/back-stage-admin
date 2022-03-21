@@ -49,5 +49,9 @@ new Vue({
   el: '#app',
   router,
   store,
+  // 使用全局事件总线解决组件间的通信
+  beforeCreate(){
+      Vue.prototype.$bus=this
+  },
   render: h => h(App)
 })

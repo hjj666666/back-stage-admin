@@ -123,89 +123,6 @@
 <!-- 这里是下面的分页器 -->
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
-<!-- 下面分别是编辑页面，以及添加页面，这里应该是定位的形式出现 -->
-<!-- 饿了么的对话框组件  这里用于展示 新增修改界面  
-       :title="textMap[dialogStatus]"  标题为下面声明的textMap数组中的dialogStatus key 的值
-       :visible.sync="dialogFormVisible"   是否显示 Dialog 传入true展示 flase隐藏 这里界面初始化时为false 点击新增和修改时修改为true
- -->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-<!-- 这部分是添加的表单 -->
-<!-- 饿了么的表单组件  
-    ref  给表单起个别名dataForm 下面可以用this.$ref.dataForm获取表单dom
-    rules设置表单数据校验规则为rules，rules在下面vue中声明  label-position标题对齐方式
--->
-      <el-tabs v-model="activeName" @tab-click="handleClick">
-        <el-tab-pane label="基础数据" name="basedata">
-          <el-form ref="dataForm" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-
-            <el-form-item label="简介">
-                <el-input v-model="temp.intro" placeholder="请输入简介"></el-input>
-            </el-form-item>
-
-            <el-form-item label="结束日期" >
-              <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="选择一个日期" />
-            </el-form-item>
-
-            <el-form-item label="状态">
-              <el-select v-model="temp.status" class="filter-item" placeholder="请选择一个状态">
-                <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
-              </el-select>
-            </el-form-item>
-
-              <el-form-item label="套餐选项">
-                <el-checkbox-group v-model="temp.type">
-                  <el-checkbox label="默认套餐" name="type"></el-checkbox>
-                  <el-checkbox label="其他套餐" name="type"></el-checkbox>
-                </el-checkbox-group>
-              </el-form-item>
-            
-            <el-form-item label="数量">
-                <el-input v-model="temp.amount" placeholder="请输入数量"></el-input>
-            </el-form-item>
-
-              <el-form-item label="原价格">
-                <el-input v-model="temp.price" placeholder="请输入价格"></el-input>
-            </el-form-item>
-
-              <el-form-item label="抢购价格">
-                <el-input v-model="temp.limitprice" placeholder="请输入价格"></el-input>
-            </el-form-item>
-
-            <el-form-item label="行程介绍">
-              <el-input v-model="temp.schedu" :autosize="{ minRows: 3, maxRows: 5}" type="textarea" placeholder="Please input" />
-            </el-form-item>
-          </el-form>
-        </el-tab-pane>
-        <el-tab-pane label="图文管理" name="textpic">
-          <!-- ElementUI的上传图片的组件 -->
-            <el-upload
-              class="upload-demo"
-              action="#"
-              :before-remove="beforeRemove"
-              :file-list="picFileList"
-              list-type="picture">
-              <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-              <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button>
-              <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
-            </el-upload>
-        </el-tab-pane>
-        <el-tab-pane label="暂时未知" name="unknown">
-          我也不知道这里放点啥，但是既然写了，就放点啥吧。
-        </el-tab-pane>
-      </el-tabs>
-      
-
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          取消
-        </el-button>
-       <!--@click="dialogStatus==='create'?createData():updateData()"  如果 vue的变量dialogStatus为create就执行新增方法，
-       否则执行修改 -->
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          确认
-        </el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
@@ -257,28 +174,79 @@ export default {
       // 获取过来的数据
       // 先让页面显示这些静态的数据
       list: [
-        {
-        id:1,
-        // timestamp应该以字符串的形式表示
-        timestamp:'2019-10-1',
-        intro:111,
-        type:["默认套餐"],
-        limitprice:9.9,
-        price:999,
-        amount:0,
-        status:"可购买",
-        schedu:"行程的详情介绍可通过点击简介进行观看"
+       {  
+          id:1,
+          intro:"12",
+          price: '13',
+          limitprice: '14',
+          timestamp:"2022-3-20 12:00:00",
+          // 列表那边需要有的数据
+          type:["默认套餐"],
+          amount:0,
+          status:"可购买",
+          schedu:"行程的详情介绍可通过点击简介进行观看",
+          // 下面的图片是从网上搜索的图片，获取后端数据后，直接替换就行
+          imglist:[
+              {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
+              {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
+              {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
+              {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
+          ],
+          exactintro:[
+              {intro:"大岭山风景好",isshow:true},
+              {intro:"大岭山风景秒",isshow:true},
+              {intro:"大岭山风景呱呱叫",isshow:true},
+              {intro:"大岭山风景棒",isshow:true},
+          ],
+          exactorder:[         
+              {order:"记得看车",isshow:true},
+              {order:"记得买票",isshow:true},
+              {order:"记得看人",isshow:true},
+              {order:"记得带伞",isshow:true},
+          ],       
+          exactcost:[
+              {cost:"门票费用",isshow:true},
+              {cost:"游玩项目费用",isshow:true},
+              {cost:"吃饭费用",isshow:true},
+              {cost:"其他费用",isshow:true},
+              ],                   
       },
       {
         id:2,
-        timestamp:'2020-10-2',
-        intro:'111',
-        limitprice:9.9,
-        price:99,
-        status:"可购买",
-        amount:0,
-        type:["其他套餐"],
-        schedu:"行程的详情介绍可通过点击简介进行观看"
+        intro:"15",
+          price: '16',
+          limitprice: '17',
+          timestamp:"2022-3-20 12:00:00",
+          // 列表那边需要有的数据
+          type:["默认套餐"],
+          amount:0,
+          status:"可购买",
+          schedu:"行程的详情介绍可通过点击简介进行观看",
+          // 下面的图片是从网上搜索的图片，获取后端数据后，直接替换就行
+          imglist:[
+              {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
+              {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
+              {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
+              {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
+          ],
+          exactintro:[
+              {intro:"大岭山风景好",isshow:true},
+              {intro:"大岭山风景秒",isshow:true},
+              {intro:"大岭山风景呱呱叫",isshow:true},
+              {intro:"大岭山风景棒",isshow:true},
+          ],
+          exactorder:[         
+              {order:"记得看车",isshow:true},
+              {order:"记得买票",isshow:true},
+              {order:"记得看人",isshow:true},
+              {order:"记得带伞",isshow:true},
+          ],       
+          exactcost:[
+              {cost:"门票费用",isshow:true},
+              {cost:"游玩项目费用",isshow:true},
+              {cost:"吃饭费用",isshow:true},
+              {cost:"其他费用",isshow:true},
+              ],      
       }
       ],
       // 目前中list中数据的条数
@@ -332,10 +300,15 @@ export default {
   created() {
     // this.getList()
   },
+  mounted() {
+    // 为$bus添加一个回调函数用于触发createData(temp)
+    this.$bus.$on("busCreateData",this.createData);
+  },
   methods: {
       //ElementUI的上传图片的URL
       submitUpload() {
         this.$refs.upload.submit();
+
       },
       handleExceed(files, fileList) {
         this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
@@ -344,6 +317,7 @@ export default {
         return this.$confirm(`确定移除 ${ file.name }?`);
       },
       // 创建一个点击登陆按钮跳转到增加页面的回调函数
+      // 并且将我们本页面的增加函数给它传送过去
       totickeditedit(){
           this.$router.push({
              path:"/productadmin/tableedit"
@@ -492,16 +466,17 @@ export default {
     },
 
        //出现添加页面后，创建数据方法
-    createData() {
+    createData(temp) {
        // 饿了么form表单前端校验的固定写法，当点击确定新增数据时，再校验一遍数据是否符合rules
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-             //设置基础数据
-          this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
+       //this.$refs['dataForm'].validate((valid) => {if (valid) {}})
             // 到后端请求新增数据
           //createArticle(this.temp).then(() => {})
-            // 删除list中的数据
-            this.list.unshift(this.temp)
+            const tempData = Object.assign({}, temp)
+            //设置基础数据
+           tempData.id = parseInt(Math.random() * 100) + 1024 // mock a id
+              console.log(tempData);
+            // 增加list中的数据
+            this.list.push(tempData)
             // 将dialog对话框隐藏
             this.dialogFormVisible = false
              // 这里添加成功后弹出一个消息窗口
@@ -511,8 +486,6 @@ export default {
               type: 'success',
               duration: 2000
             })
-        }
-      })
     },
 
       // 点击修改执行的方法  显示修改界面
