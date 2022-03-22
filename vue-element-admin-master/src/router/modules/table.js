@@ -34,6 +34,7 @@ const tableRouter = {
       path: 'tableedit',
       component: () => import('@/views/productadmin/TicketEdit'),
       name: 'TicketEdit',
+      hidden: true,
       meta: { title: '门票编辑'}
     },
     {
