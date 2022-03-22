@@ -66,35 +66,8 @@
                         <span class="span1">限时价格:</span>
                         <el-input  placeholder="请输入内容"  v-model="list.limitprice"></el-input>
                     </div>
-                </div>
-                    
-           </div>     
-
-            <!-- 添加选择城市 -->
-            <div class="citylist">
-                <div class="cityChoose">
-                    <span class="">出发城市：</span>
-                    <el-tag
-                        :key="city"
-                        v-for="city in cityList"
-                        closable
-                        :disable-transitions="false"
-                        @close="handleClose(city)">
-                        {{city}}
-                    </el-tag>
-                    <el-input
-                        class="input-new-city"
-                        v-if="inputVisible"
-                        v-model="inputValue"
-                        ref="saveCityInput"
-                        size="small"
-                        @keyup.enter.native="handleInputConfirm"
-                        @blur="handleInputConfirm">
-                    </el-input>
-                    <el-button v-else class="button-new-city" size="small" @click="showInput">增加城市</el-button>
-                </div>
-            </div>          
-
+                </div>   
+           </div>   
 
             <!-- 下面是产品介绍列表部分-->
             <div id="introitem">
@@ -274,10 +247,6 @@ export default {
             isshowaddintro:false,
             isshowaddorder:false,
             isshowaddcost:false,
-            //可选城市列表
-            cityList: ['东莞', '广州', '深圳'],
-            inputVisible: false,
-            inputValue: '',
 
             list:{
                 intro:"11",
@@ -343,27 +312,6 @@ export default {
                 duration: 2000
             })
              this.list.imglist.splice(index,1);
-        },
-
-        //加城市列表的方法
-        handleClose(city) {
-        this.cityList.splice(this.cityList.indexOf(city), 1);
-        },
-
-        showInput() {
-        this.inputVisible = true;
-        this.$nextTick(_ => {
-          this.$refs.saveCityInput.$refs.input.focus();
-            });
-        },
-
-        handleInputConfirm() {
-        let inputValue = this.inputValue;
-        if (inputValue) {
-          this.cityList.push(inputValue);
-        }
-        this.inputVisible = false;
-        this.inputValue = '';
         },
 
         // 下面的是上传文件的自带方法
@@ -541,18 +489,6 @@ export default {
 #ticketedit #form #div1 #ptli div{
     display: flex;
     
-}
-
-/* 城市列表的样式 */
-.citylist{
-    margin-top: 20px;
-    display: flex;
-    align-items: center;
-    width: 100%;
-    justify-content: space-between;
-}
-.cityChoose{
-    margin-left:4.5em;
 }
 .el-tag + .el-tag {
     margin-left: 10px;

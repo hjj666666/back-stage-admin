@@ -79,7 +79,7 @@
                         v-for="city in cityList"
                         closable
                         :disable-transitions="false"
-                        @close="handleClose(city)">
+                        @close="handleCloseOfCity(city)">
                         {{city}}
                     </el-tag>
                     <el-input
@@ -104,7 +104,7 @@
                         v-for="mix in mixList"
                         closable
                         :disable-transitions="false"
-                        @close="handleClose(mix)">
+                        @close="handleCloseOfMix(mix)">
                         {{mix}}
                     </el-tag>
                     <el-input
@@ -363,11 +363,14 @@ export default {
              this.list.imglist.splice(index,1);
         },
 
-        //加城市列表的方法
-        handleClose(city) {
+        //城市列表的方法
+
+        //这是删除城市列表的方法
+        handleCloseOfCity(city) {
         this.cityList.splice(this.cityList.indexOf(city), 1);
         },
 
+        //展示列表
         showInputOfCity() {
         this.inputVisibleOfCity = true;
         this.$nextTick(_ => {
@@ -385,7 +388,11 @@ export default {
         },
 
         //套餐列表的方法
-
+        //删除列表中的套餐
+        handleCloseOfMix(mix) {
+        this.mixList.splice(this.mixList.indexOf(mix), 1);
+        },
+        //展示列表
         showInputOfMix() {
         this.inputVisibleOfMix = true;
         this.$nextTick(_ => {
