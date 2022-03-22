@@ -16,7 +16,7 @@ const tableRouter = {
       path: 'tourism-admin',
       component: () => import('@/views/productadmin/tourism-admin'),
       name: 'TourismAdmin',
-      meta: { title: '旅游套餐管理' }
+      meta: { title: '旅游管理' }
     },
     {
       path: 'ticket-admin',

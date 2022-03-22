@@ -49,11 +49,12 @@
 
                     <div id="date">
                         <span class="span1">结束时间:</span>
-                        <el-date-picker
-                        type="datetime"
-                         v-model="list.timestamp"
-                        placeholder="选择日期时间">
-                        </el-date-picker>
+                        <el-date-picker v-model="list.timestamp" type="datetime" placeholder="选择一个日期" />
+                    </div>
+
+                     <div>
+                        <span class="span1">剩余数量:</span>
+                        <el-input  placeholder="请输入数量"  v-model="list.amount"></el-input>
                     </div>
                </div>
      
@@ -65,6 +66,12 @@
                     <div id="limitprice">
                         <span class="span1">限时价格:</span>
                         <el-input  placeholder="请输入内容"  v-model="list.limitprice"></el-input>
+                    </div>
+                    <div>
+                         <span class="span1">门票状态:</span>
+                        <el-select v-model="list.status" class="filter-item" placeholder="请选择一个状态">
+                            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
+                       </el-select>
                     </div>
                 </div>   
            </div>   
@@ -248,6 +255,9 @@ export default {
             isshowaddorder:false,
             isshowaddcost:false,
 
+            // 修改页面中的选择状态框
+           statusOptions: ['售罄','可购买'],
+
             list:{
                 intro:"11",
                 price: '11',
@@ -257,7 +267,6 @@ export default {
                 type:["默认套餐"],
                 amount:0,
                 status:"可购买",
-                schedu:"行程的详情介绍可通过点击简介进行观看",
                 // 下面的图片是从网上搜索的图片，获取后端数据后，直接替换就行
                 imglist:[
                     {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
@@ -295,6 +304,11 @@ export default {
 
     // 一旦进入立马更新methstatus，方便后面判断是执行修改方法还是增加方法
     this.methstatus=this.$route.query.methstatus;
+    // 如果methstatus==createdata，这经页面中的数据清空
+    if(this.methstatus==="createdata"){
+       // console.log("1111");
+       this.resetlist();
+    }
     // 对接受到的参数进行判断：如果this.$route.query.list!=undefined,则替换掉目前的list
     // 目前测试可行
     if(this.$route.query.list!=undefined){
@@ -314,6 +328,19 @@ export default {
              this.list.imglist.splice(index,1);
         },
 
+        // 创建一个清空页面的函数
+        resetlist(){
+             this.list.intro="";
+            this.list.price="";
+            this.list.limitprice="";
+            this.list.timestamp="";
+            this.list.amount="";
+            this.list.status="";
+            this.list.imglist=[];
+            this.list.exactintro=[];
+            this.list.exactorder=[];
+            this.list.exactcost=[];
+        },
         // 下面的是上传文件的自带方法
         handleRemove(file, fileList) {
             console.log(file, fileList);

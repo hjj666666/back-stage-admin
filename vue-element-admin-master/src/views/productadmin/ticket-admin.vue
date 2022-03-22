@@ -1,26 +1,31 @@
 <template>
   <div class="app-container">
-    <div class="filter-container">
-      <!-- 上面的根据标题进行收索搜索框 -->
-      <!-- 当回车按键弹起的时候触发handleFilter方法，native阻止input默认事情--> 
-      <el-input v-model="listQuery.intro" placeholder="根据简介搜索" style="width: 200px;margin-right:20px" class="filter-item" @keyup.enter.native="handleFilter" />
-       
-      <!-- 搜索按钮 -->
-      <!--饿了么的button 组件   v-waves使用水波纹特效 type设置样式  icon设置图标 @click触发方法 -->
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter" >
-        搜索
-      </el-button>
+      <!-- 添加一个预览界面 -->
+      <div class="preview" v-if="idshowpreview" >
+        <p>这里是预览界面</p>
+          <el-button type="danger" plain @click="controlpreview">危险按钮</el-button>
+      </div>
+      <div class="filter-container">
+        <!-- 上面的根据标题进行收索搜索框 -->
+        <!-- 当回车按键弹起的时候触发handleFilter方法，native阻止input默认事情--> 
+        <el-input v-model="listQuery.intro" placeholder="根据简介搜索" style="width: 200px;margin-right:20px" class="filter-item" @keyup.enter.native="handleFilter" />
+        
+        <!-- 搜索按钮 -->
+        <!--饿了么的button 组件   v-waves使用水波纹特效 type设置样式  icon设置图标 @click触发方法 -->
+        <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter" >
+          搜索
+        </el-button>
 
-      <!-- 添加按钮 -->
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="totickeditedit">
-        增加
-      </el-button>
+        <!-- 添加按钮 -->
+        <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="totickeditedit">
+          增加
+        </el-button>
 
-      <!-- 导出按钮 -->
-      <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
-        导出
-      </el-button>
-    </div>
+        <!-- 导出按钮 -->
+        <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
+          导出
+        </el-button>
+  </div>
 
 <!-- 这里就是下面的列表模块 -->
 <!--以上都是搜索框的内容  -->
@@ -75,13 +80,7 @@
           <span>{{row.limitprice}}</span>
         </template>
       </el-table-column>
-
-      <el-table-column label="门票类型" align="center" width="90">
-        <template slot-scope="{row}">
-          <span>{{`${row.type.join(" ")}`}}</span>
-        </template>
-      </el-table-column>
-      
+     
        <!-- 状态栏 -->
       <el-table-column label="套餐状态" class-name="status-col" width="100">
         <template slot-scope="{row}">
@@ -101,10 +100,13 @@
 
 
         <!-- 这里是我们的操作栏 -->
-      <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
+      <el-table-column label="Actions" align="center" width="300" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
             编辑
+          </el-button>
+          <el-button type="primary" size="mini" @click="controlpreview" >
+              预览
           </el-button>
           <!-- 已经完善 -->
           <el-button v-if="row.status!='售罄'" size="mini" type="success" @click="handleModifyStatus(row,'售罄')">
@@ -120,10 +122,11 @@
       </el-table-column>
     </el-table>
 
-<!-- 这里是下面的分页器 -->
+   <!-- 这里是下面的分页器 -->
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
-
+ 
   </div>
+  
 </template>
 
 <script>
@@ -136,8 +139,6 @@ import { parseTime } from '@/utils'
    // 分页组件
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
-
-const typeOptions=["默认套餐","其他套餐"]
 
 export default {
   name: 'TicketAdmin',
@@ -169,8 +170,9 @@ export default {
          url: 'https://my.wulvxinchen.cn/pictures/things/hutaoloading.gif'
          },
       ],
-
       tableKey: 0,
+      // 创建一个变量控制预览页面的显示
+      idshowpreview:false,
       // 获取过来的数据
       // 先让页面显示这些静态的数据
       list: [
@@ -180,8 +182,6 @@ export default {
           price: '13',
           limitprice: '14',
           timestamp:"2022-3-20 12:00:00",
-          // 列表那边需要有的数据
-          type:["默认套餐"],
           amount:0,
           status:"可购买",
           schedu:"行程的详情介绍可通过点击简介进行观看",
@@ -267,12 +267,8 @@ export default {
       // 修改页面中的选择状态框
       statusOptions: ['售罄','可购买'],
 
-      // 控制修改页面能否显示
-      dialogPvVisible: false,
-      pvData: [],
       // 控制导出按钮的loing?
       downloadLoading: false,
-      typeOptions
     }
   },
   // 钩子函数，当界面创建的时候调用.getList() 获取列表数据
@@ -299,7 +295,10 @@ export default {
              }
           });
       },
-
+      // 创建一个变量控制预览页面能否显示
+      controlpreview(){
+           this.idshowpreview=! this.idshowpreview;
+      },
      // 接口不知到为什么错了先不使用mock中的数据
      //解决了接口的问题，创建js文件后需要在index中注册文件
      // 获取列表数据
@@ -493,6 +492,7 @@ export default {
 handleUpdate(row){
       // 将table中的row数据深拷贝到temp 中
       const temp = Object.assign({}, row) // copy obj
+      temp.timestamp = +new Date(temp.timestamp)
       // 在跳转路由的同时将这行数据通过query传递过去
       this.$router.push({
            path:"/productadmin/tableedit",
@@ -511,6 +511,8 @@ handleUpdate(row){
       //this.$refs['dataForm'].validate((valid) => {if (valid) {}})
         const tempData = Object.assign({}, temp)
          // updateArticle(tempData).then(() => { })
+        //  这句代码是用来转换时间格式的，没有会出错
+        tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
         const index = this.list.findIndex(v => v.id === tempData.id)
         this.list.splice(index, 1, tempData)
         this.$notify({
@@ -529,13 +531,6 @@ handleUpdate(row){
         duration: 2000
       })
       this.list.splice(index, 1)
-    },
-
-    handleFetchPv(pv) {
-      fetchPv(pv).then(response => {
-        this.pvData = response.data.pvData
-        this.dialogPvVisible = true
-      })
     },
 
     // 导出按钮的回调函数
@@ -572,3 +567,13 @@ handleUpdate(row){
   }
 }
 </script>
+
+<style>
+   .app-container .preview{
+     position:absolute;
+     background-color: white;
+     z-index: 2;
+     height: 100%;
+     width: 100%;
+   }
+</style>
