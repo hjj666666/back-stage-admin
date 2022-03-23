@@ -2,9 +2,125 @@
   <div class="app-container">
       <!-- 添加一个预览界面 -->
       <div class="preview" v-if="idshowpreview" >
-        <p>这里是预览界面</p>
-          <el-button type="danger" plain @click="controlpreview">危险按钮</el-button>
+          <!-- 这部分是上面的图片部分 -->
+         <!-- 删除图片功能已经完善，但图片上传功能还未实现 -->
+
+         <div id="imgadmin">
+            <div id="item"  v-for="(item,index) in templist.imglist" :key="index">
+                <!-- 显示图片 -->
+                <el-image
+                    style="width: 100px; height: 100px"
+                    :src="item.img"
+                    fit="fill">
+                </el-image>
+           </div>
+       </div>
+        
+        <!-- 完善下面的表单部分 -->
+       <div id="form">
+        <!-- 使用替换原本的input,并且去掉控制按钮 -->
+           <div id="div1">
+               <div id="inda">
+                    <div id="intro">
+                        <span class="span1">简介:</span>
+                        <p>{{templist.intro}}</p>
+                    </div>
+
+                    <div id="date">
+                        <span class="span1">结束时间:</span>
+                        <p>{{templist.timestamp}}</p>
+                    </div>
+
+                     <div>
+                        <span class="span1">剩余数量:</span>
+                        <p>{{templist.amount}}</p>
+                    </div>
+               </div>
+     
+                <div id="ptli">
+                    <div id="price">
+                        <span class="span1">原价格:</span>
+                        <p>{{templist.price}}</p>
+                    </div>
+                    <div id="limitprice">
+                        <span class="span1">限时价格:</span>
+                         <p>{{templist.limitprice}}</p>
+                    </div>
+                    <div>
+                         <span class="span1">门票状态:</span>
+                        <p>{{templist.status}}</p>
+                    </div>
+                </div>   
+           </div>   
+
+            <!-- 下面是产品介绍列表部分-->
+            <div id="introitem">
+                <el-table
+                :data="templist.exactintro"
+                style="width: 100%">
+                <el-table-column
+                label="顺序"
+                width="50"
+                type="index">
+                </el-table-column>
+
+                <el-table-column
+                label="产品介绍详情"
+                prop="intro">
+                <template slot-scope="scope">
+                    <span>{{scope.row.intro}}</span>
+                 </template>   
+                </el-table-column>
+                
+                </el-table>  
+            </div>
+
+           <!-- 下面是预定需知部分 -->
+            <div id="orderitem">
+                <el-table
+                :data="templist.exactorder"
+                style="width: 100%">
+                <el-table-column
+                label="顺序"
+                width="50"
+                type="index">
+                </el-table-column>
+
+                <el-table-column
+                label="预定须知"
+                prop="intro">
+                <template slot-scope="scope">
+                    <span >{{scope.row.order}}</span>      
+                 </template>   
+                </el-table-column>
+                
+               
+                </el-table>
+            </div>
+
+            <!-- 下面是费用说明部分 -->
+            <div id="costitem">
+                <el-table
+                :data="templist.exactcost"
+                style="width: 100%">
+                <el-table-column
+                label="顺序"
+                width="50"
+                type="index">
+                </el-table-column>
+
+                <el-table-column
+                label="费用说明"
+                prop="intro">
+                <template slot-scope="scope">
+                    <span>{{scope.row.cost}}</span>
+                 </template>   
+                </el-table-column>
+              </el-table>   
+            </div>
+          <el-button type="danger" plain @click="controlpreview" class="downpre">取消预览</el-button>
       </div>
+    </div>
       <div class="filter-container">
         <!-- 上面的根据标题进行收索搜索框 -->
         <!-- 当回车按键弹起的时候触发handleFilter方法，native阻止input默认事情--> 
@@ -25,7 +141,6 @@
         <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
           导出
         </el-button>
-  </div>
 
 <!-- 这里就是下面的列表模块 -->
 <!--以上都是搜索框的内容  -->
@@ -38,94 +153,95 @@
  -->
 <!-- 表格data显示的数据 -->
 <!-- sortChange是下面的列表升降序箭头 -->
-    <el-table
-      :key="tableKey"
-      :data="list"
-      border
-      fit
-      highlight-current-row
-      style="width: 100%;"
-      @sort-change="sortChange"
-    >
+      <el-table
+        :key="tableKey"
+        :data="list"
+        border
+        fit
+        highlight-current-row
+        style="width: 100%;"
+        @sort-change="sortChange"
+      >
 
- <!-- 表单的列组件  label  显示的标题  prop  对应列内容的字段名  sortable 对应列是否可以排序  align 对齐方式 -->
-      <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
-        <template slot-scope="{row}">
-          <span>{{ row.id }}</span>
-        </template>
-      </el-table-column>
+  <!-- 表单的列组件  label  显示的标题  prop  对应列内容的字段名  sortable 对应列是否可以排序  align 对齐方式 -->
+        <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
+          <template slot-scope="{row}">
+            <span>{{ row.id }}</span>
+          </template>
+        </el-table-column>
 
-      <el-table-column label="抢购结束日期" prop="time" width="150px" align="center" sortable="custom">
-        <template slot-scope="{row}">
-          <span>{{ row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
-        </template>
-      </el-table-column>
+        <el-table-column label="抢购结束日期" prop="time" width="150px" align="center" sortable="custom">
+          <template slot-scope="{row}">
+            <span>{{ row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          </template>
+        </el-table-column>
 
-<!-- 这里绑定了一个修改数据的回调函数，和edit的是一样 -->
-      <el-table-column label="简介" min-width="150px">
-        <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.intro}}</span>
-        </template>
-      </el-table-column>
-       
+  <!-- 这里绑定了一个修改数据的回调函数，和edit的是一样 -->
+        <el-table-column label="简介" min-width="150px">
+          <template slot-scope="{row}">
+            <span class="link-type" @click="handleUpdate(row)">{{ row.intro}}</span>
+          </template>
+        </el-table-column>
+        
+        
+        <el-table-column label="原价格" prop="price" :sortable="'custom'" align="center" width="100">
+          <template slot-scope="{row}">
+            <span>{{ row.price }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="限时价格" prop="limitprice" :sortable="'custom'" align="center" width="120">
+          <template slot-scope="{row}">
+            <span>{{row.limitprice}}</span>
+          </template>
+        </el-table-column>
       
-      <el-table-column label="原价格" prop="price" :sortable="'custom'" align="center" width="100">
-        <template slot-scope="{row}">
-          <span>{{ row.price }}</span>
-        </template>
-      </el-table-column>
+        <!-- 状态栏 -->
+        <el-table-column label="套餐状态" class-name="status-col" width="100">
+          <template slot-scope="{row}">
+            <!-- type控制按钮的颜色样式 -->
+            <el-tag :type="row.status | statusFilter">
+              {{ row.status }}
+            </el-tag>
+          </template>
+        </el-table-column>
 
-      <el-table-column label="限时价格" prop="limitprice" :sortable="'custom'" align="center" width="120">
-        <template slot-scope="{row}">
-          <span>{{row.limitprice}}</span>
-        </template>
-      </el-table-column>
-     
-       <!-- 状态栏 -->
-      <el-table-column label="套餐状态" class-name="status-col" width="100">
-        <template slot-scope="{row}">
-          <!-- type控制按钮的颜色样式 -->
-          <el-tag :type="row.status | statusFilter">
-            {{ row.status }}
-          </el-tag>
-        </template>
-      </el-table-column>
-
-       <!-- 数量栏 -->
-      <el-table-column label="剩余数量" class-name="status-col" width="100">
-        <template slot-scope="{row}">
-            {{ row.amount }}
-        </template>
-      </el-table-column>
+        <!-- 数量栏 -->
+        <el-table-column label="剩余数量" class-name="status-col" width="100">
+          <template slot-scope="{row}">
+              {{ row.amount }}
+          </template>
+        </el-table-column>
 
 
-        <!-- 这里是我们的操作栏 -->
-      <el-table-column label="Actions" align="center" width="300" class-name="small-padding fixed-width">
-        <template slot-scope="{row,$index}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
-            编辑
-          </el-button>
-          <el-button type="primary" size="mini" @click="controlpreview" >
-              预览
-          </el-button>
-          <!-- 已经完善 -->
-          <el-button v-if="row.status!='售罄'" size="mini" type="success" @click="handleModifyStatus(row,'售罄')">
-            售罄
-          </el-button>
-          <el-button v-if="row.status!='可购买'" size="mini" @click="handleModifyStatus(row,'可购买')">
-           可购买
-          </el-button>
-          <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
-            删除
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+          <!-- 这里是我们的操作栏 -->
+        <el-table-column label="Actions" align="center" width="300" class-name="small-padding fixed-width">
+          <template slot-scope="{row,$index}">
+            <el-button type="primary" size="mini" @click="handleUpdate(row)">
+              编辑
+            </el-button>
+            <el-button type="primary" size="mini" @click="controlpreview(row)" >
+                预览
+            </el-button>
+            <!-- 已经完善 -->
+            <el-button v-if="row.status!='售罄'" size="mini" type="success" @click="handleModifyStatus(row,'售罄')">
+              售罄
+            </el-button>
+            <el-button v-if="row.status!='可购买'" size="mini" @click="handleModifyStatus(row,'可购买')">
+            可购买
+            </el-button>
+            <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
 
    <!-- 这里是下面的分页器 -->
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
  
   </div>
+ </div>
   
 </template>
 
@@ -173,6 +289,25 @@ export default {
       tableKey: 0,
       // 创建一个变量控制预览页面的显示
       idshowpreview:false,
+      // 创建一个变量保存需要预览的哪行数据
+      templist:{
+          intro:"",
+          price: '',
+          limitprice: '',
+          timestamp:"",
+          amount:0,
+          status:"",
+          schedu:"",
+          imglist:[
+              {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
+              {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
+              {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
+              {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
+          ],
+          exactintro:[],
+          exactorder:[],
+          exactcost:[],
+      },
       // 获取过来的数据
       // 先让页面显示这些静态的数据
       list: [
@@ -296,8 +431,10 @@ export default {
           });
       },
       // 创建一个变量控制预览页面能否显示
-      controlpreview(){
+      // 并且将该行的数据传递给templist
+      controlpreview(temp){
            this.idshowpreview=! this.idshowpreview;
+            this.templist= Object.assign({}, temp);
       },
      // 接口不知到为什么错了先不使用mock中的数据
      //解决了接口的问题，创建js文件后需要在index中注册文件
@@ -454,7 +591,6 @@ export default {
            tempData.id = parseInt(Math.random() * 100) + 1024 // mock a id
             // 增加list中的数据
             this.list.push(tempData)
-            console.log(tempData);
             // 将dialog对话框隐藏
             this.dialogFormVisible = false,
             // 强制渲染函数
@@ -573,7 +709,96 @@ handleUpdate(row){
      position:absolute;
      background-color: white;
      z-index: 2;
-     height: 100%;
      width: 100%;
+     height: 100%;
+     display: flex;
+     flex-direction: column;
+     align-items:center;
+     overflow: scroll;
    }
+   /* 下面是调整上面的图片的样式 */
+/* 调整图片外层边框的样式 */
+.preview #imgadmin{
+    padding: 5px;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);
+    background-color: #ecf0f1;
+}
+
+.preview #imgadmin  #item{
+    width: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+
+/* 下面的是上面的输入输入框的样式 */
+.preview #form{
+    margin-top: 20px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #ecf0f1;
+}
+.preview #form #div1{
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+.preview #form #div1 #inda{
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+}
+.preview #form #div1 #ptli{
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+}
+.preview #form #div1 .span1{
+    width: 100px;
+    margin-right: 20px;
+    display: flex;
+    align-items: center;
+     justify-content:flex-end;
+}
+.preview #form #div1 #inda div{
+    display: flex;  
+}
+.preview #form #div1 #ptli div{
+    display: flex;
+    
+}
+
+/* 下面的是列表部分的样式*/
+.preview #form #introitem{
+    margin-top: 20px;
+    width: 90%;
+}
+
+/* 下面的是预定需知的样式*/
+.preview #form #orderitem{
+    margin-top: 20px;
+    width: 90%;
+}
+
+/* 下面的是费用说明的样式*/
+.preview #form #costitem{
+    margin-top: 20px;
+    width: 90%;
+}
+
+.preview .downpre{
+  margin: 20px;
+}
 </style>
