@@ -5,7 +5,7 @@
         <el-collapse-item title="图片上传" name="uploadPic">
                 <!-- 展示已经上传的图片，在后端获取图片数据 -->
                 <div class="showPic">
-                    <div class="showPic-item" v-for="(item,index) in imglist" :key="index">
+                    <div class="showPic-item" v-for="(item,index) in uploadList.imglist" :key="index">
                         <el-image
                             style="width: 10em; height: 10em; border-radius:1.5em;"
                             :src="item.url"
@@ -30,6 +30,7 @@
                 </div>
         </el-collapse-item>
         
+        <!-- 基础信息的输入 -->
         <el-collapse-item title="基础信息" name="baseInf">
             <el-row :gutter="20">
                 <el-col :span="8">
@@ -51,37 +52,75 @@
                     </div>
                 </el-col>
             </el-row>
+            <br>
             <el-row :gutter="20">
                 <el-col :span="8">
-                    <div class="uploadIntro upload">
-                        <span class="beforeInput">简介:</span>
-                        <el-input  v-model="uploadList.intro" placeholder="请输入内容"></el-input>
+                    <div class="uploadPrice upload">
+                        <span class="beforeInput">原价格:</span>
+                        <el-input  v-model="uploadList.price" placeholder="请输入价格"><template slot="prepend">￥</template></el-input>
                     </div>
                 </el-col>
                 <el-col :span="8">
-                    <div class="uploadDate upload">
-                        <span class="beforeInput">结束时间:</span>
-                        <el-date-picker v-model="uploadList.endTime" type="datetime" placeholder="选择一个日期" />
+                    <div class="uploaLimitPrice upload">
+                        <span class="beforeInput">限定价格:</span>
+                        <el-input  v-model="uploadList.limitprice" placeholder="请输入价格"><template slot="prepend">￥</template></el-input>
                     </div>
                 </el-col>
                 <el-col :span="8">
                     <div class="uploadAmount upload">
-                        <span class="beforeInput">剩余数量:</span>
-                        <el-input  placeholder="请输入数量"  v-model="uploadList.amount"></el-input>
+                        <span class="beforeInput">类型:</span>
+                        <el-select v-model="uploadList.options" placeholder="请选择">
+                            <el-option
+                                v-for="item in typeOptions"
+                                :key="item.key" 
+                                :label="item" 
+                                :value="item">
+                            </el-option>
+                            <br>
+                                <span style="margin-left:1em">
+                                    <el-button v-if="ifCreateNewOptions" type="primary" plain @click="switchCreateNewOptions">自定义类型</el-button>
+                                    <template v-else>
+                                        <el-input v-model="inputCreateNewOptions" placeholder="请输入自定义类型" @blur="createNewOptions" maxlength="4" style="width:12em;margin-right:1em"></el-input>
+                                        <el-button type="primary" plain @click="createNewOptions">确认</el-button>
+                                    </template>
+                                    
+                                </span>
+                        </el-select>
                     </div>
                 </el-col>
             </el-row>
         </el-collapse-item>
 
-        <el-collapse-item title="" name="">
+        <!-- 价格日历的编辑 -->
+        <el-collapse-item title="价格日历" name="">
+            <el-calendar>
+                <template
+                    slot="dateCell"
+                    slot-scope="{date, data}">
+                    <p :class="data.isSelected ? 'is-selected' : ''">
+                    {{ data.day.split('-').slice(1).join('-') }} {{ data.isSelected ? '✔️' : ''}}
+                    </p>
+                </template>
+            </el-calendar>
+        </el-collapse-item>
+
+        <el-collapse-item title="产品亮点" name="">
 
         </el-collapse-item>
 
-        <el-collapse-item title="" name="">
+        <el-collapse-item title="图文详情" name="">
 
         </el-collapse-item>
 
-        <el-collapse-item title="" name="">
+        <el-collapse-item title="行程介绍" name="">
+
+        </el-collapse-item>
+
+        <el-collapse-item title="费用说明" name="">
+
+        </el-collapse-item>
+
+        <el-collapse-item title="预订须知" name="">
 
         </el-collapse-item>
     </el-collapse>
@@ -95,19 +134,32 @@ export default {
             // 默认打开的折叠部分
             openList:['uploadPic','baseInf'],
 
+            //可以选择的套餐类型
+            typeOptions:["美食","约游","玩好","乐享","纯味"],
+
             //输入的信息列表，到时直接提交这个玩意
             uploadList:{
                 intro:'',
                 endTime:'',
                 amount:'',
-            },
+                price: '',
+                limitprice: '',
+                options:'',
 
-            //暂时的图片列表，到时运用函数获取后端的api
-            imglist:[
+                //暂时的图片列表，到时运用函数获取后端的api
+                imglist:[
                 {url:'https://my.wulvxinchen.cn/pictures/things/lighthouse.jpg'},
                 {url:'https://my.wulvxinchen.cn/pictures/things/lighthouse.jpg'},
                 {url:'https://my.wulvxinchen.cn/pictures/things/lighthouse.jpg'}
-            ],
+                ],
+            },
+
+            //这里存放开关某些v-if的临时状态
+            ifCreateNewOptions:true, //这个是套餐类型的新增类型的切换状态
+
+            //这里存放临时的值，基本上用完就不用的
+            inputCreateNewOptions:'',  //这个是管理员写的新增的类型
+            
 
             
         }
@@ -123,7 +175,7 @@ export default {
                 type: 'success',
                 duration: 2000
             })
-             this.imglist.splice(index,1);
+             this.uploadList.imglist.splice(index,1);
         },
 
         //上传图片的尺寸和大小设置
@@ -138,9 +190,26 @@ export default {
             this.$message.error('上传图片大小不能超过 2MB!');
             }
             return isJPG && isLt2M;
-        }
+        },
 
+        //切换新增类型的函数
+        switchCreateNewOptions(){
+             this.ifCreateNewOptions=!this.ifCreateNewOptions;
+        },
 
+        //新增类型的函数
+        createNewOptions(){
+            if(this.inputCreateNewOptions!=''){
+                this.uploadList.options=this.inputCreateNewOptions;
+                this.ifCreateNewOptions=true;
+            }
+            else{
+                this.$message({
+                    message: '类型不能为空',
+                    type: 'warning'
+                });
+            }
+        },
 
     },
 }
@@ -162,6 +231,7 @@ export default {
     /* 上传图片的按钮样式 */
     .tourismedit .uploadPic .uploadPicBtn .el-upload {
         margin-top: 1em;
+        margin-left: 1em;
         border: 1px dashed #d9d9d9;
         border-radius: 6px;
         cursor: pointer;
@@ -187,7 +257,7 @@ export default {
         margin-right: 2em;
     }
 
-    上传输入框的样式
+    /* 上传输入框的样式 */
     .tourismedit .upload{
         margin-left: 1em;
         justify-content: space-between;
