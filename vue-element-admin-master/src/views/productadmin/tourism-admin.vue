@@ -12,12 +12,12 @@
 
       <!-- 搜索按钮 -->
       <!--饿了么的button 组件   v-waves使用水波纹特效 type设置样式  icon设置图标 @click触发方法 -->
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" style="margin-right:40vw" @click="handleFilter" >
+      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter" >
         搜索
       </el-button>
 
       <!-- 添加按钮 -->
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
+      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="toTourismEdit">
         增加
       </el-button>
 
@@ -113,60 +113,7 @@
 
 <!-- 这里是下面的分页器 -->
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
-
-<!-- 下面分别是编辑页面，以及添加页面，这里应该是定位的形式出现 -->
-<!-- 饿了么的对话框组件  这里用于展示 新增修改界面  
-       :title="textMap[dialogStatus]"  标题为下面声明的textMap数组中的dialogStatus key 的值
-       :visible.sync="dialogFormVisible"   是否显示 Dialog 传入true展示 flase隐藏 这里界面初始化时为false 点击新增和修改时修改为true
- -->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-<!-- 这部分是添加的表单 -->
-<!-- 饿了么的表单组件  
-    ref  给表单起个别名dataForm 下面可以用this.$ref.dataForm获取表单dom
-    rules设置表单数据校验规则为rules，rules在下面vue中声明  label-position标题对齐方式
--->
-      <el-form ref="dataForm" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-
-        <el-form-item label="简介">
-            <el-input v-model="temp.intro" placeholder="请输入简介"></el-input>
-        </el-form-item>
-
-        <el-form-item label="日期" >
-          <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="选择一个日期" />
-        </el-form-item>
-
-        <el-form-item label="状态">
-          <el-select v-model="temp.status" class="filter-item" placeholder="请选择一个状态">
-            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
-          </el-select>
-        </el-form-item>
-
-        <el-form-item label="类型">
-          <el-select v-model="temp.type" class="filter-item" placeholder="请选择类型">
-            <el-option v-for="item in typeOptions" :key="item" :label="item" :value="item" />
-          </el-select>
-        </el-form-item>
-         
-          <el-form-item label="价格">
-            <el-input v-model="temp.price" placeholder="请输入价格"></el-input>
-        </el-form-item>
-
-        <el-form-item label="行程介绍">
-          <el-input v-model="temp.schedu" :autosize="{ minRows: 3, maxRows: 5}" type="textarea" placeholder="Please input" />
-        </el-form-item>
-      </el-form>
-
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          取消
-        </el-button>
-       <!--@click="dialogStatus==='create'?createData():updateData()"  如果 vue的变量dialogStatus为create就执行新增方法，
-       否则执行修改 -->
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          确认
-        </el-button>
-      </div>
-    </el-dialog>
+  
   </div>
 </template>
 
@@ -392,17 +339,14 @@ export default {
       }
     },
 
-       
-    // 点击新增按钮触发的方法  展示新增界面
-    handleCreate() {
-      //清空temp数据
-      this.resetTemp()
-      this.dialogStatus = 'create'
-      this.dialogFormVisible = true
-        // 当下一次vue的dom元素更新时执行
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
+    //点击新增然后跳转到新增页面
+    toTourismEdit(){
+      this.$router.push({
+             path:"/productadmin/TourismEdit",
+             query:{
+                methstatus:"createdata"
+             }
+          });
     },
 
        //出现添加页面后，创建数据方法
