@@ -91,8 +91,8 @@
                 label="产品介绍详情"
                 prop="intro">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.isshow">{{scope.row.intro}}</span>
-                    <el-input v-model="scope.row.intro"  v-else></el-input>
+                    <span v-if="scope.row.isshow"  v-html="scope.row.intro"></span>
+                    <el-input v-model="scope.row.intro"  v-else   type="textarea" :rows="3"></el-input>              
                  </template>   
                 </el-table-column>
                 
@@ -121,7 +121,7 @@
                 </el-table> 
 
                 <div class="additem" v-if="isshowaddintro">
-                    <el-input v-model="addintrotemp" placeholder="请输入要添加的信息"></el-input>
+                    <el-input v-model="addintrotemp" placeholder="请输入要添加的信息"  type="textarea" :rows="2"></el-input>
                     <el-button type="success" size="small" @click="handleintroleAdd">确认添加</el-button>
                     <el-button type="success" size="small" @click="isshowintroAdd">取消</el-button>
                 </div>   
@@ -143,7 +143,7 @@
                 prop="intro">
                 <template slot-scope="scope">
                     <span v-if="scope.row.isshow">{{scope.row.order}}</span>
-                    <el-input v-model="scope.row.order"  v-else></el-input>
+                    <el-input v-model="scope.row.order"  v-else  type="textarea" :rows="3"></el-input>
                  </template>   
                 </el-table-column>
                 
@@ -172,7 +172,7 @@
                 </el-table> 
 
                 <div class="additem" v-if="isshowaddorder">
-                    <el-input v-model="addordertemp" placeholder="请输入要添加的信息"></el-input>
+                    <el-input v-model="addordertemp" placeholder="请输入要添加的信息"  type="textarea" :rows="2"></el-input>
                     <el-button type="success" size="small" @click=" handleorderAdd">确认添加</el-button>
                     <el-button type="success" size="small" @click="isshoworderAdd">取消</el-button>
                 </div>   
@@ -194,7 +194,7 @@
                 prop="intro">
                 <template slot-scope="scope">
                     <span v-if="scope.row.isshow">{{scope.row.cost}}</span>
-                    <el-input v-model="scope.row.cost"  v-else></el-input>
+                    <el-input v-model="scope.row.cost"  v-else  type="textarea" :rows="3"></el-input>
                  </template>   
                 </el-table-column>
                 
@@ -223,7 +223,7 @@
                 </el-table> 
 
                 <div class="additem" v-if="isshowaddcost">
-                    <el-input v-model="addcosttemp" placeholder="请输入要添加的信息"></el-input>
+                    <el-input v-model="addcosttemp" placeholder="请输入要添加的信息"  type="textarea" :rows="2"></el-input>
                     <el-button type="success" size="small" @click="handlecostAdd">确认添加</el-button>
                     <el-button type="success" size="small" @click="isshowcostAdd">取消</el-button>
                 </div>   
@@ -233,7 +233,7 @@
             <div id="footer">
                 <!-- 通过methstatus来判断执行那个方法 -->
                 <el-button type="primary" @click='nativemeth'>确认</el-button>
-                <el-button type="success">取消</el-button>
+                <el-button type="success" @click="cancel">取消</el-button>
             </div>
         </div>
    </div>
@@ -245,15 +245,17 @@ export default {
     data() {
         return {
             // 创建一个状态点击确定后触发的是增加函数，修改函数
-            methstatus:"",
+            methstatus:``,
             // 创建变量保存临时添加的数据
-            addintrotemp:"",
-            addordertemp:"",
-            addcosttemp:"",
+            addintrotemp:``,
+            addordertemp:``,
+            addcosttemp:``,
             // 创建一个变量控制是否显示添加文本框
             isshowaddintro:false,
             isshowaddorder:false,
             isshowaddcost:false,
+            // 创建一个变量控制是否显示文本编辑器
+            isshoweditor1:false,
 
             // 修改页面中的选择状态框
            statusOptions: ['售罄','可购买'],
@@ -275,22 +277,22 @@ export default {
                     {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
                 ],
                 exactintro:[
-                    {intro:"大岭山风景好",isshow:true},
-                    {intro:"大岭山风景秒",isshow:true},
-                    {intro:"大岭山风景呱呱叫",isshow:true},
-                    {intro:"大岭山风景棒",isshow:true},
+                    {intro:`大岭山风景好`,isshow:true},
+                    {intro:`大岭山风景秒`,isshow:true},
+                    {intro:`大岭山风景呱呱叫`,isshow:true},
+                    {intro:`大岭山风景棒`,isshow:true},
                 ],
                 exactorder:[         
-                    {order:"记得看车",isshow:true},
-                    {order:"记得买票",isshow:true},
-                    {order:"记得看人",isshow:true},
-                    {order:"记得带伞",isshow:true},
+                    {order:`记得看车`,isshow:true},
+                    {order:`记得买票`,isshow:true},
+                    {order:`记得看人`,isshow:true},
+                    {order:`记得带伞`,isshow:true},
                 ],       
                 exactcost:[
-                    {cost:"门票费用",isshow:true},
-                    {cost:"游玩项目费用",isshow:true},
-                    {cost:"吃饭费用",isshow:true},
-                    {cost:"其他费用",isshow:true},
+                    {cost:`门票费用`,isshow:true},
+                    {cost:`游玩项目费用`,isshow:true},
+                    {cost:`吃饭费用`,isshow:true},
+                    {cost:`其他费用`,isshow:true},
                     ],                   
             },
             // 这个数据是上传文本框的数据
@@ -327,15 +329,18 @@ export default {
             })
              this.list.imglist.splice(index,1);
         },
-
+        // 创建以恶搞是否显示编辑页面的方法
+        isshoweditor(){
+              this.isshoweditor1=!this.isshoweditor1;
+        },
         // 创建一个清空页面的函数
         resetlist(){
-             this.list.intro="";
-            this.list.price="";
-            this.list.limitprice="";
-            this.list.timestamp="";
-            this.list.amount="";
-            this.list.status="";
+            this.list.intro=``;
+            this.list.price=``;
+            this.list.limitprice=``;
+            this.list.timestamp=``;
+            this.list.amount=``;
+            this.list.status=``;
             this.list.imglist=[];
             this.list.exactintro=[];
             this.list.exactorder=[];
@@ -412,6 +417,12 @@ export default {
                path:"/productadmin/ticket-admin"
            });
         },
+        // 为取消按钮绑定一个回调函数
+        cancel(){
+             this.$router.push({
+               path:"/productadmin/ticket-admin"
+           });
+        },
         // 创建一个方法根据我们目前表单的methstatus执行相应的方法
         nativemeth(){
             if(this.methstatus==="createdata"){
@@ -432,7 +443,9 @@ export default {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    position: relative;
 }
+
 
 /* 下面是调整上面的图片的样式 */
 /* 调整图片外层边框的样式 */

@@ -2,124 +2,84 @@
   <div class="app-container">
       <!-- 添加一个预览界面 -->
       <div class="preview" v-if="idshowpreview" >
-          <!-- 这部分是上面的图片部分 -->
-         <!-- 删除图片功能已经完善，但图片上传功能还未实现 -->
+          <div class="preview-main">
+              <!-- 首先是轮播图部分 -->
+              <div class="broadcast">
+                   <el-carousel height="250px" indicator-position="none">
+                      <el-carousel-item v-for="(item,index) in templist.imglist" :key="index">
+                        <img :src="item.img" alt="">
+                      </el-carousel-item>
+                    </el-carousel>
+              </div>
 
-         <div id="imgadmin">
-            <div id="item"  v-for="(item,index) in templist.imglist" :key="index">
-                <!-- 显示图片 -->
-                <el-image
-                    style="width: 100px; height: 100px"
-                    :src="item.img"
-                    fit="fill">
-                </el-image>
-           </div>
-       </div>
-        
-        <!-- 完善下面的表单部分 -->
-       <div id="form">
-        <!-- 使用替换原本的input,并且去掉控制按钮 -->
-           <div id="div1">
-               <div id="inda">
-                    <div id="intro">
-                        <span class="span1">简介:</span>
-                        <p>{{templist.intro}}</p>
+              <!-- 简介和标题部分 -->
+              <div class="introdiv">
+                  <div class="introdivtop">
+                      {{templist.intro}}
+                  </div>
+                   <div class="introdivfoot">
+                       接触自然，感受自然
+                    </div>
+              </div>
+
+              <!-- 限时抢购价格以及倒计时 -->
+              <div class="pricedatadiv">
+                    <div class="pricediv">
+                       <span>限时抢购：</span>
+                       <div class="limitprice">{{templist.limitprice}}</div>
+                       <div class="price">{{templist.price}}</div>
+                    </div>
+                    <div class="datediv">
+                        {{templist.timestamp}}
+                    </div>
+              </div>
+
+              <!-- 旅游顾问部分 -->
+              <div class="tourismman">
+                    <div class="manimg">
+                        <img src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg" alt="">
+                    </div>
+                    <div class="phone">
+                      <span>旅游顾问</span>
+                       <span>电话:0769-22106666</span>
+                    </div>
+                    <div class="twobutton">
+                         <div>
+                            联系顾问
+                         </div>
+                          <div>
+                            进店逛逛
+                         </div>
                     </div>
 
-                    <div id="date">
-                        <span class="span1">结束时间:</span>
-                        <p>{{templist.timestamp}}</p>
-                    </div>
+              </div>
 
-                     <div>
-                        <span class="span1">剩余数量:</span>
-                        <p>{{templist.amount}}</p>
-                    </div>
-               </div>
-     
-                <div id="ptli">
-                    <div id="price">
-                        <span class="span1">原价格:</span>
-                        <p>{{templist.price}}</p>
-                    </div>
-                    <div id="limitprice">
-                        <span class="span1">限时价格:</span>
-                         <p>{{templist.limitprice}}</p>
-                    </div>
-                    <div>
-                         <span class="span1">门票状态:</span>
-                        <p>{{templist.status}}</p>
-                    </div>
-                </div>   
-           </div>   
+              <!-- 三个注意要点部分 -->
+              <div class="threepoint">
+                  <!-- 头上的导航栏部分-->
+                  <div class="pointtop">
+                     <span>产品介绍</span>
+                     <span>预定须知</span>
+                     <span>费用说明</span>
+                  </div>
 
-            <!-- 下面是产品介绍列表部分-->
-            <div id="introitem">
-                <el-table
-                :data="templist.exactintro"
-                style="width: 100%">
-                <el-table-column
-                label="顺序"
-                width="50"
-                type="index">
-                </el-table-column>
+                  <!-- 分别将我们的要点展示出来 -->
+                  <div class="intropoint">
+                        <div  class="point" v-for="(item,index) in templist.exactintro" :key="index" v-html="item.intro"></div>
+                  </div>
 
-                <el-table-column
-                label="产品介绍详情"
-                prop="intro">
-                <template slot-scope="scope">
-                    <span>{{scope.row.intro}}</span>
-                 </template>   
-                </el-table-column>
-                
-                </el-table>  
-            </div>
+                   <div class="orderpoint">
+                        <div  class="point" v-for="(item,index) in templist.exactorder" :key="index"  v-html="item.order"></div>
+                  </div>
 
-           <!-- 下面是预定需知部分 -->
-            <div id="orderitem">
-                <el-table
-                :data="templist.exactorder"
-                style="width: 100%">
-                <el-table-column
-                label="顺序"
-                width="50"
-                type="index">
-                </el-table-column>
-
-                <el-table-column
-                label="预定须知"
-                prop="intro">
-                <template slot-scope="scope">
-                    <span >{{scope.row.order}}</span>      
-                 </template>   
-                </el-table-column>
-                
-               
-                </el-table>
-            </div>
-
-            <!-- 下面是费用说明部分 -->
-            <div id="costitem">
-                <el-table
-                :data="templist.exactcost"
-                style="width: 100%">
-                <el-table-column
-                label="顺序"
-                width="50"
-                type="index">
-                </el-table-column>
-
-                <el-table-column
-                label="费用说明"
-                prop="intro">
-                <template slot-scope="scope">
-                    <span>{{scope.row.cost}}</span>
-                 </template>   
-                </el-table-column>
-              </el-table>   
-            </div>
+                  <div class="costpoint">
+                        <div  class="point" v-for="(item,index) in templist.exactcost" :key="index"  v-html="item.cost"></div>
+                  </div>
+                 
+              </div>
+        </div>
+            
           <el-button type="danger" plain @click="controlpreview" class="downpre">取消预览</el-button>
-      </div>
     </div>
       <div class="filter-container">
         <!-- 上面的根据标题进行收索搜索框 -->
@@ -313,13 +273,12 @@ export default {
       list: [
        {  
           id:1,
-          intro:"12",
-          price: '13',
-          limitprice: '14',
+          intro:"【丛林穿越A线】湾区自然学校单项产品--适合1米以上的儿童",
+          price: '98',
+          limitprice: '78',
           timestamp:"2022-3-20 12:00:00",
           amount:0,
           status:"可购买",
-          schedu:"行程的详情介绍可通过点击简介进行观看",
           // 下面的图片是从网上搜索的图片，获取后端数据后，直接替换就行
           imglist:[
               {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
@@ -328,22 +287,27 @@ export default {
               {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
           ],
           exactintro:[
-              {intro:"大岭山风景好",isshow:true},
-              {intro:"大岭山风景秒",isshow:true},
-              {intro:"大岭山风景呱呱叫",isshow:true},
-              {intro:"大岭山风景棒",isshow:true},
+              {intro:`线路长度:120米,项目数量13关,难度系数`,isshow:true},
+              {intro:`适合人群:身高一米以上体重50公斤身体健康,心理素质良好的儿童`,isshow:true},
+              {intro:`安全保护装备的穿戴：安全头盔`,isshow:true},
+              {intro:`丛林穿越市一条设在小溪边的封闭网道`,isshow:true},
           ],
           exactorder:[         
-              {order:"记得看车",isshow:true},
-              {order:"记得买票",isshow:true},
-              {order:"记得看人",isshow:true},
-              {order:"记得带伞",isshow:true},
+              {order:`1.每张门票只限单人游玩，网上预定成功后凭借短信通知请凭借二维码到前台兑换`,isshow:true},
+              {order:`2.自然学校开放时间为每天的09:30-18:00(17:00停止检票)`,isshow:true},
+              {order:`
+              3.户外运动请注意防嗮以及蚊子叮咬,以下人员不允许参加项目：<br>
+              (1)穿高跟鞋、凉鞋以及裙子等服饰<br>
+              (2)患有高血压等疾病<br>
+              (3)身高一米一下体重100斤以上<br>
+              `,isshow:true},
+              {order:"4.项目过程中请勿携带手机",isshow:true},
           ],       
           exactcost:[
-              {cost:"门票费用",isshow:true},
-              {cost:"游玩项目费用",isshow:true},
-              {cost:"吃饭费用",isshow:true},
-              {cost:"其他费用",isshow:true},
+              {cost:`门票费用`,isshow:true},
+              {cost:`游玩项目费用`,isshow:true},
+              {cost:`吃饭费用`,isshow:true},
+              {cost:`其他费用`,isshow:true},
               ],                   
       },
       {
@@ -356,7 +320,6 @@ export default {
           type:["默认套餐"],
           amount:0,
           status:"可购买",
-          schedu:"行程的详情介绍可通过点击简介进行观看",
           // 下面的图片是从网上搜索的图片，获取后端数据后，直接替换就行
           imglist:[
               {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
@@ -707,98 +670,237 @@ handleUpdate(row){
 <style>
    .app-container .preview{
      position:absolute;
-     background-color: white;
+     background-color:#bdc3c7;
      z-index: 2;
      width: 100%;
      height: 100%;
      display: flex;
      flex-direction: column;
      align-items:center;
-     overflow: scroll;
    }
-   /* 下面是调整上面的图片的样式 */
-/* 调整图片外层边框的样式 */
-.preview #imgadmin{
-    padding: 5px;
-    width: 100%;
+
+ .app-container .preview  .preview-main{
+   width: 360px;
+   height: 90%;
+   background-color:white;
+   display: flex;
+   flex-direction: column;
+   align-items:center;
+   overflow-y: auto;
+ }
+
+ /* 有关轮播图的样式 */
+ .app-container .preview .preview-main .broadcast{
+   width: 100%;
+ }
+    /* 调整图片的大小 */
+  .app-container .preview .preview-main .broadcast img{
+      width: 100%;
+      height: 100%;
+  }
+
+/* 调整简介和标题部分的样式 */
+ .app-container .preview .preview-main  .introdiv{
+       padding-top:10px;
+       width: 100%;
+       display: flex;
+       flex-direction: column;
+       align-items: center;
+ }
+
+ .app-container .preview .preview-main .introdivtop{
+       width: 90%;
+       display: flex;
+       align-items: center;
+       font-size: 15px;
+       line-height: 20px;
+       font-weight: bold;
+ 
+ }
+
+ .app-container .preview .preview-main .introdivfoot{
+       width: 90%;
+       display: flex;
+       align-items: center;
+       margin-top: 5px;
+       font-size: 8px;
+ }
+
+/* 调整限时抢购价格部分的样式 */
+ .app-container .preview .preview-main .pricedatadiv{
+       width: 90%;
+       display: flex;
+       align-items: center;
+       height: 40px;
+       margin-top: 5px;
+       flex-shrink: 0; 
+ }
+
+/* 调整里面pricediv的样式 */
+  .app-container .preview .preview-main .pricedatadiv .pricediv{
+       width: 60%;
+       height: 100%;
+       background-color: #bdc3c7;
+       display: flex;
+       align-items: center;
+       font-size: 14px;
+       padding-left: 10px;
+       color: #95a5a6;
+  }
+
+  .app-container .preview .preview-main .pricedatadiv .pricediv .limitprice{
+      font-size: 20px;
+      font-weight: bold;
+      color: #e67e22;
+      margin-right: 5px;
+  }
+
+   .app-container .preview .preview-main .pricedatadiv .pricediv .price{
+      position: relative;
+   }
+
+    .app-container .preview .preview-main .pricedatadiv .pricediv .price::after{
+      content: "";
+      display: block;
+      height: 1px;
+      position:absolute;
+      width: 100%;
+      background-color: black;
+      top: 50%;
+    }
+/* 调整里面datadiv的样式 */
+  .app-container .preview .preview-main .pricedatadiv .datediv{
+       width: 40%;
+       height: 100%;
+       font-size: 5px;
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       background-color:#e67e22;
+  }
+
+  /* 旅游顾问部分的样式 */
+  .app-container .preview .preview-main .tourismman{
+    width: 90%;
+    height: 50px;
+    margin-top: 10px;
     display: flex;
+    align-items: center;
     justify-content: space-around;
-    align-items: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);
-    background-color: #ecf0f1;
-}
+    font-size: 10px;
+     flex-shrink: 0; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .07)
 
-.preview #imgadmin  #item{
-    width: 100px;
+  }
+
+  .app-container .preview .preview-main .tourismman .manimg{
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+  }
+
+  .app-container .preview .preview-main .tourismman .manimg img{
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+  }
+ 
+  .app-container .preview .preview-main .tourismman .phone{
     display: flex;
     flex-direction: column;
-    justify-content: center;
+  }
+
+  .app-container .preview .preview-main .tourismman  .twobutton{
+   display: flex;
+  }
+  .app-container .preview .preview-main .tourismman  .twobutton div{   
+      border: 1px solid black;
+      padding: 2px;
+      margin: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  }
+
+  /* 下面三个要点的样式 */
+  .app-container .preview .preview-main .threepoint{
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      height: 500px;
+      flex-shrink: 0; 
+      margin-top: 10px;
+  }
+
+.app-container .preview .preview-main .threepoint .pointtop{
+     width: 90%;
+     height: 30px;
+      flex-shrink: 0; 
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      font-size: 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .07);
+      border-bottom:1px solid gray;
+}
+
+.app-container .preview .preview-main .threepoint .pointtop span:hover{
+    color: #e67e22;
+}
+
+/* 调整intropoint的样式 */
+.app-container .preview .preview-main .threepoint .intropoint{
+  width: 90%;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  margin-top: 5px;
+  align-items: center;
+  background-color: #bdc3c7;
+}
+
+.app-container .preview .preview-main .threepoint .intropoint .point{
+  margin-top: 5px;
+  width: 100%;
+}
+
+/* 调整orderpoint的样式 */
+.app-container .preview .preview-main .threepoint .orderpoint{
+   width: 90%;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  margin-top: 5px;
+  align-items: center;
+  background-color: #bdc3c7;
+}
+
+.app-container .preview .preview-main .threepoint .orderpoint .point{
+  margin-top: 5px;
+  width: 100%;
+}
+
+/* 调整costpoint的样式 */
+.app-container .preview .preview-main .threepoint .costpoint{
+   width: 90%;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  margin-top: 5px;
+  align-items: center;
+  background-color: #bdc3c7;
+}
+
+.app-container .preview .preview-main .threepoint .costpoint .point{
+  margin-top: 5px;
+  width: 100%;
 }
 
 
-/* 下面的是上面的输入输入框的样式 */
-.preview #form{
-    margin-top: 20px;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: #ecf0f1;
-}
-.preview #form #div1{
-    width: 90%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 20px;
-}
-.preview #form #div1 #inda{
-    display: flex;
-    align-items: center;
-    width: 100%;
-    justify-content: space-between;
-}
-.preview #form #div1 #ptli{
-    margin-top: 20px;
-    display: flex;
-    align-items: center;
-    width: 100%;
-    justify-content: space-between;
-}
-.preview #form #div1 .span1{
-    width: 100px;
-    margin-right: 20px;
-    display: flex;
-    align-items: center;
-     justify-content:flex-end;
-}
-.preview #form #div1 #inda div{
-    display: flex;  
-}
-.preview #form #div1 #ptli div{
-    display: flex;
-    
-}
+/* 取消预览按钮的样式 */
+ .app-container .preview .downpre{
+   margin: 20px;
+ }
 
-/* 下面的是列表部分的样式*/
-.preview #form #introitem{
-    margin-top: 20px;
-    width: 90%;
-}
-
-/* 下面的是预定需知的样式*/
-.preview #form #orderitem{
-    margin-top: 20px;
-    width: 90%;
-}
-
-/* 下面的是费用说明的样式*/
-.preview #form #costitem{
-    margin-top: 20px;
-    width: 90%;
-}
-
-.preview .downpre{
-  margin: 20px;
-}
 </style>
