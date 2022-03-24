@@ -92,16 +92,35 @@
         </el-collapse-item>
 
         <!-- 价格日历的编辑 -->
-        <el-collapse-item title="价格日历" name="">
+        <el-collapse-item title="价格日历" name="datePrice">
             <el-calendar>
                 <template
                     slot="dateCell"
-                    slot-scope="{date, data}">
-                    <p :class="data.isSelected ? 'is-selected' : ''">
-                    {{ data.day.split('-').slice(1).join('-') }} {{ data.isSelected ? '✔️' : ''}}
+                    slot-scope="{data}">
+                    <p>
+                    {{ data.day.split('-').slice(1).join('-') }}
                     </p>
+                    <div @click="changeDatePriceOfDialog(data)" style="background-color: #75baff">
+                        修改价格
+                    </div>
                 </template>
             </el-calendar>
+            <el-button type="primary" plain @click="test">测试</el-button>
+            <el-dialog
+                title="设置价格"
+                :visible.sync="datePriceVisible"
+                width="30%"
+                >
+                <span>正在设置&nbsp;
+                    <span style="color:#75baff">{{changeDate}}</span>
+                    &nbsp;的价格
+                </span>
+                <el-input  v-model="inputdatePrice" placeholder="请输入价格"><template slot="prepend">￥</template></el-input>
+                <span slot="footer" class="dialog-footer">
+                    <el-button @click="datePriceVisible = false;inputdatePrice=''">取 消</el-button>
+                    <el-button type="primary" @click="changeDatePrice()">确 定</el-button>
+                </span>
+            </el-dialog>
         </el-collapse-item>
 
         <el-collapse-item title="产品亮点" name="">
@@ -152,14 +171,20 @@ export default {
                 {url:'https://my.wulvxinchen.cn/pictures/things/lighthouse.jpg'},
                 {url:'https://my.wulvxinchen.cn/pictures/things/lighthouse.jpg'}
                 ],
+
+                //对应的价格日历列表
+                priceCalendar:[
+                ]
             },
 
             //这里存放开关某些v-if的临时状态
             ifCreateNewOptions:true, //这个是套餐类型的新增类型的切换状态
+            datePriceVisible:false, //这是价格日历的对话框显示状态
 
             //这里存放临时的值，基本上用完就不用的
             inputCreateNewOptions:'',  //这个是管理员写的新增的类型
-            
+            changeDate:'',     //选中的日期
+            inputdatePrice:'', //选中日期的价格
 
             
         }
@@ -211,6 +236,33 @@ export default {
             }
         },
 
+
+        //修改当前日期的价格
+        //点击修改价格并获取当前日期，让对话框显示
+        changeDatePriceOfDialog(data){
+            this.datePriceVisible = true
+            this.changeDate=data.day
+        },
+        //确定函数
+        changeDatePrice(){
+            if(this.changeDate != '' && this.inputdatePrice != ''){
+                this.uploadList.priceCalendar.push({date:this.changeDate,price:this.inputdatePrice})
+                this.datePriceVisible = false
+                this.changeDate=''
+                this.inputdatePrice=''
+            }
+            else{
+                this.$message({
+                    message: '数据不能为空',
+                    type: 'warning'
+                });
+            }
+        },
+
+        //测试函数
+        test(date,data){
+            console.log(this.uploadList.priceCalendar)
+        },
     },
 }
 </script>
