@@ -130,7 +130,7 @@
                 :data="uploadList.featuresList"
                 style="width: 100%">
                 <el-table-column
-                label="顺序"
+                label="序号"
                 width="50"
                 type="index">
                 </el-table-column>
@@ -180,15 +180,15 @@
 
         </el-collapse-item>
 
-        <el-collapse-item class="collapse-title-class" title="行程介绍" name="">
+        <el-collapse-item class="collapse-title-class" title="行程介绍" name="tourIntro">
 
         </el-collapse-item>
 
-        <el-collapse-item class="collapse-title-class" title="费用说明" name="">
+        <el-collapse-item class="collapse-title-class" title="费用说明" name="costIntro">
 
         </el-collapse-item>
 
-        <el-collapse-item class="collapse-title-class" title="预订须知" name="">
+        <el-collapse-item class="collapse-title-class" title="预订须知" name="bookNotice">
 
         </el-collapse-item>
     </el-collapse>
