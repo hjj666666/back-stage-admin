@@ -124,10 +124,10 @@
         </el-collapse-item>
 
         <!-- 下面是产品亮点列表部分-->
-        <el-collapse-item class="collapse-title-class" title="产品亮点" name="">
+        <el-collapse-item class="collapse-title-class" title="产品亮点" name="features">
             <div id="introitem">
                 <el-table
-                :data="uploadList.features"
+                :data="uploadList.featuresList"
                 style="width: 100%">
                 <el-table-column
                 label="顺序"
@@ -136,47 +136,47 @@
                 </el-table-column>
 
                 <el-table-column
-                label="产品介绍详情"
-                prop="intro">
+                label="产品亮点"
+                prop="features">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.isshow"  v-html="scope.row.intro"></span>
-                    <el-input v-model="scope.row.intro"  v-else   type="textarea" :rows="3"></el-input>              
+                    <span v-if="scope.row.isshow"  v-html="scope.row.features"></span>
+                    <el-input v-model="scope.row.features"  v-else   type="textarea" :rows="3"></el-input>              
                  </template>   
                 </el-table-column>
                 
                 <el-table-column
                 align="right">
                 <template slot="header">
-                     <el-button type="primary"  @click="isshowintroAdd">增加</el-button>
+                     <el-button type="primary"  @click="isShowFeaturesAdd">增加</el-button>
                 </template>
                 <template slot-scope="scope">
                     <el-button
                     size="mini"
                     v-if="scope.row.isshow"
-                    @click="handleintroEdit(scope.$index, scope.row)">编辑</el-button>
+                    @click="handleFeaturesEdit(scope.$index, scope.row)">编辑</el-button>
 
                     <el-button
                     size="mini"
                     v-else
-                    @click=" handleintroEdit(scope.$index, scope.row)">确认</el-button>
+                    @click=" handleFeaturesEdit(scope.$index, scope.row)">确认</el-button>
 
                     <el-button
                     size="mini"
                     type="danger"
-                    @click=" handleintroDelete(scope.$index, scope.row)">删除</el-button>
+                    @click=" handleFeaturesDelete(scope.$index, scope.row)">删除</el-button>
                 </template>
                 </el-table-column>
                 </el-table> 
 
-                <div class="additem" v-if="isshowaddintro">
-                    <el-input v-model="addintrotemp" placeholder="请输入要添加的信息"  type="textarea" :rows="2"></el-input>
-                    <el-button type="success" size="small" @click="handleintroleAdd">确认添加</el-button>
-                    <el-button type="success" size="small" @click="isshowintroAdd">取消</el-button>
+                <div class="additem" v-if="isShowAddFeatures">
+                    <el-input v-model="addFeaturesTemp" placeholder="请输入要添加的信息"  type="textarea" :rows="2"></el-input>
+                    <el-button type="success" size="small" @click="handleFeaturesAdd">确认添加</el-button>
+                    <el-button type="success" size="small" @click="isShowFeaturesAdd">取消</el-button>
                 </div>   
             </div>
         </el-collapse-item>
 
-        <el-collapse-item class="collapse-title-class" title="图文详情" name="">
+        <el-collapse-item class="collapse-title-class" title="图文详情" name="picAndText">
 
         </el-collapse-item>
 
@@ -213,7 +213,6 @@ export default {
                 price: '',
                 limitprice: '',
                 options:'',
-                features:[],
 
                 //暂时的图片列表，到时运用函数获取后端的api
                 imglist:[
@@ -224,18 +223,22 @@ export default {
 
                 //对应的价格日历列表
                 priceCalendar:[
-                ]
+                ],
+
+                //产品亮点列表
+                featuresList:[],
             },
 
             //这里存放开关某些v-if的临时状态
             ifCreateNewOptions:true, //这个是套餐类型的新增类型的切换状态
             datePriceVisible:false, //这是价格日历的对话框显示状态
+            isShowAddFeatures:false,//显示产品亮点文本框的状态
 
             //这里存放临时的值，基本上用完就不用的
             inputCreateNewOptions:'',  //这个是管理员写的新增的类型
             changeDate:'',     //选中的日期
             inputdatePrice:'', //选中日期的价格
-
+            addFeaturesTemp:'', //产品亮点临时输入
             
         }
     },
@@ -309,6 +312,29 @@ export default {
             }
         },
 
+        // 产品详情表单的方法
+        isShowFeaturesAdd(){
+            this.isShowAddFeatures=!this.isShowAddFeatures;
+        },
+        handleFeaturesAdd(){
+            if(this.addFeaturesTemp != ''){
+                this.uploadList.featuresList.push({features:this.addFeaturesTemp,isshow:true});
+                this.addFeaturesTemp="";
+                this.isShowAddFeatures=false;
+            }
+            else{
+                this.$message({
+                    message: '数据不能为空',
+                    type: 'warning'
+                });
+            }
+        },
+        handleFeaturesEdit(index, row) {
+            row.isshow=!row.isshow;
+        },
+        handleFeaturesDelete(index, row) {
+            this.uploadList.featuresList.splice(index,1);
+        },
         //测试函数
         test(date,data){
             console.log(this.uploadList.priceCalendar)
