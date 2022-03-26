@@ -2,7 +2,7 @@
   <div class="tourismedit">
     <!-- 折叠编辑的部分 -->
     <el-collapse v-model="openList">
-        <el-collapse-item title="图片上传" name="uploadPic">
+        <el-collapse-item class="collapse-title-class" title="图片上传" name="uploadPic">
                 <!-- 展示已经上传的图片，在后端获取图片数据 -->
                 <div class="showPic">
                     <div class="showPic-item" v-for="(item,index) in uploadList.imglist" :key="index">
@@ -31,7 +31,7 @@
         </el-collapse-item>
         
         <!-- 基础信息的输入 -->
-        <el-collapse-item title="基础信息" name="baseInf">
+        <el-collapse-item class="collapse-title-class" title="基础信息" name="baseInf">
             <el-row :gutter="20">
                 <el-col :span="8">
                     <div class="uploadIntro upload">
@@ -92,7 +92,7 @@
         </el-collapse-item>
 
         <!-- 价格日历的编辑 -->
-        <el-collapse-item title="价格日历" name="datePrice">
+        <el-collapse-item class="collapse-title-class" title="价格日历" name="datePrice">
             <el-calendar>
                 <template
                     slot="dateCell"
@@ -123,23 +123,72 @@
             </el-dialog>
         </el-collapse-item>
 
-        <el-collapse-item title="产品亮点" name="">
+        <!-- 下面是产品亮点列表部分-->
+        <el-collapse-item class="collapse-title-class" title="产品亮点" name="">
+            <div id="introitem">
+                <el-table
+                :data="uploadList.features"
+                style="width: 100%">
+                <el-table-column
+                label="顺序"
+                width="50"
+                type="index">
+                </el-table-column>
+
+                <el-table-column
+                label="产品介绍详情"
+                prop="intro">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.isshow"  v-html="scope.row.intro"></span>
+                    <el-input v-model="scope.row.intro"  v-else   type="textarea" :rows="3"></el-input>              
+                 </template>   
+                </el-table-column>
+                
+                <el-table-column
+                align="right">
+                <template slot="header">
+                     <el-button type="primary"  @click="isshowintroAdd">增加</el-button>
+                </template>
+                <template slot-scope="scope">
+                    <el-button
+                    size="mini"
+                    v-if="scope.row.isshow"
+                    @click="handleintroEdit(scope.$index, scope.row)">编辑</el-button>
+
+                    <el-button
+                    size="mini"
+                    v-else
+                    @click=" handleintroEdit(scope.$index, scope.row)">确认</el-button>
+
+                    <el-button
+                    size="mini"
+                    type="danger"
+                    @click=" handleintroDelete(scope.$index, scope.row)">删除</el-button>
+                </template>
+                </el-table-column>
+                </el-table> 
+
+                <div class="additem" v-if="isshowaddintro">
+                    <el-input v-model="addintrotemp" placeholder="请输入要添加的信息"  type="textarea" :rows="2"></el-input>
+                    <el-button type="success" size="small" @click="handleintroleAdd">确认添加</el-button>
+                    <el-button type="success" size="small" @click="isshowintroAdd">取消</el-button>
+                </div>   
+            </div>
+        </el-collapse-item>
+
+        <el-collapse-item class="collapse-title-class" title="图文详情" name="">
 
         </el-collapse-item>
 
-        <el-collapse-item title="图文详情" name="">
+        <el-collapse-item class="collapse-title-class" title="行程介绍" name="">
 
         </el-collapse-item>
 
-        <el-collapse-item title="行程介绍" name="">
+        <el-collapse-item class="collapse-title-class" title="费用说明" name="">
 
         </el-collapse-item>
 
-        <el-collapse-item title="费用说明" name="">
-
-        </el-collapse-item>
-
-        <el-collapse-item title="预订须知" name="">
+        <el-collapse-item class="collapse-title-class" title="预订须知" name="">
 
         </el-collapse-item>
     </el-collapse>
@@ -164,6 +213,7 @@ export default {
                 price: '',
                 limitprice: '',
                 options:'',
+                features:[],
 
                 //暂时的图片列表，到时运用函数获取后端的api
                 imglist:[
@@ -267,7 +317,15 @@ export default {
 }
 </script>
 
-<style>
+<style >
+    /* 折叠的样式 */
+    .tourismedit .el-collapse{
+        margin-left: 1em;
+        margin-right: 1em;
+    }
+    /* 折叠标题的样式 */
+    /* 没有less暂时改不了 */
+
     /* 上传的图片样式 */
     .tourismedit .showPic .showPic-item{
         margin: 1em;
@@ -320,4 +378,5 @@ export default {
         width: 20em;
     }
 
+    
 </style>
