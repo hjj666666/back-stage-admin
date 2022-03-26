@@ -287,12 +287,15 @@ export default {
               {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
           ],
           exactintro:[
-              {intro:`线路长度:120米,项目数量13关,难度系数`,isshow:true},
-              {intro:`适合人群:身高一米以上体重50公斤身体健康,心理素质良好的儿童`,isshow:true},
-              {intro:`安全保护装备的穿戴：安全头盔`,isshow:true},
-              {intro:`丛林穿越市一条设在小溪边的封闭网道`,isshow:true},
+              {intro:`丛林穿越线A线`,isshow:true},
+              {intro:`线路长度:120米<br>项目数量13关<br>难度系数:***`,isshow:true},
+              {intro:`适合人群:<br>身高一米以上体重50公斤身体健康,心理素质良好的儿童`,isshow:true},
+              {intro:`安全保护装备的穿戴<br>安全头盔`,isshow:true},
+              {intro:`项目介绍：<br>丛林穿越市一条设在小溪边的封闭网道,线路全长120米,平均高度3米，通过
+                      爬,抓,握等动作通过障碍,让孩子在半空不断前行`,isshow:true},
           ],
-          exactorder:[         
+          exactorder:[   
+              {order:`预定须知`,isshow:true},      
               {order:`1.每张门票只限单人游玩，网上预定成功后凭借短信通知请凭借二维码到前台兑换`,isshow:true},
               {order:`2.自然学校开放时间为每天的09:30-18:00(17:00停止检票)`,isshow:true},
               {order:`
@@ -300,14 +303,17 @@ export default {
               (1)穿高跟鞋、凉鞋以及裙子等服饰<br>
               (2)患有高血压等疾病<br>
               (3)身高一米一下体重100斤以上<br>
+              #隐瞒身体状况,在活动过程中出现意外由自己负责
               `,isshow:true},
-              {order:"4.项目过程中请勿携带手机",isshow:true},
+              {order:`4.项目过程中请勿携带手机,钥匙等尖锐物品,已满造成损伤或者损坏，体验项目是严禁嬉闹
+                      互相推搡故意晃动，拍照留念时，须在保证自身安全的同时进行 `,isshow:true},
+              {order:`5.项目受到天气影响雷雨天气不能进行，活动中与到雷雨天气,活动等课程将不能正常进行，
+                       可在学校前台做具体活动变更`,isshow:true},
           ],       
           exactcost:[
-              {cost:`门票费用`,isshow:true},
-              {cost:`游玩项目费用`,isshow:true},
-              {cost:`吃饭费用`,isshow:true},
-              {cost:`其他费用`,isshow:true},
+              {cost:`费用包含：`,isshow:true},
+              {cost:`丛林A线项目门票一张`,isshow:true},
+              {cost:`费用不包含：`,isshow:true},
               ],                   
       },
       {
@@ -852,12 +858,15 @@ handleUpdate(row){
 /* 调整intropoint的样式 */
 .app-container .preview .preview-main .threepoint .intropoint{
   width: 90%;
-  font-size: 13px;
+  font-size: 12px;
+  line-height: 1.5;
   display: flex;
   flex-direction: column;
+  align-items: center;
   margin-top: 5px;
   align-items: center;
-  background-color: #bdc3c7;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .07);
+  background-color:white;
 }
 
 .app-container .preview .preview-main .threepoint .intropoint .point{
@@ -868,12 +877,14 @@ handleUpdate(row){
 /* 调整orderpoint的样式 */
 .app-container .preview .preview-main .threepoint .orderpoint{
    width: 90%;
-  font-size: 13px;
+  font-size: 12px;
+  line-height: 1.5;
   display: flex;
   flex-direction: column;
   margin-top: 5px;
   align-items: center;
-  background-color: #bdc3c7;
+  background-color:white;
+   box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .07);
 }
 
 .app-container .preview .preview-main .threepoint .orderpoint .point{
@@ -884,12 +895,14 @@ handleUpdate(row){
 /* 调整costpoint的样式 */
 .app-container .preview .preview-main .threepoint .costpoint{
    width: 90%;
-  font-size: 13px;
-  display: flex;
-  flex-direction: column;
-  margin-top: 5px;
-  align-items: center;
-  background-color: #bdc3c7;
+   font-size: 12px;
+   line-height: 1.5;
+   display: flex;
+   flex-direction: column;
+   margin-top: 5px;
+   align-items: center;
+   background-color:white;
+   box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .07);
 }
 
 .app-container .preview .preview-main .threepoint .costpoint .point{
