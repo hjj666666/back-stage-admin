@@ -1,16 +1,5 @@
 <template>
    <div id="ticketedit">
-       <!-- 添加一个富文本编辑界面 -->
-       <div class="editor" v-if="isshoweditor1">
-              <div class="qeditor">
-                 <quill-editor
-                    ref="myQuillEditor"
-                    :options="editorOption"
-                    v-model="list[edittype]"
-                />   
-              </div>
-              <el-button type="success" @click="isshoweditor">取消文本编辑界面</el-button>
-       </div>
        <!-- 这部分是上面的图片部分 -->
        <!-- 删除图片功能已经完善，但图片上传功能还未实现 -->
        <div id="imgadmin">
@@ -89,35 +78,155 @@
 
             <!-- 下面是产品介绍列表部分-->
             <div id="introitem">
-                  <div id="introitemtop">
-                      <span>产品介绍</span>
-                      <el-button type="primary" @click="handleintroedit">编辑</el-button>
-                  </div>
-                  <div id="introcontent" v-html="list.exactintro">
+                <el-table
+                :data="list.exactintro"
+                style="width: 100%">
+                <el-table-column
+                label="顺序"
+                width="50"
+                type="index">
+                </el-table-column>
 
-                  </div>
+                <el-table-column
+                label="产品介绍详情"
+                prop="intro">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.isshow"  v-html="scope.row.intro"></span>
+                    <el-input v-model="scope.row.intro"  v-else   type="textarea" :rows="3"></el-input>              
+                 </template>   
+                </el-table-column>
+                
+                <el-table-column
+                align="right">
+                <template slot="header">
+                     <el-button type="primary"  @click="isshowintroAdd">增加</el-button>
+                </template>
+                <template slot-scope="scope">
+                    <el-button
+                    size="mini"
+                    v-if="scope.row.isshow"
+                    @click="handleintroEdit(scope.$index, scope.row)">编辑</el-button>
+
+                    <el-button
+                    size="mini"
+                    v-else
+                    @click=" handleintroEdit(scope.$index, scope.row)">确认</el-button>
+
+                    <el-button
+                    size="mini"
+                    type="danger"
+                    @click=" handleintroDelete(scope.$index, scope.row)">删除</el-button>
+                </template>
+                </el-table-column>
+                </el-table> 
+
+                <div class="additem" v-if="isshowaddintro">
+                    <el-input v-model="addintrotemp" placeholder="请输入要添加的信息"  type="textarea" :rows="2"></el-input>
+                    <el-button type="success" size="small" @click="handleintroleAdd">确认添加</el-button>
+                    <el-button type="success" size="small" @click="isshowintroAdd">取消</el-button>
+                </div>   
             </div>
 
            <!-- 下面是预定需知部分 -->
             <div id="orderitem">
-                   <div id="orderitemtop">
-                      <span>产品介绍</span>
-                      <el-button type="primary" @click="handleorderedit">编辑</el-button>
-                  </div>
-                  <div id="ordercontent" v-html="list.exactorder">
+                <el-table
+                :data="list.exactorder"
+                style="width: 100%">
+                <el-table-column
+                label="顺序"
+                width="50"
+                type="index">
+                </el-table-column>
 
-                  </div>
+                <el-table-column
+                label="预定须知"
+                prop="intro">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.isshow">{{scope.row.order}}</span>
+                    <el-input v-model="scope.row.order"  v-else  type="textarea" :rows="3"></el-input>
+                 </template>   
+                </el-table-column>
+                
+                <el-table-column
+                align="right">
+                <template slot="header">
+                     <el-button type="primary"  @click="isshoworderAdd">增加</el-button>
+                </template>
+                <template slot-scope="scope">
+                    <el-button
+                    size="mini"
+                    v-if="scope.row.isshow"
+                    @click="handleintroEdit(scope.$index, scope.row)">编辑</el-button>
+
+                    <el-button
+                    size="mini"
+                    v-else
+                    @click=" handleorderEdit(scope.$index, scope.row)">确认</el-button>
+
+                    <el-button
+                    size="mini"
+                    type="danger"
+                    @click=" handleorderDelete(scope.$index, scope.row)">删除</el-button>
+                </template>
+                </el-table-column>
+                </el-table> 
+
+                <div class="additem" v-if="isshowaddorder">
+                    <el-input v-model="addordertemp" placeholder="请输入要添加的信息"  type="textarea" :rows="2"></el-input>
+                    <el-button type="success" size="small" @click=" handleorderAdd">确认添加</el-button>
+                    <el-button type="success" size="small" @click="isshoworderAdd">取消</el-button>
+                </div>   
             </div>
 
             <!-- 下面是费用说明部分 -->
             <div id="costitem">
-                <div id="costitemtop">
-                      <span>产品介绍</span>
-                      <el-button type="primary" @click="handlecostedit">编辑</el-button>
-                  </div>
-                  <div id="costcontent" v-html="list.exactcost">
+                <el-table
+                :data="list.exactcost"
+                style="width: 100%">
+                <el-table-column
+                label="顺序"
+                width="50"
+                type="index">
+                </el-table-column>
 
-                  </div> 
+                <el-table-column
+                label="费用说明"
+                prop="intro">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.isshow">{{scope.row.cost}}</span>
+                    <el-input v-model="scope.row.cost"  v-else  type="textarea" :rows="3"></el-input>
+                 </template>   
+                </el-table-column>
+                
+                <el-table-column
+                align="right">
+                <template slot="header">
+                     <el-button type="primary"  @click="isshowcostAdd">增加</el-button>
+                </template>
+                <template slot-scope="scope">
+                    <el-button
+                    size="mini"
+                    v-if="scope.row.isshow"
+                    @click="handleintroEdit(scope.$index, scope.row)">编辑</el-button>
+
+                    <el-button
+                    size="mini"
+                    v-else
+                    @click=" handlecostEdit(scope.$index, scope.row)">确认</el-button>
+
+                    <el-button
+                    size="mini"
+                    type="danger"
+                    @click=" handlecostDelete(scope.$index, scope.row)">删除</el-button>
+                </template>
+                </el-table-column>
+                </el-table> 
+
+                <div class="additem" v-if="isshowaddcost">
+                    <el-input v-model="addcosttemp" placeholder="请输入要添加的信息"  type="textarea" :rows="2"></el-input>
+                    <el-button type="success" size="small" @click="handlecostAdd">确认添加</el-button>
+                    <el-button type="success" size="small" @click="isshowcostAdd">取消</el-button>
+                </div>   
             </div>
 
             <!-- 下面是取消和确认连个按钮 -->
@@ -125,78 +234,28 @@
                 <!-- 通过methstatus来判断执行那个方法 -->
                 <el-button type="primary" @click='nativemeth'>确认</el-button>
                 <el-button type="success" @click="cancel">取消</el-button>
-                <el-button type="success" @click="isshoweditor">显示文本编辑界面</el-button>
             </div>
         </div>
    </div>
 </template>
 
 <script>
-// 实现富文本基本引用
-import 'quill/dist/quill.core.css'
-import 'quill/dist/quill.snow.css'
-import 'quill/dist/quill.bubble.css'
-import { quillEditor } from 'vue-quill-editor'
-// 实现图片缩放编辑
-import Quill from "quill";
-import ImageResize from "quill-image-resize-module";
-import { ImageDrop } from "quill-image-drop-module"
-Quill.register("modules/imageDrop", ImageDrop);
-Quill.register("modules/imageResize", ImageResize); // 注册
-
-// 工具栏配置
-const toolbarOptions = [
-  ["bold", "italic", "underline", "strike"], // 加粗 斜体 下划线 删除线 -----['bold', 'italic', 'underline', 'strike']
-  ["blockquote", "code-block"], // 引用  代码块-----['blockquote', 'code-block']
-  [{ header: 1 }, { header: 2 }], // 1、2 级标题-----[{ header: 1 }, { header: 2 }]
-  [{ list: "ordered" }, { list: "bullet" }], // 有序、无序列表-----[{ list: 'ordered' }, { list: 'bullet' }]
-  [{ script: "sub" }, { script: "super" }], // 上标/下标-----[{ script: 'sub' }, { script: 'super' }]
-  [{ indent: "-1" }, { indent: "+1" }], // 缩进-----[{ indent: '-1' }, { indent: '+1' }]
-  [{ direction: "rtl" }], // 文本方向-----[{'direction': 'rtl'}]
-  [{ size: ["small", false, "large", "huge"] }], // 字体大小-----[{ size: ['small', false, 'large', 'huge'] }]
-  [{ header: [1, 2, 3, 4, 5, 6, false] }], // 标题-----[{ header: [1, 2, 3, 4, 5, 6, false] }]
-  [{ color: [] }, { background: [] }], // 字体颜色、字体背景颜色-----[{ color: [] }, { background: [] }]
-  [{ font: [] }], // 字体种类-----[{ font: [] }]
-  [{ align: [] }], // 对齐方式-----[{ align: [] }]
-  ["clean"], // 清除文本格式-----['clean']
-  ["image", "video"] // 链接、图片、视频-----['link', 'image', 'video']
-];
-
 export default {
-    name: 'TicketEdit',
-    // 注册富文本组件
-    components: {
-      quillEditor
-    },
+    name: 'TicketEdit01',
     data() {
         return {
             // 创建一个状态点击确定后触发的是增加函数，修改函数
             methstatus:``,
-            // 创建一个变量控制富本编辑器与谁进行绑定
-            edittype:"",
+            // 创建变量保存临时添加的数据
+            addintrotemp:``,
+            addordertemp:``,
+            addcosttemp:``,
+            // 创建一个变量控制是否显示添加文本框
+            isshowaddintro:false,
+            isshowaddorder:false,
+            isshowaddcost:false,
             // 创建一个变量控制是否显示文本编辑器
             isshoweditor1:false,
-
-             //  富文本编辑器配置
-            editorOption: {
-                //  富文本编辑器配置
-                theme: "snow",
-                placeholder: "请输入正文",
-                modules: {
-                    imageDrop: true,
-                    imageResize: {
-                        displayStyles: {
-                        backgroundColor: "black",
-                        border: "none",
-                        color: "white"
-                    },
-                    modules: ["Resize", "DisplaySize", "Toolbar"]
-                },
-                toolbar: toolbarOptions
-                },
-           
-            },
-
 
             // 修改页面中的选择状态框
            statusOptions: ['售罄','可购买'],
@@ -217,9 +276,24 @@ export default {
                     {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
                     {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
                 ],
-                exactintro:"",
-                exactorder:"",       
-                exactcost:"",                   
+                exactintro:[
+                    {intro:`大岭山风景好`,isshow:true},
+                    {intro:`大岭山风景秒`,isshow:true},
+                    {intro:`大岭山风景呱呱叫`,isshow:true},
+                    {intro:`大岭山风景棒`,isshow:true},
+                ],
+                exactorder:[         
+                    {order:`记得看车`,isshow:true},
+                    {order:`记得买票`,isshow:true},
+                    {order:`记得看人`,isshow:true},
+                    {order:`记得带伞`,isshow:true},
+                ],       
+                exactcost:[
+                    {cost:`门票费用`,isshow:true},
+                    {cost:`游玩项目费用`,isshow:true},
+                    {cost:`吃饭费用`,isshow:true},
+                    {cost:`其他费用`,isshow:true},
+                    ],                   
             },
             // 这个数据是上传文本框的数据
             fileList: [{name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}, {name: 'food2.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}],
@@ -255,7 +329,7 @@ export default {
             })
              this.list.imglist.splice(index,1);
         },
-        // 创建是否显示编辑页面的方法
+        // 创建以恶搞是否显示编辑页面的方法
         isshoweditor(){
               this.isshoweditor1=!this.isshoweditor1;
         },
@@ -268,9 +342,9 @@ export default {
             this.list.amount=``;
             this.list.status=``;
             this.list.imglist=[];
-            this.list.exactintro="";
-            this.list.exactorder="";
-            this.list.exactcost="";
+            this.list.exactintro=[];
+            this.list.exactorder=[];
+            this.list.exactcost=[];
         },
         // 下面的是上传文件的自带方法
         handleRemove(file, fileList) {
@@ -286,29 +360,49 @@ export default {
             return this.$confirm(`确定移除 ${ file.name }？`);
         },
 
-        // 产品详情的方法
-        //  首先为产品编辑绑定一个回调函数
-        handleintroedit(){
-            // 首先将edittype修改为exactintro，然后显示文本编辑器
-            this.edittype="exactintro";
-            this.isshoweditor1=!this.isshoweditor1;
+        // 产品详情表单的方法
+        isshowintroAdd(){
+            this.isshowaddintro=!this.isshowaddintro;
         },
-        // 须知详情表单的方法
-        //  首先为产品编辑绑定一个回调函数
-        handleorderedit(){
-            // 首先将edittype修改为exactintro，然后显示文本编辑器
-            this.edittype="exactorder";
-            this.isshoweditor1=!this.isshoweditor1;
+        handleintroleAdd(){
+            this.list.exactintro.push({intro:this.addintrotemp,isshow:true});
+            this.addintrotemp="";
         },
-   
-        // 费用说明的方法
-         //  首先为产品编辑绑定一个回调函数
-        handlecostedit(){
-            // 首先将edittype修改为exactintro，然后显示文本编辑器
-            this.edittype="exactcost";
-            this.isshoweditor1=!this.isshoweditor1;
-        },   
+        handleintroEdit(index, row) {
+            row.isshow=!row.isshow;
+        },
+        handleintroDelete(index, row) {
+            this.list.exactintro.splice(index,1);
+        },
 
+        // 须知详情表单的方法
+        isshoworderAdd(){
+            this.isshowaddorder=!this.isshowaddorder;
+        },
+        handleorderAdd(){
+            this.list.exactorder.push({order:this.addordertemp,isshow:true});
+            this.addordertemp="";
+        },
+        handleorderEdit(index, row) {
+            row.isshow=!row.isshow;
+        },
+        handleorderDelete(index, row) {
+            this.list.exactorder.splice(index,1);
+        },
+        // 费用说明的方法
+        isshowcostAdd(){
+            this.isshowaddcost=!this.isshowaddcost;
+        },
+        handlecostAdd(){
+            this.list.exactcost.push({cost:this.addcosttemp,isshow:true});
+            this.addcosttemp="";
+        },
+        handlecostEdit(index, row) {
+            row.isshow=!row.isshow;
+        },
+        handlecostDelete(index, row) {
+            this.list.exactcost.splice(index,1);
+        },    
         // 为整个表单的确认按钮绑定一个回调函数，用来触发我们接受过来的createData函数
         // 接受方法好像不太性，那么就使用全局事件总线，促发busCreateData
         nativecreateData(){
@@ -352,21 +446,6 @@ export default {
     position: relative;
 }
 
-/* 调整富文本编辑页面的样式 */
-#ticketedit .editor{
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    z-index: 2;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: white;
-}
-
-#ticketedit .editor .qeditor .ql-editor{
-  min-height: 500px;
-}
 
 /* 下面是调整上面的图片的样式 */
 /* 调整图片外层边框的样式 */
@@ -471,90 +550,25 @@ export default {
 #ticketedit #form #introitem{
     margin-top: 20px;
     width: 90%;
+}
+#ticketedit #form #introitem .additem{
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: white;
 }
-
-#ticketedit #form #introitem #introitemtop{
-     width: 100%;
-     height: 50px;
-     padding: 0 20px;
-     color:rgb(144, 147, 153);
-     font-size: 15px;
-     display: flex;
-     align-items: center;
-     justify-content: space-between;
-     border-bottom: 1px solid rgb(144, 147, 153);
-}
-
-#ticketedit #form #introitem  #introcontent{
-    width:100%;
-    color:rgb(96, 98, 102);
-    min-height: 50px;
-    font-size:14px;
-    font-family:"Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB";
-}
-
-
 /* 下面的是预定需知的样式*/
 #ticketedit #form #orderitem{
     margin-top: 20px;
     width: 90%;
+}
+#ticketedit #form #orderitem .additem{
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: white;
-}
-
-#ticketedit #form #orderitem #orderitemtop{
-     width: 100%;
-     height: 50px;
-     padding: 0 20px;
-     color:rgb(144, 147, 153);
-     font-size: 15px;
-     display: flex;
-     align-items: center;
-     justify-content: space-between;
-     border-bottom: 1px solid rgb(144, 147, 153);
-}
-
-#ticketedit #form #orderitem  #ordercontent{
-    width:100%;
-    color:rgb(96, 98, 102);
-    min-height: 50px;
-    font-size:14px;
-    font-family:"Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB";
 }
 /* 下面的是费用说明的样式*/
 #ticketedit #form #costitem{
     margin-top: 20px;
     width: 90%;
+}
+#ticketedit #form #costitem .additem{
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: white;
-}
-
-#ticketedit #form #costitem #costitemtop{
-     width: 100%;
-     height: 50px;
-     padding: 0 20px;
-     color:rgb(144, 147, 153);
-     font-size: 15px;
-     display: flex;
-     align-items: center;
-     justify-content: space-between;
-     border-bottom: 1px solid rgb(144, 147, 153);
-}
-
-#ticketedit #form #costitem  #costcontent{
-    width:100%;
-    color:rgb(96, 98, 102);
-    min-height: 50px;
-    font-size:14px;
-    font-family:"Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB";
 }
 
 /* 下面两个按钮的样式 */
@@ -562,78 +576,5 @@ export default {
     margin-top: 10px;
     margin-bottom: 30px;
     width: 90%; 
-}
-
-/* 富文本汉化样式 */
-.ql-snow .ql-tooltip[data-mode="link"]::before {
-  content: "请输入链接地址:";
-}
-.ql-snow .ql-tooltip.ql-editing a.ql-action::after {
-  border-right: 0px;
-  content: "保存";
-  padding-right: 0px;
-}
-
-.ql-snow .ql-tooltip[data-mode="video"]::before {
-  content: "请输入视频地址:";
-}
-
-.ql-snow .ql-picker.ql-size .ql-picker-label::before,
-.ql-snow .ql-picker.ql-size .ql-picker-item::before {
-  content: "14px";
-}
-.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="small"]::before,
-.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="small"]::before {
-  content: "10px";
-}
-.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="large"]::before,
-.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="large"]::before {
-  content: "18px";
-}
-.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="huge"]::before,
-.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="huge"]::before {
-  content: "32px";
-}
-
-.ql-snow .ql-picker.ql-header .ql-picker-label::before,
-.ql-snow .ql-picker.ql-header .ql-picker-item::before {
-  content: "文本";
-}
-.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="1"]::before,
-.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="1"]::before {
-  content: "标题1";
-}
-.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="2"]::before,
-.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="2"]::before {
-  content: "标题2";
-}
-.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="3"]::before,
-.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="3"]::before {
-  content: "标题3";
-}
-.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="4"]::before,
-.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="4"]::before {
-  content: "标题4";
-}
-.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="5"]::before,
-.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="5"]::before {
-  content: "标题5";
-}
-.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="6"]::before,
-.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="6"]::before {
-  content: "标题6";
-}
-
-.ql-snow .ql-picker.ql-font .ql-picker-label::before,
-.ql-snow .ql-picker.ql-font .ql-picker-item::before {
-  content: "标准字体";
-}
-.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="serif"]::before,
-.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="serif"]::before {
-  content: "衬线字体";
-}
-.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="monospace"]::before,
-.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="monospace"]::before {
-  content: "等宽字体";
 }
 </style>
