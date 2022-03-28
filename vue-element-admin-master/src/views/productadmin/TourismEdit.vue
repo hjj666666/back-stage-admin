@@ -317,7 +317,7 @@ export default {
             var obj=this.uploadList.priceCalendar.find(function (obj) {
                 return obj.date === day
             })
-             this.$alert(day+"的价格为"+obj.price, '正在查询'+day+'的价格', {
+             this.$alert(day+"的价格为"+obj.price, '查询价格', {
                 confirmButtonText: '关闭',
             });
         },
@@ -343,7 +343,7 @@ export default {
             }
         },
 
-        // 产品详情表单的方法
+        // 产品亮点表单的方法
         isShowFeaturesAdd(){
             this.isShowAddFeatures=!this.isShowAddFeatures;
         },
