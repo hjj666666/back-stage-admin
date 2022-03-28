@@ -100,7 +100,7 @@
                     <p>
                     {{ data.day.split('-').slice(1).join('-') }}
                     </p>
-                    <div @click="changeDatePriceOfDialog(data)" style="background-color: #75baff">
+                    <div @click="changeDatePriceOfDialog(data)" style="width: 5em; background-color: #75baff">
                         修改价格
                     </div>
                 </template>
@@ -169,9 +169,14 @@
                 </el-table> 
 
                 <div class="additem" v-if="isShowAddFeatures">
-                    <el-input v-model="addFeaturesTemp" placeholder="请输入要添加的信息"  type="textarea" :rows="2"></el-input>
-                    <el-button type="success" size="small" @click="handleFeaturesAdd">确认添加</el-button>
-                    <el-button type="success" size="small" @click="isShowFeaturesAdd">取消</el-button>
+                    <el-input v-model="addFeaturesTemp" 
+                    placeholder="请输入要添加的信息" 
+                    @blur="isShowFeaturesAdd" 
+                    type="textarea" 
+                    :rows="2"
+                    style="width:80%"></el-input>
+                    <el-button type="primary" size="small" @click="handleFeaturesAdd" style="margin:1em 1em">确认添加</el-button>
+                    <el-button type="danger" size="small" @click="isShowFeaturesAdd">取消</el-button>
                 </div>   
             </div>
         </el-collapse-item>
