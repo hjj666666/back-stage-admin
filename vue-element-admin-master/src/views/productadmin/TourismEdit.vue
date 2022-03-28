@@ -1,5 +1,6 @@
 <template>
   <div class="tourismedit">
+    <el-button type="primary" plain @click="test">测试</el-button>
     <!-- 折叠编辑的部分 -->
     <el-collapse v-model="openList">
         <el-collapse-item class="collapse-title-class" title="图片上传" name="uploadPic">
@@ -33,6 +34,20 @@
         <!-- 基础信息的输入 -->
         <el-collapse-item class="collapse-title-class" title="基础信息" name="baseInf">
             <el-row :gutter="20">
+                <el-col :span="23">
+                    <div class="uploadTitle upload">
+                        <span class="beforeInput">标题:</span>
+                        <el-input
+                            type="textarea"
+                            :rows="4"
+                            placeholder="请输入标题"
+                            v-model="uploadList.title">
+                        </el-input>
+                </div>
+                </el-col>
+            </el-row>
+            <br>
+            <el-row :gutter="20">
                 <el-col :span="8">
                     <div class="uploadIntro upload">
                         <span class="beforeInput">简介:</span>
@@ -47,7 +62,7 @@
                 </el-col>
                 <el-col :span="8">
                     <div class="uploadAmount upload">
-                        <span class="beforeInput">剩余数量:</span>
+                        <span class="beforeInput">数量:</span>
                         <el-input  placeholder="请输入数量"  v-model="uploadList.amount"></el-input>
                     </div>
                 </el-col>
@@ -100,12 +115,14 @@
                     <p>
                     {{ data.day.split('-').slice(1).join('-') }}
                     </p>
-                    <div @click="changeDatePriceOfDialog(data)" style="width: 5em; background-color: #75baff">
+                    <div @click="showDatePriceOfDialog(data.day)" class="calendarBtn">
+                        查看价格
+                    </div>
+                    <div @click="changeDatePriceOfDialog(data)" class="calendarBtn" style="margin-left:0.5em">
                         修改价格
                     </div>
                 </template>
             </el-calendar>
-            <el-button type="primary" plain @click="test">测试</el-button>
             <el-dialog
                 title="设置价格"
                 :visible.sync="datePriceVisible"
@@ -212,6 +229,7 @@ export default {
 
             //输入的信息列表，到时直接提交这个玩意
             uploadList:{
+                title:'',
                 intro:'',
                 endTime:'',
                 amount:'',
@@ -294,7 +312,15 @@ export default {
             }
         },
 
-
+        //查看当前日期的价格（实在没有办法实现实时渲染了，丢人！所以这是一个委屈求全的方法）
+        showDatePriceOfDialog(day){
+            var obj=this.uploadList.priceCalendar.find(function (obj) {
+                return obj.date === day
+            })
+             this.$alert(day+"的价格为"+obj.price, '正在查询'+day+'的价格', {
+                confirmButtonText: '关闭',
+            });
+        },
         //修改当前日期的价格
         //点击修改价格并获取当前日期，让对话框显示
         changeDatePriceOfDialog(data){
@@ -342,7 +368,7 @@ export default {
         },
         //测试函数
         test(date,data){
-            console.log(this.uploadList.priceCalendar)
+            console.log(this.uploadList)
         },
     },
 }
@@ -409,5 +435,12 @@ export default {
         width: 20em;
     }
 
+    .tourismedit .calendarBtn{
+        float:left;
+        width: 5em;
+        background-color: #75baff;
+        padding-left:0.5em;
+        border-radius: 6px;
+    }
     
 </style>
