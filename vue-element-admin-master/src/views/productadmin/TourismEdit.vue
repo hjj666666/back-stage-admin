@@ -1,5 +1,16 @@
 <template>
   <div class="tourismedit">
+    <div class="quillEditor" v-if="isShowquillEditor">
+        <div>
+            <quill-editor
+            ref="myQuillEditor"
+            :options="editorOption"
+            v-model="uploadList[quillEditorType]"
+        />
+        </div>
+        <br>
+        <el-button type="primary" @click="quitEditor">保存并退出</el-button>
+    </div>
     <el-button type="primary" plain @click="test">测试</el-button>
     <!-- 折叠编辑的部分 -->
     <el-collapse v-model="openList">
@@ -199,7 +210,10 @@
         </el-collapse-item>
 
         <el-collapse-item class="collapse-title-class" title="图文详情" name="picAndText">
+            <el-button type="primary" @click="test(imgAndText)">编辑</el-button>
+            <div class="picAndText" v-html="uploadList.imgAndText">
 
+            </div>
         </el-collapse-item>
 
         <el-collapse-item class="collapse-title-class" title="行程介绍" name="tourIntro">
@@ -218,7 +232,40 @@
 </template>
 
 <script>
+// 实现富文本基本引用
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
+import { quillEditor } from 'vue-quill-editor'
+// 实现图片缩放编辑
+import Quill from "quill";
+import ImageResize from "quill-image-resize-module";
+import { ImageDrop } from "quill-image-drop-module"
+Quill.register("modules/imageDrop", ImageDrop);
+Quill.register("modules/imageResize", ImageResize); // 注册
+
+// 工具栏配置
+const toolbarOptions = [
+  ["bold", "italic", "underline", "strike"], // 加粗 斜体 下划线 删除线 -----['bold', 'italic', 'underline', 'strike']
+  ["blockquote", "code-block"], // 引用  代码块-----['blockquote', 'code-block']
+  [{ header: 1 }, { header: 2 }], // 1、2 级标题-----[{ header: 1 }, { header: 2 }]
+  [{ list: "ordered" }, { list: "bullet" }], // 有序、无序列表-----[{ list: 'ordered' }, { list: 'bullet' }]
+  [{ script: "sub" }, { script: "super" }], // 上标/下标-----[{ script: 'sub' }, { script: 'super' }]
+  [{ indent: "-1" }, { indent: "+1" }], // 缩进-----[{ indent: '-1' }, { indent: '+1' }]
+  [{ direction: "rtl" }], // 文本方向-----[{'direction': 'rtl'}]
+  [{ size: ["small", false, "large", "huge"] }], // 字体大小-----[{ size: ['small', false, 'large', 'huge'] }]
+  [{ header: [1, 2, 3, 4, 5, 6, false] }], // 标题-----[{ header: [1, 2, 3, 4, 5, 6, false] }]
+  [{ color: [] }, { background: [] }], // 字体颜色、字体背景颜色-----[{ color: [] }, { background: [] }]
+  [{ font: [] }], // 字体种类-----[{ font: [] }]
+  [{ align: [] }], // 对齐方式-----[{ align: [] }]
+  ["clean"], // 清除文本格式-----['clean']
+  ["image", "video"] // 链接、图片、视频-----['link', 'image', 'video']
+];
 export default {
+    name: 'TourismEdit',
+    components: {
+      quillEditor
+    },
     data() {
         return {
             // 默认打开的折叠部分
@@ -229,13 +276,13 @@ export default {
 
             //输入的信息列表，到时直接提交这个玩意
             uploadList:{
-                title:'',
-                intro:'',
-                endTime:'',
-                amount:'',
-                price: '',
-                limitprice: '',
-                options:'',
+                title:'',  //标题
+                intro:'',  //简介
+                endTime:'', //结束时间
+                amount:'',  //数量
+                price: '',  //原价
+                limitprice: '', //限时价格
+                options:'',     //类型
 
                 //暂时的图片列表，到时运用函数获取后端的api
                 imglist:[
@@ -250,19 +297,43 @@ export default {
 
                 //产品亮点列表
                 featuresList:[],
+
+                //图文详情
+                imgAndText:'',
             },
 
             //这里存放开关某些v-if的临时状态
             ifCreateNewOptions:true, //这个是套餐类型的新增类型的切换状态
             datePriceVisible:false, //这是价格日历的对话框显示状态
             isShowAddFeatures:false,//显示产品亮点文本框的状态
+            isShowquillEditor:false, //显示富文本编辑器的状态
 
             //这里存放临时的值，基本上用完就不用的
             inputCreateNewOptions:'',  //这个是管理员写的新增的类型
             changeDate:'',     //选中的日期
             inputdatePrice:'', //选中日期的价格
             addFeaturesTemp:'', //产品亮点临时输入
-            
+            quillEditorType:'', //富文本编辑器正在编辑的类型
+
+             //  富文本编辑器配置
+            editorOption: {
+                //  富文本编辑器配置
+                theme: "snow",
+                placeholder: "请输入正文",
+                modules: {
+                    imageDrop: true,
+                    imageResize: {
+                        displayStyles: {
+                        backgroundColor: "black",
+                        border: "none",
+                        color: "white"
+                    },
+                    modules: ["Resize", "DisplaySize", "Toolbar"]
+                },
+                toolbar: toolbarOptions
+                },
+           
+            },
         }
     },
 
@@ -366,15 +437,54 @@ export default {
         handleFeaturesDelete(index, row) {
             this.uploadList.featuresList.splice(index,1);
         },
+
+
+        // 富文本编辑器的方法
+        // 退出编辑器
+        quitEditor(){
+            this.$confirm('是否确定保存并退出', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+                }).then(() => {
+                //富文本编辑器设定为隐藏
+                this.isShowquillEditor=false
+
+                }).catch(() => {
+                this.$message({
+                    type: 'info',
+                    message: '已取消'
+                });          
+            });
+            
+        },
         //测试函数
-        test(date,data){
+        test(data){
             console.log(this.uploadList)
+            this.quillEditorType="imgAndText"
         },
     },
 }
 </script>
 
 <style >
+    /* 富文本编辑器的样式 */
+    .tourismedit .quillEditor{
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: white;
+
+        margin-top: 0px;
+        margin-bottom: 20px;
+    }
+    .tourismedit .quillEditor .ql-editor{
+        min-height: 500px;
+    }
     /* 折叠的样式 */
     .tourismedit .el-collapse{
         margin-left: 1em;
