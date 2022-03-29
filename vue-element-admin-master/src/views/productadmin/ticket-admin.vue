@@ -15,10 +15,10 @@
               <!-- 简介和标题部分 -->
               <div class="introdiv">
                   <div class="introdivtop">
-                      {{templist.intro}}
+                      {{templist.title}}
                   </div>
                    <div class="introdivfoot">
-                       接触自然，感受自然
+                       {{templist.intro}}
                     </div>
               </div>
 
@@ -84,7 +84,7 @@
       <div class="filter-container">
         <!-- 上面的根据标题进行收索搜索框 -->
         <!-- 当回车按键弹起的时候触发handleFilter方法，native阻止input默认事情--> 
-        <el-input v-model="listQuery.intro" placeholder="根据简介搜索" style="width: 200px;margin-right:20px" class="filter-item" @keyup.enter.native="handleFilter" />
+        <el-input v-model="listQuery.tittle" placeholder="根据简介搜索" style="width: 200px;margin-right:20px" class="filter-item" @keyup.enter.native="handleFilter" />
         
         <!-- 搜索按钮 -->
         <!--饿了么的button 组件   v-waves使用水波纹特效 type设置样式  icon设置图标 @click触发方法 -->
@@ -137,9 +137,9 @@
         </el-table-column>
 
   <!-- 这里绑定了一个修改数据的回调函数，和edit的是一样 -->
-        <el-table-column label="简介" min-width="150px">
+        <el-table-column label="标题" min-width="150px">
           <template slot-scope="{row}">
-            <span class="link-type" @click="handleUpdate(row)">{{ row.intro}}</span>
+            <span class="link-type" @click="handleUpdate(row)">{{ row.title}}</span>
           </template>
         </el-table-column>
         
@@ -252,7 +252,8 @@ export default {
       // 创建一个变量保存需要预览的哪行数据
       templist:{
           intro:"",
-          price: '',
+          title:"",
+          price:'',
           limitprice: '',
           timestamp:"",
           amount:0,
@@ -273,7 +274,8 @@ export default {
       list: [
        {  
           id:1,
-          intro:"【丛林穿越A线】湾区自然学校单项产品--适合1米以上的儿童",
+          title:"【丛林穿越A线】湾区自然学校单项产品--适合1米以上的儿童",
+          intro:"接触自然，感受自然",
           price: '98',
           limitprice: '78',
           timestamp:"2022-3-20 12:00:00",
@@ -320,6 +322,7 @@ export default {
       },
       {
         id:2,
+        title:"",
         intro:"15",
           price: '16',
           limitprice: '17',
@@ -365,7 +368,7 @@ export default {
         page: 1,
         // 请求数据的多少
         limit: 20,
-        intro: "",
+        title: "",
         // 控制后端发送过来的数据的升降
         sort: '+id'
       },

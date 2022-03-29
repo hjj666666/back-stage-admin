@@ -9,7 +9,7 @@
                     v-model="list[edittype]"
                 />   
               </div>
-              <el-button type="success" @click="isshoweditor">取消文本编辑界面</el-button>
+              <el-button type="success" @click="isshoweditor">取消文本编辑</el-button>
        </div>
        <!-- 这部分是上面的图片部分 -->
        <!-- 删除图片功能已经完善，但图片上传功能还未实现 -->
@@ -52,6 +52,15 @@
            <!-- 这部分是上面的四个输入框 -->
            <!-- 数据已经和v-modle中的数据进行双向绑定 -->
            <div id="div1">
+               <div id="title">
+                   <span>标题:</span>
+                     <el-input
+                        type="textarea"
+                        :rows="2"
+                        placeholder="请输入标题"
+                        v-model="list.title">
+                    </el-input>
+               </div>
                <div id="inda">
                     <div id="intro">
                         <span class="span1">简介:</span>
@@ -125,7 +134,6 @@
                 <!-- 通过methstatus来判断执行那个方法 -->
                 <el-button type="primary" @click='nativemeth'>确认</el-button>
                 <el-button type="success" @click="cancel">取消</el-button>
-                <el-button type="success" @click="isshoweditor">显示文本编辑界面</el-button>
             </div>
         </div>
    </div>
@@ -203,6 +211,7 @@ export default {
 
             list:{
                 intro:"11",
+                title:"",
                 price: '11',
                 limitprice: '11',
                 timestamp:"2022-3-20 12:00:00",
@@ -261,6 +270,7 @@ export default {
         },
         // 创建一个清空页面的函数
         resetlist(){
+            this.list.title=``;
             this.list.intro=``;
             this.list.price=``;
             this.list.limitprice=``;
@@ -363,6 +373,10 @@ export default {
     align-items: center;
     background-color: white;
 }
+#ticketedit .editor .qeditor{
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
 
 #ticketedit .editor .qeditor .ql-editor{
   min-height: 500px;
@@ -423,6 +437,19 @@ export default {
     flex-direction: column;
     align-items: center;
     margin-top: 20px;
+}
+#ticketedit #form #div1 #title{
+    width: 100%;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: flex-start;
+}
+#ticketedit #form #div1 #title span{
+    width: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 #ticketedit #form #div1 #inda{
     display: flex;
