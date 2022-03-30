@@ -486,7 +486,41 @@ export default {
             document.body.scrollTop = 0
         },
 
+        // 保存并退出编辑页面
+        quitTourismEdit(){
+            this.$confirm('是否确定保存并退出', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+                }).then(() => {
+                //返回原来的套餐列表
+                this.$router.push({
+                    path:"/productadmin/tourism-admin",
+                    query:{
+                        methstatus:"createdata"
+                    }
+                });
+                //清空所有
+                resetAll()
 
+                }).catch(() => {
+                this.$message({
+                    type: 'info',
+                    message: '已取消'
+                });          
+            }); 
+        },
+
+        // 清空所有信息的函数
+        resetAll(){
+            this.uploadList.title=''  //标题
+            this.uploadList.intro=''  //简介
+            this.uploadList.endTime='' //结束时间
+            this.uploadList.amount=''  //数量
+            this.uploadList.price= ''  //原价
+            this.uploadList.limitprice= '' //限时价格
+            this.uploadList.options=''     //类型
+        },
         //测试函数
         test(data){
             this.quillEditorType="imgAndText"
