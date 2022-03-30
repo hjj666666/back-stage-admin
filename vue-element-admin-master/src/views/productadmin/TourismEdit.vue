@@ -106,7 +106,7 @@
                                 <span style="margin-left:1em">
                                     <el-button v-if="ifCreateNewOptions" type="primary" plain @click="switchCreateNewOptions">自定义类型</el-button>
                                     <template v-else>
-                                        <el-input v-model="inputCreateNewOptions" placeholder="请输入自定义类型" @blur="createNewOptions" maxlength="4" style="width:12em;margin-right:1em"></el-input>
+                                        <el-input v-model="inputCreateNewOptions" placeholder="请输入自定义类型" maxlength="4" style="width:12em;margin-right:1em"></el-input>
                                         <el-button type="primary" plain @click="createNewOptions">确认</el-button>
                                     </template>
                                     
@@ -199,7 +199,6 @@
                 <div class="additem" v-if="isShowAddFeatures">
                     <el-input v-model="addFeaturesTemp" 
                     placeholder="请输入要添加的信息" 
-                    @blur="isShowFeaturesAdd" 
                     type="textarea" 
                     :rows="2"
                     style="width:80%"></el-input>
