@@ -209,9 +209,9 @@
         </el-collapse-item>
 
         <el-collapse-item class="collapse-title-class" title="图文详情" name="picAndText">
-            <el-button type="primary" @click="test(imgAndText)">编辑</el-button>
-            <div class="picAndText" v-html="uploadList.imgAndText">
-
+            <el-button type="primary" @click="enterEditor('imgAndText')">编辑</el-button>
+            <div class="picAndText showHTML" v-html="uploadList.imgAndText">
+                
             </div>
         </el-collapse-item>
 
@@ -457,10 +457,19 @@ export default {
             });
             
         },
+
+        //进入文本编辑器
+        enterEditor(type){
+            this.quillEditorType=type;
+            this.isShowquillEditor=true;
+        },
+
         //测试函数
         test(data){
-            console.log(this.uploadList)
             this.quillEditorType="imgAndText"
+            console.log(this.uploadList)
+            this.isShowquillEditor=true;
+            
         },
     },
 }
@@ -551,5 +560,10 @@ export default {
         padding-left:0.5em;
         border-radius: 6px;
     }
-    
+    /* 富文本编辑后展示的区域的样式 */
+    .tourismedit .collapse-title-class .showHTML{
+        margin: 0.5em;
+        border: 2px solid #6d6d6da8;
+        padding: 0.5em;
+    }
 </style>
