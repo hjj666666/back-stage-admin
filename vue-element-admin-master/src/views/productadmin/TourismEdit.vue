@@ -216,17 +216,29 @@
         </el-collapse-item>
 
         <el-collapse-item class="collapse-title-class" title="行程介绍" name="tourIntro">
-
+            <el-button type="primary" @click="enterEditor('tourIntro')">编辑</el-button>
+            <div class="tourIntro showHTML" v-html="uploadList.tourIntro">
+                
+            </div>
         </el-collapse-item>
 
         <el-collapse-item class="collapse-title-class" title="费用说明" name="costIntro">
-
+            <el-button type="primary" @click="enterEditor('costIntro')">编辑</el-button>
+            <div class="costIntr showHTML" v-html="uploadList.costIntro">
+                
+            </div>
         </el-collapse-item>
 
         <el-collapse-item class="collapse-title-class" title="预订须知" name="bookNotice">
-
+            <el-button type="primary" @click="enterEditor('bookNotice')">编辑</el-button>
+            <div class="bookNotice showHTML" v-html="uploadList.bookNotice">
+                
+            </div>
         </el-collapse-item>
     </el-collapse>
+    <div class="bottomBtn">
+        <el-button type="primary" @click="quitTourismEdit">保存</el-button><el-button type="danger">退出</el-button>
+    </div>
   </div>
 </template>
 
@@ -299,6 +311,15 @@ export default {
 
                 //图文详情
                 imgAndText:'',
+
+                //行程介绍
+                tourIntro:'',
+
+                //费用说明
+                costIntro:'',
+
+                //预订须知
+                bookNotice:'',
             },
 
             //这里存放开关某些v-if的临时状态
@@ -462,7 +483,9 @@ export default {
         enterEditor(type){
             this.quillEditorType=type;
             this.isShowquillEditor=true;
+            document.body.scrollTop = 0
         },
+
 
         //测试函数
         test(data){
@@ -565,5 +588,10 @@ export default {
         margin: 0.5em;
         border: 2px solid #6d6d6da8;
         padding: 0.5em;
+    }
+    /* 底部的两个按钮样式 */
+    .tourismedit .bottomBtn{
+        margin: 1em;
+        text-align: center; 
     }
 </style>
