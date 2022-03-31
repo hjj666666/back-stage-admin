@@ -14,22 +14,7 @@
        <!-- 这部分是上面的图片部分 -->
        <!-- 删除图片功能已经完善，但图片上传功能还未实现 -->
        <div id="imgadmin">
-           <div id="imgcontrol">
-               <div id="item"  v-for="(item,index) in list.imglist" :key="index">
-                    <!-- 显示图片 -->
-                    <el-image
-                        style="width: 100px; height: 100px"
-                        :src="item.img"
-                        fit="fill">
-                    </el-image>
-                    <!-- 显示删除按钮 -->
-                    <div id="button">
-                        <el-button type="danger" icon="el-icon-delete" circle @click="deleteimg(index)"></el-button>
-                    </div>
-               </div>
-           </div>
-
-           <!-- 在后面防止一个上传图片的按钮 -->
+            <!-- 在后面防止一个上传图片的按钮 -->
            <div id="upload">
                 <el-upload
                     class="upload-demo"
@@ -44,7 +29,22 @@
                     <el-button size="small" type="primary">点击上传</el-button>
                     <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
                 </el-upload>
-           </div>       
+           </div>  
+
+           <div id="imgcontrol">
+               <div id="item"  v-for="(item,index) in list.imglist" :key="index">
+                    <!-- 显示图片 -->
+                    <el-image
+                        style="width: 100px; height: 100px"
+                        :src="item.img"
+                        fit="fill">
+                    </el-image>
+                    <!-- 显示删除按钮 -->
+                    <div id="button">
+                        <el-button type="danger" icon="el-icon-delete" circle @click="deleteimg(index)"></el-button>
+                    </div>
+               </div>
+           </div>     
        </div>
         
         <!-- 完善下面的表单部分 -->
