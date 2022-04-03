@@ -280,7 +280,29 @@
             </div>
             <div class=" currencyBoder">
                 <h4>沿途景点</h4>
-
+                <el-tag
+                    style="margin-left:0.5em"
+                    :key="scenery"
+                    v-for="scenery in uploadList.tourIntro.sceneryList"
+                    closable
+                    :disable-transitions="false"
+                    @close="handleCloseOfScenery(scenery)">
+                    {{scenery}}
+                </el-tag>
+                <el-input
+                    style="width: 20em; margin-left: 10px; vertical-align: bottom;"
+                    v-if="isShowInputScenery"
+                    v-model="inputValueOfScenery"
+                    ref="saveSceneryInput"
+                    size="small"
+                    @keyup.enter.native="handleInputConfirmOfScenery"
+                    @blur="handleInputConfirmOfScenery">
+                </el-input>
+                <el-button 
+                    v-else 
+                    style="margin-left: 10px; height: 32px; line-height: 30px; padding-top: 0; padding-bottom: 0;" size="small" 
+                    @click="showInputOfScenery">
+                    增加沿途景点</el-button>
             </div>
         </el-collapse-item>
 
@@ -376,14 +398,8 @@ export default {
 
                 //行程介绍
                 tourIntro:{
-                    tourList:[
-                        {   
-                            focusPlace:'东莞理工北门',
-                            focusTime:'8:10',
-                            backPlace:'东莞理工学院南门',
-                            otherMeg:'以通知为准'
-                        },
-                    ],
+                    tourList:[],
+                    sceneryList:[],
                 },
                     
 
@@ -400,6 +416,7 @@ export default {
             isShowAddFeatures:false,//显示产品亮点文本框的状态
             isShowquillEditor:false, //显示富文本编辑器的状态
             isShowTourListAdd:false, //显示行程介绍列表的状态
+            isShowInputScenery:false, //显示行程沿途景点列表的状态
 
             //这里存放临时的值，基本上用完就不用的
             inputCreateNewOptions:'',  //这个是管理员写的新增的类型
@@ -408,6 +425,7 @@ export default {
             addFeaturesTemp:'', //产品亮点临时输入
             quillEditorType:'', //富文本编辑器正在编辑的类型
             tourListAdd:{focusPlace:'',focusTime:'',backPlace:'',otherMeg:''}, //行程介绍列表新添加的临时变量
+            inputValueOfScenery:'', //行程沿途景点列新添加的临时变量
 
              //  富文本编辑器配置
             editorOption: {
@@ -543,6 +561,30 @@ export default {
         //删除行程介绍列表的函数
         handleTourListDelete(index, row){
             this.uploadList.tourIntro.tourList.splice(index,1);
+        },
+
+        //以下是沿途风景相关的函数
+        //展示沿途风景列表
+        showInputOfScenery() {
+        this.isShowInputScenery = true;
+        this.$nextTick(_ => {
+          this.$refs.saveSceneryInput.$refs.input.focus();
+            });
+        },
+
+        //新增沿途风景列表的方法
+        handleInputConfirmOfScenery() {
+        let inputValueOfScenery = this.inputValueOfScenery;
+        if (inputValueOfScenery) {
+          this.uploadList.tourIntro.sceneryList.push(inputValueOfScenery);
+        }
+        this.isShowInputScenery = false;
+        this.inputValueOfScenery = '';
+        },
+
+        //这是删除沿途风景列表的方法
+        handleCloseOfScenery(Scenery) {
+         this.uploadList.tourIntro.sceneryList.splice(this.uploadList.tourIntro.sceneryList.indexOf(Scenery), 1);
         },
 
         // 富文本编辑器的方法
