@@ -216,9 +216,65 @@
         </el-collapse-item>
 
         <el-collapse-item class="collapse-title-class" title="行程介绍" name="tourIntro">
-            <el-button type="primary" @click="enterEditor('tourIntro')">编辑</el-button>
-            <div class="tourIntro showHTML" v-html="uploadList.tourIntro">
-                
+            <div class="tourList">
+                 <el-table
+                    :data="uploadList.tourIntro.tourList"
+                    border
+                    height="250"
+                    style="width: 100%">
+                    <el-table-column
+                        label="序号"
+                        width="50"
+                        type="index">
+                    </el-table-column>
+                    <el-table-column
+                        prop="focusPlace"
+                        label="集合地点"
+                        width="180">
+                    </el-table-column>
+                    <el-table-column
+                        prop="focusTime"
+                        label="集合时间"
+                        width="180">
+                    </el-table-column>
+                    <el-table-column
+                        prop="backPlace"
+                        label="返回地点">
+                    </el-table-column>
+                    <el-table-column
+                        prop="otherMeg"
+                        label="其他">
+                    </el-table-column>
+                    <el-table-column
+                        width="180"
+                        label="操作">
+                        <template slot-scope="scope">
+                            <el-button
+                                size="mini"
+                                type="danger"
+                                @click="handleTourListDelete(scope.$index, scope.row)">删除</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <br>
+                <el-button @click="isShowTourListAdd = true" type="primary">增加</el-button>
+                <el-dialog title="行程增加" :visible.sync="isShowTourListAdd">
+                    <el-form :model="tourListAdd">
+                        <el-form-item label="集合地点" label-width="120px">
+                        <el-input v-model="tourListAdd.focusPlace"></el-input>
+                        </el-form-item>
+                        <el-form-item label="集合时间" label-width="120px">
+                        <el-input v-model="tourListAdd.focusTime"></el-input>
+                        </el-form-item>
+                        <el-form-item label="返回地点" label-width="120px">
+                        <el-input v-model="tourListAdd.backPlace"></el-input>
+                        </el-form-item>
+                        <el-form-item label="其他" label-width="120px">
+                        <el-input v-model="tourListAdd.otherMeg"></el-input>
+                        </el-form-item>
+                    </el-form>
+                    <el-button @click="handleTourListAdd" type="primary">确定</el-button>
+                </el-dialog>
             </div>
         </el-collapse-item>
 
@@ -313,7 +369,17 @@ export default {
                 imgAndText:'',
 
                 //行程介绍
-                tourIntro:'',
+                tourIntro:{
+                    tourList:[
+                        {   
+                            focusPlace:'东莞理工北门',
+                            focusTime:'8:10',
+                            backPlace:'东莞理工学院南门',
+                            otherMeg:'以通知为准'
+                        },
+                    ],
+                },
+                    
 
                 //费用说明
                 costIntro:'',
@@ -327,6 +393,7 @@ export default {
             datePriceVisible:false, //这是价格日历的对话框显示状态
             isShowAddFeatures:false,//显示产品亮点文本框的状态
             isShowquillEditor:false, //显示富文本编辑器的状态
+            isShowTourListAdd:false, //显示行程介绍列表的状态
 
             //这里存放临时的值，基本上用完就不用的
             inputCreateNewOptions:'',  //这个是管理员写的新增的类型
@@ -334,7 +401,7 @@ export default {
             inputdatePrice:'', //选中日期的价格
             addFeaturesTemp:'', //产品亮点临时输入
             quillEditorType:'', //富文本编辑器正在编辑的类型
-
+            tourListAdd:[{focusPlace:'',focusTime:'',backPlace:'',otherMeg:''},], //行程介绍列表新添加的临时变量
              //  富文本编辑器配置
             editorOption: {
                 //  富文本编辑器配置
@@ -458,6 +525,16 @@ export default {
             this.uploadList.featuresList.splice(index,1);
         },
 
+        //行程介绍的函数
+        //增加行程介绍列表的函数
+        handleTourListAdd(){
+
+        },
+
+        //删除行程介绍列表的函数
+        handleTourListDelete(index, row){
+            this.uploadList.tourIntro.tourList.splice(index,1);
+        },
 
         // 富文本编辑器的方法
         // 退出编辑器
@@ -500,14 +577,14 @@ export default {
                         methstatus:"createdata"
                     }
                 });
-                //清空所有
-                resetAll()
-
-                }).catch(() => {
                 this.$message({
                     type: 'info',
-                    message: '已取消'
-                });          
+                    message: '已保存'
+                });  
+                //清空所有
+                resetAll()
+                }).catch(() => {
+                        
             }); 
         },
 
