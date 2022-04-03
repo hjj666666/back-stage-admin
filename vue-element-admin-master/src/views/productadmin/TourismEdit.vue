@@ -153,7 +153,7 @@
 
         <!-- 下面是产品亮点列表部分-->
         <el-collapse-item class="collapse-title-class" title="产品亮点" name="features">
-            <div id="introitem">
+            <div id="introitem" class="currencyBoder">
                 <el-table
                 :data="uploadList.featuresList"
                 style="width: 100%">
@@ -210,13 +210,15 @@
 
         <el-collapse-item class="collapse-title-class" title="图文详情" name="picAndText">
             <el-button type="primary" @click="enterEditor('imgAndText')">编辑</el-button>
-            <div class="picAndText showHTML" v-html="uploadList.imgAndText">
+            <div class="picAndText showHTML currencyBoder" v-html="uploadList.imgAndText">
                 
             </div>
         </el-collapse-item>
 
         <el-collapse-item class="collapse-title-class" title="行程介绍" name="tourIntro">
-            <div class="tourList">
+            
+            <div class="tourList currencyBoder">
+                <h4>行程列表</h4>
                  <el-table
                     :data="uploadList.tourIntro.tourList"
                     border
@@ -276,18 +278,22 @@
                     <el-button @click="handleTourListAdd" type="primary">确定</el-button>
                 </el-dialog>
             </div>
+            <div class=" currencyBoder">
+                <h4>沿途景点</h4>
+
+            </div>
         </el-collapse-item>
 
         <el-collapse-item class="collapse-title-class" title="费用说明" name="costIntro">
             <el-button type="primary" @click="enterEditor('costIntro')">编辑</el-button>
-            <div class="costIntr showHTML" v-html="uploadList.costIntro">
+            <div class="costIntr showHTML currencyBoder" v-html="uploadList.costIntro">
                 
             </div>
         </el-collapse-item>
 
         <el-collapse-item class="collapse-title-class" title="预订须知" name="bookNotice">
             <el-button type="primary" @click="enterEditor('bookNotice')">编辑</el-button>
-            <div class="bookNotice showHTML" v-html="uploadList.bookNotice">
+            <div class="bookNotice showHTML currencyBoder" v-html="uploadList.bookNotice">
                 
             </div>
         </el-collapse-item>
@@ -602,17 +608,13 @@ export default {
             this.uploadList.options=''     //类型
         },
         //测试函数
-        test(data){
-            this.quillEditorType="imgAndText"
-            console.log(this.uploadList)
-            this.isShowquillEditor=true;
-            
+        test(){            
         },
     },
 }
 </script>
 
-<style >
+<style>
     /* 富文本编辑器的样式 */
     .tourismedit .quillEditor{
         position: absolute;
@@ -699,13 +701,23 @@ export default {
     }
     /* 富文本编辑后展示的区域的样式 */
     .tourismedit .collapse-title-class .showHTML{
-        margin: 0.5em;
-        border: 2px solid #6d6d6da8;
-        padding: 0.5em;
+
     }
     /* 底部的两个按钮样式 */
     .tourismedit .bottomBtn{
         margin: 1em;
         text-align: center; 
+    }
+
+    /* 行程介绍的行程列表的样式 */
+    .tourismedit .tourList{
+
+    }
+
+    /* 通用的边框样式 */
+    .tourismedit .currencyBoder{
+        margin: 0.5em;
+        border: 2px solid #6d6d6da8;
+        padding: 0.5em;
     }
 </style>
