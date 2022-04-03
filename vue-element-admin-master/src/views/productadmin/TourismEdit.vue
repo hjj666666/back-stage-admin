@@ -259,7 +259,7 @@
                 <br>
                 <el-button @click="isShowTourListAdd = true" type="primary">增加</el-button>
                 <el-dialog title="行程增加" :visible.sync="isShowTourListAdd">
-                    <el-form :model="tourListAdd">
+                    <el-form>
                         <el-form-item label="集合地点" label-width="120px">
                         <el-input v-model="tourListAdd.focusPlace"></el-input>
                         </el-form-item>
@@ -401,7 +401,8 @@ export default {
             inputdatePrice:'', //选中日期的价格
             addFeaturesTemp:'', //产品亮点临时输入
             quillEditorType:'', //富文本编辑器正在编辑的类型
-            tourListAdd:[{focusPlace:'',focusTime:'',backPlace:'',otherMeg:''},], //行程介绍列表新添加的临时变量
+            tourListAdd:{focusPlace:'',focusTime:'',backPlace:'',otherMeg:''}, //行程介绍列表新添加的临时变量
+
              //  富文本编辑器配置
             editorOption: {
                 //  富文本编辑器配置
@@ -528,7 +529,9 @@ export default {
         //行程介绍的函数
         //增加行程介绍列表的函数
         handleTourListAdd(){
-
+            this.uploadList.tourIntro.tourList.push(this.tourListAdd)
+            this.tourListAdd={focusPlace:'',focusTime:'',backPlace:'',otherMeg:''}
+            this.isShowTourListAdd=false
         },
 
         //删除行程介绍列表的函数
