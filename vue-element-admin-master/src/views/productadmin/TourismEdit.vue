@@ -650,7 +650,8 @@ export default {
             this.uploadList.options=''     //类型
         },
         //测试函数
-        test(){            
+        test(){
+            console.log(this.uploadList)       
         },
     },
 }
