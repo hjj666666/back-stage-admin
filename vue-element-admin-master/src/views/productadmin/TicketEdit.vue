@@ -18,10 +18,11 @@
            <div id="upload">
                 <el-upload
                     class="upload-demo"
-                    action="https://jsonplaceholder.typicode.com/posts/"
+                    action="http://mffavp.natappfree.cc/menu/ticket/upLoadPhoto"
                     :on-preview="handlePreview"
                     :on-remove="handleRemove"
                     :before-remove="beforeRemove"
+                    :on-success="onSuccess"
                     multiple
                     :limit="3"
                     :on-exceed="handleExceed"
@@ -140,6 +141,7 @@
 </template>
 
 <script>
+
 // 实现富文本基本引用
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
@@ -212,27 +214,30 @@ export default {
             list:{
                 intro:"11",
                 title:"",
-                price: '11',
-                limitprice: '11',
+                price: 11,
+                limitprice: 11,
                 timestamp:"2022-3-20 12:00:00",
                 // 列表那边需要有的数据
-                type:["默认套餐"],
                 amount:0,
-                status:"可购买",
+                status:"",
                 // 下面的图片是从网上搜索的图片，获取后端数据后，直接替换就行
                 imglist:[
-                    {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
-                    {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
-                    {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
-                    {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
+                    {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg', ticketId:"",
+                ticketPhotoId:""},
+                    {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg', ticketId:"",
+                ticketPhotoId:""},
+                    {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg', ticketId:"",
+                  ticketPhotoId:""},
+                    {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg', ticketId:"",
+                  ticketPhotoId:""},
                 ],
                 exactintro:"",
                 exactorder:"",       
                 exactcost:"",                   
             },
             // 这个数据是上传文本框的数据
-            fileList: [{name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}, {name: 'food2.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}],
-
+            fileList: [{name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'},
+             {name: 'food2.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}],
         }
     },
     activated(){
@@ -295,6 +300,23 @@ export default {
         beforeRemove(file, fileList) {
             return this.$confirm(`确定移除 ${ file.name }？`);
         },
+        // 图片上传成功后，后台返回图片的路径
+        onSuccess(res){
+            console.log(res);
+            if(res.code===2000){
+                res.data.forEach((item)=>{
+                    let imgData={
+                      ticketId:"",
+                      ticketPhotoId:"",
+                      img:item
+                    }                  
+                  console.log(imgData);
+                  this.list.imglist.push(imgData);
+                })
+            }else{
+
+            }
+        },
 
         // 产品详情的方法
         //  首先为产品编辑绑定一个回调函数
@@ -322,6 +344,13 @@ export default {
         // 为整个表单的确认按钮绑定一个回调函数，用来触发我们接受过来的createData函数
         // 接受方法好像不太性，那么就使用全局事件总线，促发busCreateData
         nativecreateData(){
+            // 经状态字符串改为o-1
+            //'售罄','可购买'
+            if(this.list.status==="售罄"){
+               this.list.status=0;
+            }else{
+                 this.list.status=1;
+            }
          this.$bus.$emit("busCreateData",this.list);
            this.$router.push({
                path:"/productadmin/ticket-admin"

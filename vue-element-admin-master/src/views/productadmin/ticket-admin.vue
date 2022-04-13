@@ -84,7 +84,7 @@
       <div class="filter-container">
         <!-- 上面的根据标题进行收索搜索框 -->
         <!-- 当回车按键弹起的时候触发handleFilter方法，native阻止input默认事情--> 
-        <el-input v-model="listQuery.tittle" placeholder="根据简介搜索" style="width: 200px;margin-right:20px" class="filter-item" @keyup.enter.native="handleFilter" />
+        <el-input v-model="listQuery.introduction" placeholder="根据简介搜索" style="width: 200px;margin-right:20px" class="filter-item" @keyup.enter.native="handleFilter" />
         
         <!-- 搜索按钮 -->
         <!--饿了么的button 组件   v-waves使用水波纹特效 type设置样式  icon设置图标 @click触发方法 -->
@@ -161,7 +161,7 @@
           <template slot-scope="{row}">
             <!-- type控制按钮的颜色样式 -->
             <el-tag :type="row.status | statusFilter">
-              {{ row.status }}
+              {{ statusOptions[row.status ]}}
             </el-tag>
           </template>
         </el-table-column>
@@ -184,11 +184,11 @@
                 预览
             </el-button>
             <!-- 已经完善 -->
-            <el-button v-if="row.status!='售罄'" size="mini" type="success" @click="handleModifyStatus(row,'售罄')">
+            <el-button v-if="row.status!=0" size="mini" type="success" @click="handleModifyStatus(row,0)">
               售罄
             </el-button>
-            <el-button v-if="row.status!='可购买'" size="mini" @click="handleModifyStatus(row,'可购买')">
-            可购买
+            <el-button v-if="row.status!=1" size="mini" @click="handleModifyStatus(row,1)">
+             可购买
             </el-button>
             <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
               删除
@@ -198,7 +198,7 @@
       </el-table>
 
    <!-- 这里是下面的分页器 -->
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
+    <pagination v-show="total>0" :total="total" :page.sync="listQuery.pageNum" :limit.sync="listQuery.pageSize" @pagination="getList" />
 
   </div>
  </div>
@@ -207,13 +207,14 @@
 
 <script>
  // 从api中引入与后台交互的请求方法
-import { fetchList} from '@/api/travel'
+import { fetchList, createTicket,updateTicket,deleteTicket,chageStatus} from '@/api/ticket'
     // 引入水波纹
 import waves from '@/directive/waves' // waves directive
     // 格式化时间
 import { parseTime } from '@/utils'
    // 分页组件
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import { get } from 'js-cookie'
 
 
 export default {
@@ -257,7 +258,7 @@ export default {
           limitprice: '',
           timestamp:"",
           amount:0,
-          status:"",
+          status:0,
           schedu:"",
           imglist:[
               {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
@@ -280,13 +281,24 @@ export default {
           limitprice: '78',
           timestamp:"2022-3-20 12:00:00",
           amount:0,
-          status:"可购买",
+          status:1,
           // 下面的图片是从网上搜索的图片，获取后端数据后，直接替换就行
           imglist:[
-              {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
-              {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
-              {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
-              {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
+              {
+                img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
+                ticketId:"",
+                ticketPhotoId:""
+              },
+              {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
+                 ticketId:"",
+                ticketPhotoId:""},
+              {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
+               ticketId:"",
+                ticketPhotoId:""},
+              {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
+               ticketId:"",
+                ticketPhotoId:""
+              },
           ],
           exactintro:`<p>丛林穿越线A线</p>
                       <p> 线路长度:<br>120米项目数量13关<br>难度系数:***</p>
@@ -324,19 +336,22 @@ export default {
         id:2,
         title:"",
         intro:"15",
-          price: '16',
-          limitprice: '17',
+          price: 16,
+          limitprice: 17,
           timestamp:"2022-3-20 12:00:00",
           // 列表那边需要有的数据
-          type:["默认套餐"],
           amount:0,
-          status:"可购买",
+          status:1,
           // 下面的图片是从网上搜索的图片，获取后端数据后，直接替换就行
           imglist:[
-              {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
-              {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
-              {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
-              {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'},
+              {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg', ticketId:"",
+                ticketPhotoId:""},
+              {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg', ticketId:"",
+                ticketPhotoId:""},
+              {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg', ticketId:"",
+                ticketPhotoId:""},
+              {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg', ticketId:"",
+                ticketPhotoId:""},
           ],
           exactintro:`
                    <p>大岭山风景好</p>
@@ -365,12 +380,12 @@ export default {
       // 这个时我们发送fetchList需要携带的参数
       listQuery: {
         // 请求的是第几页的数据
-        page: 1,
+        pageNum:1,
         // 请求数据的多少
-        limit: 20,
-        title: "",
+        pageSize:20,
+        introduction: "",
         // 控制后端发送过来的数据的升降
-        sort: '+id'
+        //sort: '+id'
       },
       // 这部分数据是控制列表中的升降序
       // label组件的显示名，每个选项的key
@@ -382,10 +397,13 @@ export default {
       downloadLoading: false,
     }
   },
+
   // 钩子函数，当界面创建的时候调用.getList() 获取列表数据
-  created() {
-    // this.getList()
+ async created() {
+      this.getList()
+      let res= await fetchList(this.listQuery);
   },
+
   mounted() {
      // 为$bus添加一个回调函数用于触发createData(temp)
     this.$bus.$on("busCreateData",this.createData);
@@ -421,9 +439,10 @@ export default {
            //从后台请求数据
       fetchList(this.listQuery).then(response => {
            // 将获取到的数据替换data中的数据
-        this.list = response.data.items
+        this.list = response.data.data.list
+        console.log(this.list);
         // 下面这个是每次请求的数量也就是我们的每一页的参数
-        this.total = response.data.total
+        this.total = response.data.data.total
 
         // Just to simulate the time of the request
         // 模拟请求的延迟，正式开发去掉
@@ -440,18 +459,22 @@ export default {
     // 搜索这里是直接对接后端的所以我这里不好修改
     // 它是通过获取限制条件下取得的数据然后直接重新渲染列表
     handleFilter() {
-      this.listQuery.page = 1
+      this.listQuery.pageNum= 1
       this.getList()
     },
 
 
 // 处理我们的状态
-    handleModifyStatus(row, status) {
-      this.$message({
+async  handleModifyStatus(row, status) {
+      let res=await chageStatus(row.id);
+      console.log(res);
+      if(res.data.code===2000){
+        this.$message({
         message: '操作成功',
         type: 'success'
       })
       row.status = status
+      }
     },
 
 // 这个是升降箭头的回调函数
@@ -557,27 +580,51 @@ export default {
 */
 
     //出现添加页面后，创建数据方法
-    createData(temp) {
+ async  createData(temp) {
        // 饿了么form表单前端校验的固定写法，当点击确定新增数据时，再校验一遍数据是否符合rules
        //this.$refs['dataForm'].validate((valid) => {if (valid) {}})
-            // 到后端请求新增数据
-          //createArticle(this.temp).then(() => {})
-            const tempData = Object.assign({}, temp)
-            //设置基础数据
-           tempData.id = parseInt(Math.random() * 100) + 1024 // mock a id
-            // 增加list中的数据
-            this.list.push(tempData)
-            // 将dialog对话框隐藏
-            this.dialogFormVisible = false,
-            // 强制渲染函数
-            this.$forceUpdate();
-             // 这里添加成功后弹出一个消息窗口
-            this.$notify({
-              title: '成功',
-              message: '成功添加数据',
-              type: 'success',
-              duration: 2000
+      //  强制转化数据格式
+      temp.id=""
+      temp.address=""
+      temp.lastAmount=1
+      temp.price=parseInt(temp.price)
+      temp.limitprice=parseInt(temp.limitprice) 
+      temp.amount=parseInt(temp.amount)
+      //  这句代码是用来转换时间格式的，没有会出错
+      temp.timestamp = +new Date(temp.timestamp) 
+       //  先将temp转化为json格式
+
+        // let temp1= JSON.stringify(temp)
+        // console.log(temp1);
+        // 到后端请求新增数据
+        //createTicket(temp1).then(() => {})    
+           let res= await createTicket(temp);
+           if(res.data.code===2000){
+              const tempData = Object.assign({}, temp)
+              //设置基础数据
+            tempData.id = parseInt(Math.random() * 100) + 1024 // mock a id
+              // 增加list中的数据
+              //this.list.push(tempData)
+             this.getList()
+              // 将dialog对话框隐藏
+              this.dialogFormVisible = false,
+              // 强制渲染函数
+              this.$forceUpdate();
+              // 这里添加成功后弹出一个消息窗口
+              this.$notify({
+                title: '成功',
+                message: '成功添加数据',
+                type: 'success',
+                duration: 2000
             })
+           }else{
+                this.$notify({
+                title: '失败',
+                message: '没有成功添加数据',
+                type: 'success',
+                duration: 2000
+            })
+           }
     },
 
 /*
@@ -619,30 +666,42 @@ handleUpdate(row){
 //该回调函数会在校验结束后被调用，并传入两个参数：是否校验成功和未通过校验的字段。
 //若不传入回调函数，则会返回一个 promise
     // 修改页面中确认按钮绑定的回调函数
-    updateData(temp) {
+ async  updateData(temp) {
       //this.$refs['dataForm'].validate((valid) => {if (valid) {}})
         const tempData = Object.assign({}, temp)
-         // updateArticle(tempData).then(() => { })
         //  这句代码是用来转换时间格式的，没有会出错
         tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-        const index = this.list.findIndex(v => v.id === tempData.id)
-        this.list.splice(index, 1, tempData)
-        this.$notify({
-            title: 'Success',
-            message: '更新成功',
-            type: 'success',
-            duration: 2000
-        })
+        let res= await updateTicket(tempData)
+        if(res.data.code===2000){
+            const index = this.list.findIndex(v => v.id === tempData.id)
+            this.list.splice(index, 1, tempData)
+            this.$notify({
+                title: 'Success',
+                message: '更新成功',
+                type: 'success',
+                duration: 2000
+            })
+        }else{
+           this.$notify({
+                title: 'Fail',
+                message: '更新失败',
+                type: 'success',
+                duration: 2000
+            })
+        }   
     },
     // 这个是删除按钮的回调函数
-    handleDelete(row, index) {
+ async  handleDelete(row, index) {
       this.$notify({
         title: 'Success',
         message: '删除成功',
         type: 'success',
         duration: 2000
       })
-      this.list.splice(index, 1)
+     let res= await deleteTicket(row.id);
+     if(res.code===2000){
+        this.list.splice(index, 1)
+     }
     },
 
     // 导出按钮的回调函数
