@@ -7,6 +7,7 @@
                     ref="myQuillEditor"
                     :options="editorOption"
                     v-model="list[edittype]"
+                    class="ql-editor"
                 />   
               </div>
               <el-button type="success" @click="isshoweditor">取消文本编辑</el-button>
@@ -18,7 +19,8 @@
            <div id="upload">
                 <el-upload
                     class="upload-demo"
-                    action="http://mffavp.natappfree.cc/menu/ticket/upLoadPhoto"
+                    action="http://pys6jv.natappfree.cc/ticket/upLoadPhoto"
+                    :headers="taken"
                     :on-preview="handlePreview"
                     :on-remove="handleRemove"
                     :before-remove="beforeRemove"
@@ -153,7 +155,7 @@ import ImageResize from "quill-image-resize-module";
 import { ImageDrop } from "quill-image-drop-module"
 Quill.register("modules/imageDrop", ImageDrop);
 Quill.register("modules/imageResize", ImageResize); // 注册
-
+import { getToken } from '@/utils/auth'
 // 工具栏配置
 const toolbarOptions = [
   ["bold", "italic", "underline", "strike"], // 加粗 斜体 下划线 删除线 -----['bold', 'italic', 'underline', 'strike']
@@ -172,6 +174,8 @@ const toolbarOptions = [
   ["image", "video"] // 链接、图片、视频-----['link', 'image', 'video']
 ];
 
+var takentemp=getToken();
+
 export default {
     name: 'TicketEdit',
     // 注册富文本组件
@@ -180,13 +184,13 @@ export default {
     },
     data() {
         return {
+            taken:{'token': takentemp},
             // 创建一个状态点击确定后触发的是增加函数，修改函数
             methstatus:``,
             // 创建一个变量控制富本编辑器与谁进行绑定
             edittype:"",
             // 创建一个变量控制是否显示文本编辑器
             isshoweditor1:false,
-
              //  富文本编辑器配置
             editorOption: {
                 //  富文本编辑器配置

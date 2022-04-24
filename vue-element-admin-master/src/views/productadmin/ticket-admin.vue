@@ -84,7 +84,7 @@
       <div class="filter-container">
         <!-- 上面的根据标题进行收索搜索框 -->
         <!-- 当回车按键弹起的时候触发handleFilter方法，native阻止input默认事情--> 
-        <el-input v-model="listQuery.introduction" placeholder="根据简介搜索" style="width: 200px;margin-right:20px" class="filter-item" @keyup.enter.native="handleFilter" />
+        <el-input v-model="listQuery.title" placeholder="根据标题搜索" style="width: 200px;margin-right:20px" class="filter-item" @keyup.enter.native="handleFilter" />
         
         <!-- 搜索按钮 -->
         <!--饿了么的button 组件   v-waves使用水波纹特效 type设置样式  icon设置图标 @click触发方法 -->
@@ -383,7 +383,7 @@ export default {
         pageNum:1,
         // 请求数据的多少
         pageSize:20,
-        introduction: "",
+        title:"",
         // 控制后端发送过来的数据的升降
         //sort: '+id'
       },
@@ -439,10 +439,11 @@ export default {
            //从后台请求数据
       fetchList(this.listQuery).then(response => {
            // 将获取到的数据替换data中的数据
-        this.list = response.data.data.list
+        console.log(response);
+        this.list = response.data.list
         console.log(this.list);
         // 下面这个是每次请求的数量也就是我们的每一页的参数
-        this.total = response.data.data.total
+        this.total = response.data.total
 
         // Just to simulate the time of the request
         // 模拟请求的延迟，正式开发去掉
@@ -468,7 +469,7 @@ export default {
 async  handleModifyStatus(row, status) {
       let res=await chageStatus(row.id);
       console.log(res);
-      if(res.data.code===2000){
+      if(res.code===2000){
         this.$message({
         message: '操作成功',
         type: 'success'
@@ -599,7 +600,8 @@ async  handleModifyStatus(row, status) {
         // 到后端请求新增数据
         //createTicket(temp1).then(() => {})    
            let res= await createTicket(temp);
-           if(res.data.code===2000){
+           console.log(res)
+           if(res.code===2000){
               const tempData = Object.assign({}, temp)
               //设置基础数据
             tempData.id = parseInt(Math.random() * 100) + 1024 // mock a id
@@ -672,7 +674,7 @@ handleUpdate(row){
         //  这句代码是用来转换时间格式的，没有会出错
         tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
         let res= await updateTicket(tempData)
-        if(res.data.code===2000){
+        if(res.code===2000){
             const index = this.list.findIndex(v => v.id === tempData.id)
             this.list.splice(index, 1, tempData)
             this.$notify({

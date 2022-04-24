@@ -40,8 +40,8 @@ const actions = {
       // 向后台发送登陆请求
       login({ username: username.trim(), password: password }).then(response => {
         const { data } = response
-        commit('SET_TOKEN', data.token)
-        setToken(data.token)
+        commit('SET_TOKEN', response.data)
+        setToken(response.data)
         resolve()
       }).catch(error => {
         reject(error)
@@ -50,10 +50,18 @@ const actions = {
   },
 
   // get user info
+  // 因为我们这里只有一个管理者身份，所以就不打算根据token从后端获取数据了
+  // 直接写死一个固定数据算了
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      getInfo(state.token).then(response => {
-        const { data } = response
+    // 不再发送请求，直接写死一个数据
+    //  getInfo(state.token).then(response => {
+        const data  =  {
+          roles: ['admin'],
+          introduction: 'I am a super administrator',
+          avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
+          name: 'Super Admin'
+        }
 
         if (!data) {
           reject('Verification failed, please Login again.')
@@ -74,7 +82,7 @@ const actions = {
       }).catch(error => {
         reject(error)
       })
-    })
+   // })
   },
 
   // user logout
