@@ -211,7 +211,8 @@
         <el-collapse-item class="collapse-title-class" title="图文详情" name="picAndText">
             <el-button type="primary" @click="enterEditor('imgAndText')">编辑</el-button>
             <div class="picAndText showHTML currencyBoder" v-html="uploadList.imgAndText">
-                
+
+                }
             </div>
         </el-collapse-item>
 
@@ -400,6 +401,13 @@ export default {
                 tourIntro:{
                     tourList:[],
                     sceneryList:[],
+                    dayTour:[
+                        {
+                            intro:"",
+                        
+                        },
+                        {}
+                    ],
                 },
                     
 
@@ -651,7 +659,9 @@ export default {
         },
         //测试函数
         test(){
-            console.log(this.uploadList)       
+            this.quillEditorType="uploadList.tourIntro.dayTour[0].intro";
+            this.isShowquillEditor=true;
+            document.body.scrollTop = 0     
         },
     },
 }
