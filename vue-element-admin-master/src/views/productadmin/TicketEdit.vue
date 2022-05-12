@@ -19,19 +19,47 @@
            <div id="upload">
                 <el-upload
                     class="upload-demo"
-                    action="http://pys6jv.natappfree.cc/ticket/upLoadPhoto"
-                    :headers="taken"
-                    :on-preview="handlePreview"
-                    :on-remove="handleRemove"
+                    action
                     :before-remove="beforeRemove"
                     :on-success="onSuccess"
-                    multiple
+                    :on-change="changeUpload"
+                    :auto-upload="false"
+                     multiple
                     :limit="3"
                     :on-exceed="handleExceed"
                     :file-list="fileList">
                     <el-button size="small" type="primary">点击上传</el-button>
                     <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
                 </el-upload>
+
+                <!-- 图片裁剪框 -->
+                <!-- vueCropper 剪裁图片实现-->
+                <el-dialog title="图片剪裁" :visible.sync="dialogVisible" append-to-body>
+                    <div class="cropper-content">
+                        <div class="cropper" style="text-align:center">
+                        <vueCropper 
+                            ref="cropper" 
+                            :img="option.img" 
+                            :outputSize="option.size" 
+                            :outputType="option.outputType"
+                            :info="true" 
+                            :full="option.full" 
+                            :canMove="option.canMove" 
+                            :canMoveBox="option.canMoveBox"
+                            :original="option.original" 
+                            :autoCrop="option.autoCrop" 
+                            :fixed="option.fixed"
+                            :fixedNumber="option.fixedNumber" 
+                            :centerBox="option.centerBox" 
+                            :infoTrue="option.infoTrue"
+                            :fixedBox="option.fixedBox"></vueCropper>
+                        </div>
+                    </div>
+                    <div slot="footer" class="dialog-footer">
+                        <el-button @click="dialogVisible = false">取 消</el-button>
+                        <el-button type="primary" @click="finish" >确认</el-button>
+                    </div>
+                </el-dialog>
            </div>  
 
            <div id="imgcontrol">
@@ -184,6 +212,29 @@ export default {
     },
     data() {
         return {
+            // 裁剪插件的相关数据
+            // 控制裁剪框是否显示
+                dialogVisible: false,
+            // 裁剪框的相关配置
+                option: {
+                img: '', // 裁剪图片的地址
+                info: true, // 裁剪框的大小信息
+                outputSize: 1, // 裁剪生成图片的质量
+                outputType: 'jpeg', // 裁剪生成图片的格式
+                canScale: false, // 图片是否允许滚轮缩放
+                autoCrop: true, // 是否默认生成截图框
+                // autoCropWidth: 300, // 默认生成截图框宽度
+                // autoCropHeight: 200, // 默认生成截图框高度
+                fixedBox: false, // 固定截图框大小 不允许改变
+                fixed: true, // 是否开启截图框宽高固定比例
+                fixedNumber: [1270, 622], // 截图框的宽高比例
+                full: true, // 是否输出原图比例的截图
+                canMoveBox: true, // 截图框能否拖动
+                original: false, // 上传图片按照原始比例渲染
+                centerBox: false, // 截图框是否被限制在图片里面
+                infoTrue: true // true 为展示真实输出图片宽高 false 展示看到的截图框宽高
+            },
+
             taken:{'token': takentemp},
             // 创建一个状态点击确定后触发的是增加函数，修改函数
             methstatus:``,
@@ -214,7 +265,6 @@ export default {
 
             // 修改页面中的选择状态框
            statusOptions: ['售罄','可购买'],
-
             list:{
                 intro:"11",
                 title:"",
@@ -227,13 +277,13 @@ export default {
                 // 下面的图片是从网上搜索的图片，获取后端数据后，直接替换就行
                 imglist:[
                     {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg', ticketId:"",
-                ticketPhotoId:""},
+                ticketPhotoId:"",name:"1"},
                     {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg', ticketId:"",
-                ticketPhotoId:""},
+                ticketPhotoId:"",name:"2"},
                     {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg', ticketId:"",
-                  ticketPhotoId:""},
+                  ticketPhotoId:"",name:"3"},
                     {img:'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg', ticketId:"",
-                  ticketPhotoId:""},
+                  ticketPhotoId:"",name:"4"},
                 ],
                 exactintro:"",
                 exactorder:"",       
@@ -262,7 +312,71 @@ export default {
     }
    },
     methods: {
-        // 创建一个删除图片的回调函数
+        // 裁剪框的相应回调函数
+        // 上传按钮   限制图片大小
+      changeUpload(file, fileList) {
+        //   限定上传图片的类型
+        if (!/\.(gif|jpg|jpeg|png|bmp|GIF|JPG|PNG)$/.test(file.raw.name)) {
+		alert('图片类型必须是.gif,jpeg,jpg,png,bmp中的一种')
+		return false
+           }
+        //  限定上传图片的大小
+        const isLt5M = file.size / 1024 / 1024 < 5;
+        if (!isLt5M) {
+		this.$message.error('上传文件大小不能超过 5MB!')
+		return false
+        }
+        var files = file.raw;
+        this.fileinfo = file; // 保存下当前文件的一些基本信息
+        let reader = new FileReader(); // 创建文件读取对象
+        reader.onload = async e => {
+            let data;
+            if (typeof e.target.result === 'object') {
+            // 把Array Buffer转化为blob 如果是base64不需要
+            data = window.URL.createObjectURL(new Blob([e.target.result])); 
+            } else {
+            data = e.target.result;
+            }
+            console.log(data);
+            this.option.img = data; // 设置option的初始image
+            this.dialogVisible = true;
+        };
+        reader.readAsArrayBuffer(files);
+     },
+         // 点击裁剪，这一步是可以拿到处理后的地址
+      finish() {
+        this.$refs.cropper.getCropBlob((data) => {
+          let formData = new FormData();
+            formData.append(
+            'file',data,"DX.jpg"
+            );
+         this.$axios({
+            //action="http://2uah4e.natappfree.cc/ticket/upLoadPhoto"
+            url: `http://qzdsgu.natappfree.cc/ticket/upLoadPhoto`,
+            method: 'post',
+            data: formData,
+            headers:{
+                'Content-Type': 'multipart/form-data',
+                'token': takentemp
+            }
+          }).then( res  => {
+              console.log(res);
+            if (res.data.code === 2000) {
+                res.data.data.forEach((item)=>{
+                    let imgData={
+                      ticketId:"",
+                      ticketPhotoId:"",
+                      img:item
+                    }                  
+                  this.list.imglist.push(imgData);
+                })
+                 this.dialogVisible = false
+            } else {
+            }
+          })
+        })
+      },
+      // 创建一个删除图片的回调函数
         deleteimg(index){
             // 如果删除成功，弹出一个消息框
             this.$notify({
@@ -290,13 +404,6 @@ export default {
             this.list.exactintro="";
             this.list.exactorder="";
             this.list.exactcost="";
-        },
-        // 下面的是上传文件的自带方法
-        handleRemove(file, fileList) {
-            console.log(file, fileList);
-        },
-        handlePreview(file) {
-            console.log(file);
         },
         handleExceed(files, fileList) {
             this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
@@ -385,6 +492,11 @@ export default {
 </script>
 
 <style>
+  /* 截图 */
+  .cropper {
+    width: auto;
+    height: 300px;
+  }
 /* 先调整整个页面的布局 */
 #ticketedit{
     width: 100%;

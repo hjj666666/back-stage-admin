@@ -11,7 +11,9 @@
         <br>
         <el-button type="primary" @click="quitEditor">保存并退出</el-button>
     </div>
+    
     <el-button type="primary" plain @click="test">测试</el-button>
+    <el-button type="primary" plain @click="isShowTravelEdit=!isShowTravelEdit">测试travaledit</el-button>
     <!-- 折叠编辑的部分 -->
     <el-collapse v-model="openList">
         <el-collapse-item class="collapse-title-class" title="图片上传" name="uploadPic">
@@ -34,7 +36,9 @@
                 <div class="uploadPic">
                     <el-upload
                         class="uploadPicBtn"
-                        action="https://jsonplaceholder.typicode.com/posts/"
+                        :headers="taken"
+                        :on-success="onSuccess"
+                        action="http://qzdsgu.natappfree.cc/travel/upLoadPhoto"
                         :show-file-list="false"
                         :before-upload="beforePicUpload">
                         <i class="el-icon-plus avatar-uploader-icon"></i>
@@ -66,9 +70,11 @@
                     </div>
                 </el-col>
                 <el-col :span="8">
-                    <div class="uploadDate upload">
-                        <span class="beforeInput">结束时间:</span>
-                        <el-date-picker v-model="uploadList.endTime" type="datetime" placeholder="选择一个日期" />
+                    <div class="uploadAmount upload">
+                        <span class="span1">门票状态:</span>
+                        <el-select v-model="uploadList.status" class="filter-item" placeholder="请选择一个状态">
+                            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
+                       </el-select>
                     </div>
                 </el-col>
                 <el-col :span="8">
@@ -94,24 +100,48 @@
                 </el-col>
                 <el-col :span="8">
                     <div class="uploadAmount upload">
-                        <span class="beforeInput">类型:</span>
-                        <el-select v-model="uploadList.options" placeholder="请选择">
-                            <el-option
-                                v-for="item in typeOptions"
-                                :key="item.key" 
-                                :label="item" 
-                                :value="item">
-                            </el-option>
-                            <br>
-                                <span style="margin-left:1em">
-                                    <el-button v-if="ifCreateNewOptions" type="primary" plain @click="switchCreateNewOptions">自定义类型</el-button>
-                                    <template v-else>
-                                        <el-input v-model="inputCreateNewOptions" placeholder="请输入自定义类型" maxlength="4" style="width:12em;margin-right:1em"></el-input>
-                                        <el-button type="primary" plain @click="createNewOptions">确认</el-button>
-                                    </template>
-                                    
-                                </span>
-                        </el-select>
+                        <span class="beforeInput">房差:</span>
+                        <el-input  placeholder="请输入房差"  v-model="uploadList.differPrice"></el-input>
+                    </div>
+                </el-col>
+            </el-row>
+            <br>
+            <!-- 添加四个新的属性 -->
+              <el-row :gutter="20">
+                <el-col :span="8">
+                    <div class="uploadIntro upload">
+                        <span class="beforeInput">出发地:</span>
+                        <el-tag
+                            :key="tag"
+                            v-for="tag in uploadList.departurePlace"
+                            closable
+                            :disable-transitions="false"
+                            @close="handleClose(tag)">
+                            {{tag}}
+                            </el-tag>
+                            <el-input
+                            class="input-new-tag"
+                            v-if="inputVisible"
+                            v-model="inputValue"
+                            ref="saveTagInput"
+                            size="small"
+                            @keyup.enter.native="handleInputConfirm"
+                            @blur="handleInputConfirm"
+                            >
+                            </el-input>
+                            <el-button v-else class="button-new-tag" size="small" @click="showInput">添加</el-button>
+                    </div>
+                </el-col>
+                <el-col :span="8">
+                    <div class="uploadDate upload">
+                        <span class="beforeInput">成人价格:</span>
+                        <el-input  v-model="uploadList.adultPrice" placeholder="请输入成人价格"></el-input>
+                    </div>
+                </el-col>
+                <el-col :span="8">
+                    <div class="uploadAmount upload">
+                        <span class="beforeInput">儿童价格:</span>
+                        <el-input  placeholder="请输入儿童价格"  v-model="uploadList.childPrice"></el-input>
                     </div>
                 </el-col>
             </el-row>
@@ -215,12 +245,11 @@
             </div>
         </el-collapse-item>
 
-        <el-collapse-item class="collapse-title-class" title="行程介绍" name="tourIntro">
-            
+        <el-collapse-item class="collapse-title-class" title="行程介绍" name="tourIntro">          
             <div class="tourList currencyBoder">
                 <h4>行程列表</h4>
                  <el-table
-                    :data="uploadList.tourIntro.tourList"
+                    :data="uploadList.tourList"
                     border
                     height="250"
                     style="width: 100%">
@@ -266,7 +295,7 @@
                         <el-input v-model="tourListAdd.focusPlace"></el-input>
                         </el-form-item>
                         <el-form-item label="集合时间" label-width="120px">
-                        <el-input v-model="tourListAdd.focusTime"></el-input>
+                        <el-date-picker v-model="tourListAdd.focusTime" type="datetime" placeholder="选择一个日期" />
                         </el-form-item>
                         <el-form-item label="返回地点" label-width="120px">
                         <el-input v-model="tourListAdd.backPlace"></el-input>
@@ -283,7 +312,7 @@
                 <el-tag
                     style="margin-left:0.5em"
                     :key="scenery"
-                    v-for="scenery in uploadList.tourIntro.sceneryList"
+                    v-for="scenery in uploadList.sceneryList"
                     closable
                     :disable-transitions="false"
                     @close="handleCloseOfScenery(scenery)">
@@ -306,6 +335,164 @@
             </div>
         </el-collapse-item>
 
+        <el-collapse-item class="collapse-title-class" title="具体的行程介绍" name="exacttourIntro">          
+            <div class="tourList currencyBoder">
+                <h4>行程详情：</h4>
+                <!-- 直接将列表中的数据使用v-for显示在下面 -->
+                <div class="collapse-title-class-list">
+                      <div class="traveledit"  v-for="(item,index) in uploadList.exactTourList" :key="index">
+                        <!-- 先输入几个文本框控制其它数据的输入 -->
+                        <div class="traveldiv1">
+                            <!-- 这里是控制天数，起点，入住 -->
+                            <div class="traveldiv2">
+                                <div class="traveldiv4">
+                                    <span>第几天: </span>
+                                    <el-input placeholder="请输入第几天" v-model="item.nthdate"></el-input>
+                                </div>
+                                <div class="traveldiv4">
+                                    <span>起点: </span>
+                                    <el-input placeholder="请输入起点" v-model="item.startPlace"></el-input>
+                                </div>
+                                <div class="traveldiv4">
+                                    <span>终点: </span>
+                                    <el-input placeholder="请输入终点" v-model="item.endPlace"></el-input>
+                                </div>
+                                <div class="traveldiv4">
+                                    <span>入住: </span>
+                                    <el-input placeholder="请输入入住地点" v-model="item.hostel"></el-input>
+                                </div>
+                            </div>
+
+                            <!-- 这里是控制早餐，午餐，晚餐 -->
+                            <div class="traveldiv3">
+                                <div class="traveldiv4">
+                                    <span>早餐: </span>
+                                      <el-autocomplete
+                                            class="inline-input"
+                                            v-model="item.breakfast"
+                                            :fetch-suggestions="querySearch"
+                                            placeholder="请输入早餐" 
+                                            ></el-autocomplete>
+                                </div>
+                                <div class="traveldiv4">
+                                    <span>午餐: </span>
+                                            <el-autocomplete
+                                            class="inline-input"
+                                            v-model="item.lunch"
+                                            :fetch-suggestions="querySearch"
+                                            placeholder="请输入午餐" 
+                                            ></el-autocomplete>
+                                </div>
+                                <div class="traveldiv4">
+                                    <span>晚餐: </span>
+                                            <el-autocomplete
+                                            class="inline-input"
+                                            v-model="item.dinner"
+                                            :fetch-suggestions="querySearch"
+                                            placeholder="请输入晚餐" 
+                                            ></el-autocomplete>
+                                </div>
+                            </div> 
+                        </div>
+
+                        <!-- 这里是控制富文本控制具体的每一条数据 -->
+                        <div class="traveldiv5">  
+                            <div>
+                            <quill-editor
+                            ref="myQuillEditor"
+                            :options="editorOption"
+                            v-model="item.exactTravel"
+                            />
+                        </div>
+                        </div>
+                        <!-- 先编写一个按钮控制页面的显示 -->
+                        <div class="lastdiv">
+                            <el-button type="primary" @click="deleteExactTeavelEdit(index,item)">删除本数据</el-button>
+                        </div>
+                    </div>
+                </div>
+                <!-- 直接编辑页面显示到这里，不再另外开启一个编辑 -->
+                <!-- 下面使新增数据的控制页面 -->
+                <div class="collapse-title-class-div" v-if="isShowTravelEdit">
+                    <h4>增加数据：</h4>
+                    <div class="traveledit" >
+                        <!-- 先输入几个文本框控制其它数据的输入 -->
+                        <div class="traveldiv1">
+                            <!-- 这里是控制天数，起点，入住 -->
+                            <div class="traveldiv2">
+                                <div class="traveldiv4">
+                                    <span>第几天: </span>
+                                    <el-input placeholder="请输入第几天" v-model="exactTravelTemp.nthdate"></el-input>
+                                </div>
+                                <div class="traveldiv4">
+                                    <span>起点: </span>
+                                    <el-input placeholder="请输入起点" v-model="exactTravelTemp.startPlace"></el-input>
+                                </div>
+                                <div class="traveldiv4">
+                                    <span>终点: </span>
+                                    <el-input placeholder="请输入终点" v-model="exactTravelTemp.endPlace"></el-input>
+                                </div>
+                                <div class="traveldiv4">
+                                    <span>入住: </span>
+                                    <el-input placeholder="请输入入住地点" v-model="exactTravelTemp.hostel"></el-input>
+                                </div>
+                            </div>
+
+                            <!-- 这里是控制早餐，午餐，晚餐 -->
+                            <div class="traveldiv3">
+                                <div class="traveldiv4">
+                                    <span>早餐: </span>
+                                           <el-autocomplete
+                                            class="inline-input"
+                                            v-model="exactTravelTemp.breakfast"
+                                            :fetch-suggestions="querySearch"
+                                            placeholder="请输入早餐" 
+                                            ></el-autocomplete>
+                                </div>
+                                <div class="traveldiv4">
+                                    <span>午餐: </span>
+                                            <el-autocomplete
+                                            class="inline-input"
+                                            v-model="exactTravelTemp.lunch"
+                                            :fetch-suggestions="querySearch"
+                                            placeholder="请输入午餐" 
+                                            ></el-autocomplete>
+                                </div>
+                                <div class="traveldiv4">
+                                    <span>晚餐: </span>
+                                            <el-autocomplete
+                                            class="inline-input"
+                                            v-model="exactTravelTemp.dinner"
+                                            :fetch-suggestions="querySearch"
+                                            placeholder="请输入晚餐" 
+                                            ></el-autocomplete>
+                                </div>
+                            </div> 
+                        </div>
+
+                        <!-- 这里是控制富文本控制具体的每一条数据 -->
+                        <div class="traveldiv5">  
+                            <div>
+                            <quill-editor
+                            ref="myQuillEditor"
+                            :options="editorOption"
+                            v-model="exactTravelTemp.exactTravel"
+                            />
+                        </div>
+                        </div>
+                        <!-- 先编写一个按钮控制页面的显示 -->
+                        <div class="lastdiv">
+                            <el-button type="primary" @click="isShowTravelEdit=!isShowTravelEdit">取消</el-button>
+                            <el-button type="primary" @click="saveExactTeavelEdit">保存</el-button>
+                        </div>
+                    </div>
+                </div>
+
+                <br>
+                <el-button @click="addExactTeavelEdit()" type="primary">增加</el-button>          
+            </div>
+        </el-collapse-item>
+
         <el-collapse-item class="collapse-title-class" title="费用说明" name="costIntro">
             <el-button type="primary" @click="enterEditor('costIntro')">编辑</el-button>
             <div class="costIntr showHTML currencyBoder" v-html="uploadList.costIntro">
@@ -321,7 +508,7 @@
         </el-collapse-item>
     </el-collapse>
     <div class="bottomBtn">
-        <el-button type="primary" @click="quitTourismEdit">保存</el-button><el-button type="danger">退出</el-button>
+        <el-button type="primary" @click="quitTourismEdit">保存</el-button><el-button type="danger" @click="quxiaoTourismEdit">取消编辑</el-button>
     </div>
   </div>
 </template>
@@ -338,7 +525,7 @@ import ImageResize from "quill-image-resize-module";
 import { ImageDrop } from "quill-image-drop-module"
 Quill.register("modules/imageDrop", ImageDrop);
 Quill.register("modules/imageResize", ImageResize); // 注册
-
+import { getToken } from '@/utils/auth'
 // 工具栏配置
 const toolbarOptions = [
   ["bold", "italic", "underline", "strike"], // 加粗 斜体 下划线 删除线 -----['bold', 'italic', 'underline', 'strike']
@@ -356,6 +543,8 @@ const toolbarOptions = [
   ["clean"], // 清除文本格式-----['clean']
   ["image", "video"] // 链接、图片、视频-----['link', 'image', 'video']
 ];
+
+var takentemp=getToken();
 export default {
     name: 'TourismEdit',
     components: {
@@ -365,19 +554,52 @@ export default {
         return {
             // 默认打开的折叠部分
             openList:['uploadPic','baseInf'],
+            taken:{'token': takentemp},
 
-            //可以选择的套餐类型
-            typeOptions:["美食","约游","玩好","乐享","纯味"],
+            // 创建一个变量，保存可以选择的早餐
+            meals:[
+            {value:"自理"},
+            {value:"肠粉"},
+            {value:"面包"},
+            {value:"白粥"},
+          ],
 
+           // 地点标签多需要的数据
+            inputVisible: false,
+            inputValue: '',
+
+            // 创建一个变量保存目前行程详情编辑页面
+            exactEditTravelType:"edit",
+            // 创建一个变量保存编辑页面的状态
+            methstatus:"",
+            // 修改页面中的选择状态框
+           statusOptions: ['售罄','可购买'],
+            // 添加一条暂时的数据，用来保存行程详情里面的数据
+            exactTravelTemp:{
+                nthdate:1,
+                startPlace:"广州",
+                endPlace:"上海",
+                exactTravel:"111",
+                breakfast:"11",
+                lunch:"111",
+                dinner:"11",
+                hostel:"111"
+            },
+            // 创建一个变量保存目前的编辑数据的index
+            indexTemp:0,
             //输入的信息列表，到时直接提交这个玩意
             uploadList:{
+                id:"",
                 title:'',  //标题
                 intro:'',  //简介
-                endTime:'', //结束时间
-                amount:'',  //数量
-                price: '',  //原价
-                limitprice: '', //限时价格
-                options:'',     //类型
+                amount:undefined,  //数量
+                price: undefined,  //原价
+                limitprice: undefined, //限时价格
+                status: 1,
+                departurePlace:["深圳","上海","广州"],
+                adultPrice:999,
+                childPrice:88,
+                differPrice:88,
 
                 //暂时的图片列表，到时运用函数获取后端的api
                 imglist:[
@@ -395,31 +617,34 @@ export default {
 
                 //图文详情
                 imgAndText:'',
-
-                //行程介绍
-                tourIntro:{
-                    tourList:[],
-                    sceneryList:[],
-                },
-                    
-
+          
+                //行程介绍   
+                tourList:[],
+                sceneryList:[],
+                exactTourList:[
+                    // {nthdate:1,startPlace:"广州",endPlace:"上海",exactTravel:"11",breakfast:"11",
+                    // lunch:"111",dinner:"111",hostel:"111"
+                    // },
+                    // {nthdate:2,startPlace:"广州",endPlace:"上海",exactTravel:"222",breakfast:"22",
+                    // lunch:"222",dinner:"",hostel:"222"
+                    // },
+                ],
+               
                 //费用说明
                 costIntro:'',
-
                 //预订须知
                 bookNotice:'',
             },
 
             //这里存放开关某些v-if的临时状态
-            ifCreateNewOptions:true, //这个是套餐类型的新增类型的切换状态
             datePriceVisible:false, //这是价格日历的对话框显示状态
             isShowAddFeatures:false,//显示产品亮点文本框的状态
             isShowquillEditor:false, //显示富文本编辑器的状态
             isShowTourListAdd:false, //显示行程介绍列表的状态
             isShowInputScenery:false, //显示行程沿途景点列表的状态
+            isShowTravelEdit:false,//是否显示行程的具体编辑页面
 
             //这里存放临时的值，基本上用完就不用的
-            inputCreateNewOptions:'',  //这个是管理员写的新增的类型
             changeDate:'',     //选中的日期
             inputdatePrice:'', //选中日期的价格
             addFeaturesTemp:'', //产品亮点临时输入
@@ -440,16 +665,65 @@ export default {
                         border: "none",
                         color: "white"
                     },
-                    modules: ["Resize", "DisplaySize", "Toolbar"]
-                },
-                toolbar: toolbarOptions
+                    modules: ["Resize", "DisplaySize", "Toolbar"],
+                    },
+                    toolbar: toolbarOptions
                 },
            
             },
         }
     },
+   activated(){
+    //    根据路由传递过来的参数判断目前是编辑页面还是添加页面
+    //    判断是否能接受到我们的create函数,可以输出,成功获取
+    //console.log(this.$route.query.methstatus);
+        // 一旦进入立马更新methstatus，方便后面判断是执行修改方法还是增加方法
+    this.methstatus=this.$route.query.methstatus;
+    // 如果methstatus==createdata，这经页面中的数据清空
+    if(this.methstatus==="createdata"){
+       // console.log("1111");
+       this.resetAll();
+    }
+    // 对接受到的参数进行判断：如果this.$route.query.list!=undefined,则替换掉目前的list
+    // 目前测试可行
+    if(this.$route.query.list!=undefined){
+        this.uploadList=this.$route.query.list;
+    }
 
+   },
     methods: {
+        // 地点标签的相应方法
+        handleClose(tag) {
+         this.uploadList.departurePlace.splice(this.uploadList.departurePlace.indexOf(tag), 1);
+      },
+       
+    //    早餐选择框的回调函数
+        querySearch(queryString, cb) {
+        var meals = this.meals;
+        var results = queryString ? meals.filter(this.createFilter(queryString)) : meals;
+        // 调用 callback 返回建议列表的数据
+        cb(results);
+      },
+      createFilter(queryString) {
+        return (meal) => {
+          return (meal.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+        };
+      },
+      showInput() {
+        this.inputVisible = true;
+        this.$nextTick(_ => {
+          this.$refs.saveTagInput.$refs.input.focus();
+        });
+      },
+
+      handleInputConfirm() {
+        let inputValue = this.inputValue;
+        if (inputValue) {
+          this.uploadList.departurePlace.push(inputValue);
+        }
+        this.inputVisible = false;
+        this.inputValue = '';
+      },
         // 创建一个删除图片的回调函数
         deleteimg(index){
             // 如果删除成功，弹出一个消息框
@@ -476,44 +750,58 @@ export default {
             return isJPG && isLt2M;
         },
 
-        //切换新增类型的函数
-        switchCreateNewOptions(){
-             this.ifCreateNewOptions=!this.ifCreateNewOptions;
+    // 图片上传成功后，后台返回图片的路径
+        onSuccess(res){
+            console.log(res);
+            if(res.code===2000){
+                res.data.forEach((item)=>{
+                    let imgData={
+                      //ticketId:"",
+                      //ticketPhotoId:"",
+                      url:item
+                    }                  
+                  this.uploadList.imglist.push(imgData);
+                })
+            }else{
+
+            }
         },
 
-        //新增类型的函数
-        createNewOptions(){
-            if(this.inputCreateNewOptions!=''){
-                this.uploadList.options=this.inputCreateNewOptions;
-                this.ifCreateNewOptions=true;
-            }
-            else{
-                this.$message({
-                    message: '类型不能为空',
-                    type: 'warning'
-                });
-            }
-        },
 
         //查看当前日期的价格（实在没有办法实现实时渲染了，丢人！所以这是一个委屈求全的方法）
         showDatePriceOfDialog(day){
-            var obj=this.uploadList.priceCalendar.find(function (obj) {
-                return obj.date === day
+            if(this.uploadList.priceCalendar.length>0)
+            var obj=this.uploadList.priceCalendar.forEach(element => {
+                 let timestamp = +new Date(day)//将时间字符串转化为时间撮
+                 let timestamp2= +new Date(element.date)
+                if( timestamp2=== timestamp){
+                    this.$alert(day+"的价格为"+element.price, '查询价格', {
+                        confirmButtonText: '关闭',
+                    });
+                }
             })
-             this.$alert(day+"的价格为"+obj.price, '查询价格', {
-                confirmButtonText: '关闭',
-            });
         },
         //修改当前日期的价格
         //点击修改价格并获取当前日期，让对话框显示
         changeDatePriceOfDialog(data){
             this.datePriceVisible = true
             this.changeDate=data.day
+
         },
         //确定函数
-        changeDatePrice(){
+        changeDatePrice(){ 
+            var pd=false;
             if(this.changeDate != '' && this.inputdatePrice != ''){
-                this.uploadList.priceCalendar.push({date:this.changeDate,price:this.inputdatePrice})
+               pd=this.uploadList.priceCalendar.some((item,index)=>{
+                if(item.date === this.changeDate){
+                      let timestamp = +new Date(this.changeDate)//将时间字符串转化为时间撮
+                    this.uploadList.priceCalendar.splice(index,1,{date:timestamp,price:this.inputdatePrice})
+                }
+                })
+                if(pd===false){
+                     let timestamp = +new Date(this.changeDate)//将时间字符串转化为时间撮
+                     this.uploadList.priceCalendar.push({date:timestamp,price:this.inputdatePrice});
+                }
                 this.datePriceVisible = false
                 this.changeDate=''
                 this.inputdatePrice=''
@@ -553,14 +841,15 @@ export default {
         //行程介绍的函数
         //增加行程介绍列表的函数
         handleTourListAdd(){
-            this.uploadList.tourIntro.tourList.push(this.tourListAdd)
+            this.tourListAdd.focusTime= +new Date(this.tourListAdd.focusTime)
+            this.uploadList.tourList.push(this.tourListAdd)
             this.tourListAdd={focusPlace:'',focusTime:'',backPlace:'',otherMeg:''}
             this.isShowTourListAdd=false
         },
 
         //删除行程介绍列表的函数
         handleTourListDelete(index, row){
-            this.uploadList.tourIntro.tourList.splice(index,1);
+            this.uploadList.tourList.splice(index,1);
         },
 
         //以下是沿途风景相关的函数
@@ -576,7 +865,7 @@ export default {
         handleInputConfirmOfScenery() {
         let inputValueOfScenery = this.inputValueOfScenery;
         if (inputValueOfScenery) {
-          this.uploadList.tourIntro.sceneryList.push(inputValueOfScenery);
+          this.uploadList.sceneryList.push(inputValueOfScenery);
         }
         this.isShowInputScenery = false;
         this.inputValueOfScenery = '';
@@ -584,7 +873,7 @@ export default {
 
         //这是删除沿途风景列表的方法
         handleCloseOfScenery(Scenery) {
-         this.uploadList.tourIntro.sceneryList.splice(this.uploadList.tourIntro.sceneryList.indexOf(Scenery), 1);
+         this.uploadList.sceneryList.splice(this.uploadList.sceneryList.indexOf(Scenery), 1);
         },
 
         // 富文本编辑器的方法
@@ -615,49 +904,183 @@ export default {
         },
 
         // 保存并退出编辑页面
+        // 并且需要在这里完成将数据发送到后端冰完成数据的更新
         quitTourismEdit(){
             this.$confirm('是否确定保存并退出', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
                 }).then(() => {
+                //首先判断当前页面的编辑状态时什么
+                // 经状态字符串改为o-1
+                //'售罄','可购买'
+                if(this.uploadList.status==="售罄"){
+                this.uploadList.status=0;
+                }else{
+                    this.uploadList.status=1;
+                }
+                if(this.methstatus==="createdata") {
+                    // 首先触发事件总线中的busCreateTravelData
+                    this.$bus.$emit("busCreateTravelData",this.uploadList);
+                }else{
+                    this.$bus.$emit("busUpdateTravelData",this.uploadList);
+                }
+
+                // 如果时编辑函数
+               
                 //返回原来的套餐列表
                 this.$router.push({
                     path:"/productadmin/tourism-admin",
-                    query:{
-                        methstatus:"createdata"
-                    }
                 });
                 this.$message({
                     type: 'info',
                     message: '已保存'
                 });  
-                //清空所有
-                resetAll()
+
                 }).catch(() => {
                         
             }); 
         },
 
+        // 为取消编辑绑定一个回调函数
+        quxiaoTourismEdit(){
+            //返回原来的套餐列表
+            this.$router.push({
+                 path:"/productadmin/tourism-admin",
+            });
+        },
         // 清空所有信息的函数
         resetAll(){
             this.uploadList.title=''  //标题
             this.uploadList.intro=''  //简介
-            this.uploadList.endTime='' //结束时间
-            this.uploadList.amount=''  //数量
-            this.uploadList.price= ''  //原价
-            this.uploadList.limitprice= '' //限时价格
-            this.uploadList.options=''     //类型
+            this.uploadList.amount=undefined  //数量
+            this.uploadList.price= undefined  //原价
+            this.uploadList.limitprice= undefined //限时价格
+            this.uploadList.status=0
+            this.uploadList.departurePlace="",
+            this.uploadList.adultPrice=undefined,
+            this.uploadList.childPrice=undefined,
+            this.uploadList.differPrice=undefined,
+            //暂时的图片列表，到时运用函数获取后端的api
+            this.uploadList.imglist=[
+                {url:'https://my.wulvxinchen.cn/pictures/things/lighthouse.jpg'},
+                {url:'https://my.wulvxinchen.cn/pictures/things/lighthouse.jpg'},
+                {url:'https://my.wulvxinchen.cn/pictures/things/lighthouse.jpg'}
+                ]
+                            //对应的价格日历列表
+            this.uploadList.priceCalendar=[
+                ]
+
+                //产品亮点列表
+            this.uploadList.featuresList=[]
+
+            //图文详情
+            this.uploadList. imgAndText=''
+
+            //行程介绍 
+            this.uploadList. tourList=[]
+            this.uploadList. sceneryList=[]
+            this.uploadList. exactTourList=[]
+                
+            //费用说明
+            this.uploadList.costIntro=''
+            //预订须知
+            this.uploadList.bookNotice=''
+        },
+        
+        // 为编辑行程详情绑定一个回调函数
+        handleExactTeavelEdit(index,list){
+            // 首先要将编辑页面显示出来
+            this.isShowTravelEdit=! this.isShowTravelEdit;
+            this.exactEditTravelType="edit";
+            // 其次需要在编辑页面中显示目前的数据
+            // nthdate:1,
+            // destination:"广州/上海",
+            // exactTravel:"111",
+            // breakfast:"11",
+            // lunch:"111",
+            // dinner:"11",
+            // hostel:"111"
+            this.exactTravelTemp.nthdate=this.uploadList.exactTourList[index].nthdate;
+            this.exactTravelTemp.destination=this.uploadList.exactTourList[index].destination;
+            this.exactTravelTemp.exactTravel=this.uploadList.exactTourList[index].exactTravel;
+            this.exactTravelTemp.breakfast=this.uploadList.exactTourList[index].breakfast;
+            this.exactTravelTemp.lunch=this.uploadList.exactTourList[index].lunch;
+            this.exactTravelTemp.dinner=this.uploadList.exactTourList[index].dinner;
+            this.exactTravelTemp.hostel=this.uploadList.exactTourList[index].hostel;
+            // 保存当前编辑的数据
+            this.indexTemp=index;
+        }, 
+         // 为编辑行程详情绑定一个回调函数
+        saveExactTeavelEdit(){
+            // 其次需要在编辑页面中显示目前的数据
+            // nthdate:1,
+            // destination:"广州/上海",
+            // exactTravel:"111",
+            // breakfast:"11",
+            // lunch:"111",
+            // dinner:"11",
+            // hostel:"111"
+            if(this.exactEditTravelType==="edit"){
+                this.uploadList.exactTourList[this.indexTemp].nthdate=this.exactTravelTemp.nthdate;
+                this.uploadList.exactTourList[this.indexTemp].destination=this.exactTravelTemp.destination;
+                this.uploadList.exactTourList[this.indexTemp].exactTravel=this.exactTravelTemp.exactTravel;
+                this.uploadList.exactTourList[this.indexTemp].breakfast=this.exactTravelTemp.breakfast;
+                this.uploadList.exactTourList[this.indexTemp].lunch= this.exactTravelTemp.lunch;
+                this.uploadList.exactTourList[this.indexTemp].dinner= this.exactTravelTemp.dinner;
+                this.uploadList.exactTourList[this.indexTemp].hostel=this.exactTravelTemp.hostel;
+            }
+            if(this.exactEditTravelType==="add"){
+                 const temp = Object.assign({}, this.exactTravelTemp)
+                this.uploadList.exactTourList.push(temp);
+            }  
+            // 首先要将编辑页面显示出来
+            this.isShowTravelEdit=! this.isShowTravelEdit;
+        }, 
+        // 为增加一个具体行程详情添加一个回调函数
+        addExactTeavelEdit(){
+            // 首先要将编辑页面显示出来
+            this.isShowTravelEdit=! this.isShowTravelEdit;
+            // 先将编辑页面清空
+            this.exactTravelTemp.nthdate="";
+            this.exactTravelTemp.startPlace="";
+            this.exactTravelTemp.endPlace="";
+            this.exactTravelTemp.exactTravel="";
+            this.exactTravelTemp.breakfast="";
+            this.exactTravelTemp.lunch="";
+            this.exactTravelTemp.dinner="";
+            this.exactTravelTemp.hostel="";
+            this.exactEditTravelType="add";
+        },
+        // 为删除具体行程绑定一个回调函数
+        deleteExactTeavelEdit(index,temp){
+             this.uploadList.exactTourList.splice(index,1)
         },
         //测试函数
         test(){
             console.log(this.uploadList)       
         },
-    },
+    }
 }
 </script>
 
 <style>
+    /* 标签输入框的样式 */
+    .el-tag + .el-tag {
+    margin-left: 10px;
+  }
+  .button-new-tag {
+    margin-left: 10px;
+    height: 32px;
+    line-height: 30px;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .input-new-tag {
+    width: 90px;
+    margin-left: 10px;
+    vertical-align: bottom;
+  }
     /* 富文本编辑器的样式 */
     .tourismedit .quillEditor{
         position: absolute;
@@ -668,7 +1091,6 @@ export default {
         flex-direction: column;
         align-items: center;
         background-color: white;
-
         margin-top: 0px;
         margin-bottom: 20px;
     }
@@ -762,5 +1184,152 @@ export default {
         margin: 0.5em;
         border: 2px solid #6d6d6da8;
         padding: 0.5em;
+    }
+  /* 具体行程列表的样式 */
+    .tourismedit   .collapse-title-class-list{
+        width: 100%;
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+     .tourismedit .currencyBoder .collapse-title-class-list .traveledit{
+       width: 100%;
+       height: 100%;
+       background-color:white;
+       /* 控制布局 */
+       display: flex;
+       flex-direction: column;
+       align-items: center;
+       padding-bottom: 20px;
+       border-bottom: 1px solid gray;
+   }
+
+    .tourismedit .currencyBoder .collapse-title-class-list .traveledit .traveldiv1{
+       width: 90%;
+       height: 200px;
+       display: flex;
+       flex-direction: column;
+       align-items: center;
+       justify-content: space-around;
+   }
+
+    .tourismedit .currencyBoder .collapse-title-class-list .traveledit .traveldiv1 .traveldiv2{
+       width: 100%;
+       display: flex;
+       justify-content: space-between;
+       align-items: center;
+   }
+      .tourismedit .currencyBoder .collapse-title-class-list .traveledit .traveldiv1 .traveldiv3{
+       width: 100%;
+       display: flex;
+       justify-content: space-between;
+       align-items: center;
+   }
+   /* 调整里面小的div的样式 */
+       .tourismedit .currencyBoder .collapse-title-class-list .traveledit .traveldiv1  .traveldiv4{
+       display: flex;
+       justify-content: space-around;
+       align-items: center;
+    }
+
+    .tourismedit .currencyBoder .collapse-title-class-list .traveledit .traveldiv1  .traveldiv4 span{
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        width: 100px;
+     }
+
+     /* 调整富文本的样式 */
+    .tourismedit .currencyBoder .collapse-title-class-list .traveledit .traveldiv5{
+          width: 90%;         
+     }
+    .tourismedit .currencyBoder .collapse-title-class-list .traveledit .traveldiv5 .ql-container{
+          height: 300px;
+    }
+    
+    .tourismedit .lastdiv{
+        width: 50%;
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+    }
+
+  /* 下面使具体行程的编程的样式 */
+    .tourismedit .currencyBoder .collapse-title-class-div{
+        width: 100%;
+       /* 控制布局 */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .tourismedit .currencyBoder .collapse-title-class-div .traveledit{
+       width: 100%;
+       height: 100%;
+       background-color:white;
+       /* 控制布局 */
+       display: flex;
+       flex-direction: column;
+       align-items: center;
+   }
+
+    .tourismedit .currencyBoder .collapse-title-class-div .traveledit .traveldiv1{
+       width: 90%;
+       height: 200px;
+       display: flex;
+       flex-direction: column;
+       align-items: center;
+       justify-content: space-around;
+   }
+
+    .tourismedit .currencyBoder .collapse-title-class-div .traveledit .traveldiv1 .traveldiv2{
+       width: 100%;
+       display: flex;
+       justify-content: space-between;
+       align-items: center;
+   }
+      .tourismedit .currencyBoder .collapse-title-class-div .traveledit .traveldiv1 .traveldiv3{
+       width: 100%;
+       display: flex;
+       justify-content: space-between;
+       align-items: center;
+   }
+   /* 调整里面小的div的样式 */
+       .tourismedit .currencyBoder .collapse-title-class-div .traveledit .traveldiv1  .traveldiv4{
+       display: flex;
+       justify-content: space-around;
+       align-items: center;
+    }
+
+    .tourismedit .currencyBoder .collapse-title-class-div .traveledit .traveldiv1  .traveldiv4 span{
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        width: 100px;
+     }
+
+      .tourismedit .currencyBoder .collapse-title-class-div .traveledit .traveldiv1  .traveldiv4  .el-autocomplete{
+          z-index: 3;
+      }
+     
+
+     /* 调整富文本的样式 */
+    .tourismedit .currencyBoder .collapse-title-class-div .traveledit .traveldiv5{
+          width: 90%;
+          
+     }
+    .tourismedit .currencyBoder .collapse-title-class-div .traveledit .traveldiv5 .ql-container{
+          height: 300px;
+    }
+
+    .tourismedit .lastdiv{
+        width: 50%;
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
     }
 </style>

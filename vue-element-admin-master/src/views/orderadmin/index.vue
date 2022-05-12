@@ -157,13 +157,14 @@
 
 <script>
  // 从api中引入与后台交互的请求方法
-import { fetchList} from '@/api/travel'
+import { fetchList} from '@/api/order'
     // 引入水波纹
 import waves from '@/directive/waves' // waves directive
     // 格式化时间
 import { parseTime } from '@/utils'
    // 分页组件
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+
 
 
 const statusOptions=['待付款','待处理','处理中','待评价','已完成']
@@ -254,8 +255,10 @@ export default {
     }
   },
   // 钩子函数，当界面创建的时候调用.getList() 获取列表数据
-  created() {
+  async created() {
     // this.getList()
+    let  res = await fetchList();
+    console.log(res);
   },
   methods: {
      // 接口不知到为什么错了先不使用mock中的数据

@@ -20,9 +20,18 @@ import './utils/error-log' // error log
 
 import * as filters from './filters' // global filters
 
+import axios from 'axios'
+Vue.prototype.$axios = axios
+
+
+// 全局引入截图插件
+import VueCropper from 'vue-cropper'
+
 // 引入qs
 //在main.js引入qs  
 import qs from  'qs'  
+
+Vue.use(VueCropper)
  
 //配全局属性配置，在任意组件内可以使用this.$qs获取qs对象 
 Vue.prototype.$qs = qs
