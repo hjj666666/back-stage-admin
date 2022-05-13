@@ -15,498 +15,559 @@
     <el-button type="primary" plain @click="test">测试</el-button>
     <el-button type="primary" plain @click="isShowTravelEdit=!isShowTravelEdit">测试travaledit</el-button>
     <!-- 折叠编辑的部分 -->
-    <el-collapse v-model="openList">
-        <el-collapse-item class="collapse-title-class" title="图片上传" name="uploadPic">
-                <!-- 展示已经上传的图片，在后端获取图片数据 -->
-                <div class="showPic">
-                    <div class="showPic-item" v-for="(item,index) in uploadList.imglist" :key="index">
-                        <el-image
-                            style="width: 10em; height: 10em; border-radius:1.5em;"
-                            :src="item.url"
-                            fit="cover">
-                        </el-image>
-                        <!-- 删除图片的按钮 -->
-                        <div class="delPicBtn">
-                            <el-button type="danger" icon="el-icon-delete" circle @click="deleteimg(index)"></el-button>
-                        </div>
+
+    <div class="collapse-title-class box-class" title="图片上传" name="uploadPic">
+        <div class="box-title-class">图片上传</div><hr>
+            <!-- 展示已经上传的图片，在后端获取图片数据 -->
+            <div class="showPic">
+                <div class="showPic-item" v-for="(item,index) in uploadList.imglist" :key="index">
+                    <el-image
+                        style="width: 10em; height: 10em; border-radius:1.5em;"
+                        :src="item.url"
+                        fit="cover">
+                    </el-image>
+                    <!-- 删除图片的按钮 -->
+                    <div class="delPicBtn">
+                        <el-button type="danger" icon="el-icon-delete" circle @click="deleteimg(index)"></el-button>
                     </div>
                 </div>
+            </div>
 
-                <!-- 上传图片的按钮 -->
-                <div class="uploadPic">
-                    <el-upload
-                        class="uploadPicBtn"
-                        :headers="taken"
-                        :on-success="onSuccess"
-                        action="http://qzdsgu.natappfree.cc/travel/upLoadPhoto"
-                        :show-file-list="false"
-                        :before-upload="beforePicUpload">
-                        <i class="el-icon-plus avatar-uploader-icon"></i>
-                    </el-upload>
+            <!-- 上传图片的按钮 -->
+            <div class="uploadPic">
+                <el-upload
+                    class="uploadPicBtn"
+                    :headers="taken"
+                    :on-success="onSuccess"
+                    action="http://qzdsgu.natappfree.cc/travel/upLoadPhoto"
+                    :show-file-list="false"
+                    :before-upload="beforePicUpload">
+                    <i class="el-icon-plus avatar-uploader-icon"></i>
+                </el-upload>
+            </div>
+    </div>
+    
+    <!-- 基础信息的输入 -->
+    <div class="collapse-title-class box-class" title="基础信息" name="baseInf">
+        <div class="box-title-class">基础信息</div><hr>
+        <el-row :gutter="20">
+            <el-col :span="23">
+                <div class="uploadTitle upload">
+                    <span class="beforeInput">标题:</span>
+                    <el-input
+                        type="textarea"
+                        :rows="4"
+                        placeholder="请输入标题"
+                        v-model="uploadList.title">
+                    </el-input>
+            </div>
+            </el-col>
+        </el-row>
+        <br>
+        <el-row :gutter="20">
+            <el-col :span="8">
+                <div class="uploadIntro upload">
+                    <span class="beforeInput">简介:</span>
+                    <el-input  v-model="uploadList.intro" placeholder="请输入内容"></el-input>
                 </div>
-        </el-collapse-item>
-        
-        <!-- 基础信息的输入 -->
-        <el-collapse-item class="collapse-title-class" title="基础信息" name="baseInf">
+            </el-col>
+            <el-col :span="8">
+                <div class="uploadAmount upload">
+                    <span class="span1">门票状态:</span>
+                    <el-select v-model="uploadList.status" class="filter-item" placeholder="请选择一个状态">
+                        <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
+                    </el-select>
+                </div>
+            </el-col>
+            <el-col :span="8">
+                <div class="uploadAmount upload">
+                    <span class="beforeInput">数量:</span>
+                    <el-input  placeholder="请输入数量"  v-model="uploadList.amount"></el-input>
+                </div>
+            </el-col>
+        </el-row>
+        <br>
+        <el-row :gutter="20">
+            <el-col :span="8">
+                <div class="uploadPrice upload">
+                    <span class="beforeInput">原价格:</span>
+                    <el-input  v-model="uploadList.price" placeholder="请输入价格"><template slot="prepend">￥</template></el-input>
+                </div>
+            </el-col>
+            <el-col :span="8">
+                <div class="uploaLimitPrice upload">
+                    <span class="beforeInput">限定价格:</span>
+                    <el-input  v-model="uploadList.limitprice" placeholder="请输入价格"><template slot="prepend">￥</template></el-input>
+                </div>
+            </el-col>
+            <el-col :span="8">
+                <div class="uploadAmount upload">
+                    <span class="beforeInput">房差:</span>
+                    <el-input  placeholder="请输入房差"  v-model="uploadList.differPrice"></el-input>
+                </div>
+            </el-col>
+        </el-row>
+        <br>
+        <!-- 添加四个新的属性 -->
             <el-row :gutter="20">
-                <el-col :span="23">
-                    <div class="uploadTitle upload">
-                        <span class="beforeInput">标题:</span>
+            <el-col :span="8">
+                <div class="uploadIntro upload">
+                    <span class="beforeInput">出发地:</span>
+                    <el-tag
+                        :key="tag"
+                        v-for="tag in uploadList.departurePlace"
+                        closable
+                        :disable-transitions="false"
+                        @close="handleClose(tag)">
+                        {{tag}}
+                        </el-tag>
                         <el-input
-                            type="textarea"
-                            :rows="4"
-                            placeholder="请输入标题"
-                            v-model="uploadList.title">
+                        class="input-new-tag"
+                        v-if="inputVisible"
+                        v-model="inputValue"
+                        ref="saveTagInput"
+                        size="small"
+                        @keyup.enter.native="handleInputConfirm"
+                        @blur="handleInputConfirm"
+                        >
                         </el-input>
+                        <el-button v-else class="button-new-tag" size="small" @click="showInput">添加</el-button>
                 </div>
-                </el-col>
-            </el-row>
-            <br>
-            <el-row :gutter="20">
-                <el-col :span="8">
-                    <div class="uploadIntro upload">
-                        <span class="beforeInput">简介:</span>
-                        <el-input  v-model="uploadList.intro" placeholder="请输入内容"></el-input>
-                    </div>
-                </el-col>
-                <el-col :span="8">
-                    <div class="uploadAmount upload">
-                        <span class="span1">门票状态:</span>
-                        <el-select v-model="uploadList.status" class="filter-item" placeholder="请选择一个状态">
-                            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
-                       </el-select>
-                    </div>
-                </el-col>
-                <el-col :span="8">
-                    <div class="uploadAmount upload">
-                        <span class="beforeInput">数量:</span>
-                        <el-input  placeholder="请输入数量"  v-model="uploadList.amount"></el-input>
-                    </div>
-                </el-col>
-            </el-row>
-            <br>
-            <el-row :gutter="20">
-                <el-col :span="8">
-                    <div class="uploadPrice upload">
-                        <span class="beforeInput">原价格:</span>
-                        <el-input  v-model="uploadList.price" placeholder="请输入价格"><template slot="prepend">￥</template></el-input>
-                    </div>
-                </el-col>
-                <el-col :span="8">
-                    <div class="uploaLimitPrice upload">
-                        <span class="beforeInput">限定价格:</span>
-                        <el-input  v-model="uploadList.limitprice" placeholder="请输入价格"><template slot="prepend">￥</template></el-input>
-                    </div>
-                </el-col>
-                <el-col :span="8">
-                    <div class="uploadAmount upload">
-                        <span class="beforeInput">房差:</span>
-                        <el-input  placeholder="请输入房差"  v-model="uploadList.differPrice"></el-input>
-                    </div>
-                </el-col>
-            </el-row>
-            <br>
-            <!-- 添加四个新的属性 -->
-              <el-row :gutter="20">
-                <el-col :span="8">
-                    <div class="uploadIntro upload">
-                        <span class="beforeInput">出发地:</span>
-                        <el-tag
-                            :key="tag"
-                            v-for="tag in uploadList.departurePlace"
-                            closable
-                            :disable-transitions="false"
-                            @close="handleClose(tag)">
-                            {{tag}}
-                            </el-tag>
-                            <el-input
-                            class="input-new-tag"
-                            v-if="inputVisible"
-                            v-model="inputValue"
-                            ref="saveTagInput"
-                            size="small"
-                            @keyup.enter.native="handleInputConfirm"
-                            @blur="handleInputConfirm"
-                            >
-                            </el-input>
-                            <el-button v-else class="button-new-tag" size="small" @click="showInput">添加</el-button>
-                    </div>
-                </el-col>
-                <el-col :span="8">
-                    <div class="uploadDate upload">
-                        <span class="beforeInput">成人价格:</span>
-                        <el-input  v-model="uploadList.adultPrice" placeholder="请输入成人价格"></el-input>
-                    </div>
-                </el-col>
-                <el-col :span="8">
-                    <div class="uploadAmount upload">
-                        <span class="beforeInput">儿童价格:</span>
-                        <el-input  placeholder="请输入儿童价格"  v-model="uploadList.childPrice"></el-input>
-                    </div>
-                </el-col>
-            </el-row>
-        </el-collapse-item>
+            </el-col>
+            <el-col :span="8">
+                <div class="uploadDate upload">
+                    <span class="beforeInput">成人价格:</span>
+                    <el-input  v-model="uploadList.adultPrice" placeholder="请输入成人价格"></el-input>
+                </div>
+            </el-col>
+            <el-col :span="8">
+                <div class="uploadAmount upload">
+                    <span class="beforeInput">儿童价格:</span>
+                    <el-input  placeholder="请输入儿童价格"  v-model="uploadList.childPrice"></el-input>
+                </div>
+            </el-col>
+        </el-row>
+    </div>
 
-        <!-- 价格日历的编辑 -->
-        <el-collapse-item class="collapse-title-class" title="价格日历" name="datePrice">
-            <el-calendar>
-                <template
-                    slot="dateCell"
-                    slot-scope="{data}">
-                    <p>
-                    {{ data.day.split('-').slice(1).join('-') }}
-                    </p>
-                    <div @click="showDatePriceOfDialog(data.day)" class="calendarBtn">
-                        查看价格
-                    </div>
-                    <div @click="changeDatePriceOfDialog(data)" class="calendarBtn" style="margin-left:0.5em">
-                        修改价格
-                    </div>
-                </template>
-            </el-calendar>
-            <el-dialog
-                title="设置价格"
-                :visible.sync="datePriceVisible"
-                width="30%"
-                >
-                <span>正在设置&nbsp;
-                    <span style="color:#75baff">{{changeDate}}</span>
-                    &nbsp;的价格
-                </span>
-                <el-input  v-model="inputdatePrice" placeholder="请输入价格"><template slot="prepend">￥</template></el-input>
-                <span slot="footer" class="dialog-footer">
-                    <el-button @click="datePriceVisible = false;inputdatePrice=''">取 消</el-button>
-                    <el-button type="primary" @click="changeDatePrice()">确 定</el-button>
-                </span>
-            </el-dialog>
-        </el-collapse-item>
+    <!-- 价格日历的编辑 -->
+    <div class="collapse-title-class box-class" title="价格日历" name="datePrice">
+        <div class="box-title-class">价格日历</div><hr>
+        <el-calendar>
+            <template
+                slot="dateCell"
+                slot-scope="{data}">
+                <p>
+                {{ data.day.split('-').slice(1).join('-') }}
+                </p>
+                <div @click="showDatePriceOfDialog(data.day)" class="calendarBtn">
+                    查看价格
+                </div>
+                <div @click="changeDatePriceOfDialog(data)" class="calendarBtn" style="margin-left:0.5em">
+                    修改价格
+                </div>
+            </template>
+        </el-calendar>
+        <el-dialog
+            title="设置价格"
+            :visible.sync="datePriceVisible"
+            width="30%"
+            >
+            <span>正在设置&nbsp;
+                <span style="color:#75baff">{{changeDate}}</span>
+                &nbsp;的价格
+            </span>
+            <el-input  v-model="inputdatePrice" placeholder="请输入价格"><template slot="prepend">￥</template></el-input>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="datePriceVisible = false;inputdatePrice=''">取 消</el-button>
+                <el-button type="primary" @click="changeDatePrice()">确 定</el-button>
+            </span>
+        </el-dialog>
+    </div>
 
-        <!-- 下面是产品亮点列表部分-->
-        <el-collapse-item class="collapse-title-class" title="产品亮点" name="features">
-            <div id="introitem" class="currencyBoder">
+    <!-- 下面是产品亮点列表部分-->
+    <div class="collapse-title-class box-class" title="产品亮点" name="features">
+        <div class="box-title-class">产品亮点</div><hr>
+        <div id="introitem" class="currencyBoder">
+            <el-table
+            :data="uploadList.featuresList"
+            style="width: 100%">
+            <el-table-column
+            label="序号"
+            width="50"
+            type="index">
+            </el-table-column>
+
+            <el-table-column
+            label="产品亮点"
+            prop="features">
+            <template slot-scope="scope">
+                <span v-if="scope.row.isshow"  v-html="scope.row.features"></span>
+                <el-input v-model="scope.row.features"  v-else   type="textarea" :rows="3"></el-input>              
+                </template>   
+            </el-table-column>
+            
+            <el-table-column
+            align="right">
+            <template slot="header">
+                    <el-button type="primary"  @click="isShowFeaturesAdd">增加</el-button>
+            </template>
+            <template slot-scope="scope">
+                <el-button
+                size="mini"
+                v-if="scope.row.isshow"
+                @click="handleFeaturesEdit(scope.$index, scope.row)">编辑</el-button>
+
+                <el-button
+                size="mini"
+                v-else
+                @click=" handleFeaturesEdit(scope.$index, scope.row)">确认</el-button>
+
+                <el-button
+                size="mini"
+                type="danger"
+                @click=" handleFeaturesDelete(scope.$index, scope.row)">删除</el-button>
+            </template>
+            </el-table-column>
+            </el-table> 
+
+            <div class="additem" v-if="isShowAddFeatures">
+                <el-input v-model="addFeaturesTemp" 
+                placeholder="请输入要添加的信息" 
+                type="textarea" 
+                :rows="2"
+                style="width:80%"></el-input>
+                <el-button type="primary" size="small" @click="handleFeaturesAdd" style="margin:1em 1em">确认添加</el-button>
+                <el-button type="danger" size="small" @click="isShowFeaturesAdd">取消</el-button>
+            </div>   
+        </div>
+    </div>
+
+    <div class="collapse-title-class box-class" title="图文详情" name="picAndText">
+        <div class="box-title-class">图文详情</div><hr>
+        <el-button type="primary" @click="enterEditor('imgAndText')">编辑</el-button>
+        <div class="picAndText showHTML currencyBoder" v-html="uploadList.imgAndText">
+            
+        </div>
+    </div>
+
+    <div class="collapse-title-class box-class" title="行程介绍" name="tourIntro">
+        <div class="box-title-class">行程介绍</div><hr>          
+        <div class="tourList currencyBoder">
+            <h4>行程列表</h4>
                 <el-table
-                :data="uploadList.featuresList"
+                :data="uploadList.tourList"
+                border
+                height="250"
                 style="width: 100%">
                 <el-table-column
-                label="序号"
-                width="50"
-                type="index">
+                    label="序号"
+                    width="50"
+                    type="index">
                 </el-table-column>
-
                 <el-table-column
-                label="产品亮点"
-                prop="features">
-                <template slot-scope="scope">
-                    <span v-if="scope.row.isshow"  v-html="scope.row.features"></span>
-                    <el-input v-model="scope.row.features"  v-else   type="textarea" :rows="3"></el-input>              
-                 </template>   
+                    prop="focusPlace"
+                    label="集合地点"
+                    width="180">
                 </el-table-column>
-                
                 <el-table-column
-                align="right">
-                <template slot="header">
-                     <el-button type="primary"  @click="isShowFeaturesAdd">增加</el-button>
-                </template>
-                <template slot-scope="scope">
-                    <el-button
-                    size="mini"
-                    v-if="scope.row.isshow"
-                    @click="handleFeaturesEdit(scope.$index, scope.row)">编辑</el-button>
-
-                    <el-button
-                    size="mini"
-                    v-else
-                    @click=" handleFeaturesEdit(scope.$index, scope.row)">确认</el-button>
-
-                    <el-button
-                    size="mini"
-                    type="danger"
-                    @click=" handleFeaturesDelete(scope.$index, scope.row)">删除</el-button>
-                </template>
+                    prop="focusTime"
+                    label="集合时间"
+                    width="180">
                 </el-table-column>
-                </el-table> 
+                <el-table-column
+                    prop="backPlace"
+                    label="返回地点">
+                </el-table-column>
+                <el-table-column
+                    prop="otherMeg"
+                    label="其他">
+                </el-table-column>
+                <el-table-column
+                    width="180"
+                    label="操作">
+                    <template slot-scope="scope">
+                        <el-button
+                            size="mini"
+                            type="danger"
+                            @click="handleTourListDelete(scope.$index, scope.row)">删除</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <br>
+            <el-button @click="isShowTourListAdd = true" type="primary">增加</el-button>
+            <el-dialog title="行程增加" :visible.sync="isShowTourListAdd">
+                <el-form>
+                    <el-form-item label="集合地点" label-width="120px">
+                    <el-input v-model="tourListAdd.focusPlace"></el-input>
+                    </el-form-item>
+                    <el-form-item label="集合时间" label-width="120px">
+                    <el-date-picker v-model="tourListAdd.focusTime" type="datetime" placeholder="选择一个日期" />
+                    </el-form-item>
+                    <el-form-item label="返回地点" label-width="120px">
+                    <el-input v-model="tourListAdd.backPlace"></el-input>
+                    </el-form-item>
+                    <el-form-item label="其他" label-width="120px">
+                    <el-input v-model="tourListAdd.otherMeg"></el-input>
+                    </el-form-item>
+                </el-form>
+                <el-button @click="handleTourListAdd" type="primary">确定</el-button>
+            </el-dialog>
+        </div>
+        <div class=" currencyBoder">
+            <h4>沿途景点</h4>
+            <!-- <el-tag
+                style="margin-left:0.5em"
+                :key="scenery"
+                v-for="scenery in uploadList.sceneryList"
+                closable
+                :disable-transitions="false"
+                @close="handleCloseOfScenery(scenery)">
+                {{scenery}}
+            </el-tag>
+            <el-input
+                style="width: 20em; margin-left: 10px; vertical-align: bottom;"
+                v-if="isShowInputScenery"
+                v-model="inputValueOfScenery"
+                ref="saveSceneryInput"
+                size="small"
+                @keyup.enter.native="handleInputConfirmOfScenery"
+                @blur="handleInputConfirmOfScenery">
+            </el-input>
+            <el-button 
+                v-else 
+                style="margin-left: 10px; height: 32px; line-height: 30px; padding-top: 0; padding-bottom: 0;" size="small" 
+                @click="showInputOfScenery">
+                增加沿途景点</el-button> -->
 
-                <div class="additem" v-if="isShowAddFeatures">
-                    <el-input v-model="addFeaturesTemp" 
-                    placeholder="请输入要添加的信息" 
-                    type="textarea" 
-                    :rows="2"
-                    style="width:80%"></el-input>
-                    <el-button type="primary" size="small" @click="handleFeaturesAdd" style="margin:1em 1em">确认添加</el-button>
-                    <el-button type="danger" size="small" @click="isShowFeaturesAdd">取消</el-button>
-                </div>   
-            </div>
-        </el-collapse-item>
+            <el-table
+            :data="uploadList.sceneryList"
+            style="width: 100%">
+            <el-table-column
+            label="序号"
+            width="50"
+            type="index">
+            </el-table-column>
 
-        <el-collapse-item class="collapse-title-class" title="图文详情" name="picAndText">
-            <el-button type="primary" @click="enterEditor('imgAndText')">编辑</el-button>
-            <div class="picAndText showHTML currencyBoder" v-html="uploadList.imgAndText">
-                
-            </div>
-        </el-collapse-item>
+            <el-table-column
+            label="沿途景点"
+            prop="scenery">
+            <template slot-scope="scope">
+                <span v-if="scope.row.isshow"  v-html="scope.row.scenery"></span>
+                <el-input v-model="scope.row.scenery"  v-else   type="textarea" :rows="3"></el-input>              
+                </template>   
+            </el-table-column>
+            
+            <el-table-column
+            align="right">
+            <template slot="header">
+                    <el-button type="primary"  @click="isShowSceneryAdd">增加</el-button>
+            </template>
+            <template slot-scope="scope">
+                <el-button
+                size="mini"
+                v-if="scope.row.isshow"
+                @click="handleSceneryEdit(scope.$index, scope.row)">编辑</el-button>
 
-        <el-collapse-item class="collapse-title-class" title="行程介绍" name="tourIntro">          
-            <div class="tourList currencyBoder">
-                <h4>行程列表</h4>
-                 <el-table
-                    :data="uploadList.tourList"
-                    border
-                    height="250"
-                    style="width: 100%">
-                    <el-table-column
-                        label="序号"
-                        width="50"
-                        type="index">
-                    </el-table-column>
-                    <el-table-column
-                        prop="focusPlace"
-                        label="集合地点"
-                        width="180">
-                    </el-table-column>
-                    <el-table-column
-                        prop="focusTime"
-                        label="集合时间"
-                        width="180">
-                    </el-table-column>
-                    <el-table-column
-                        prop="backPlace"
-                        label="返回地点">
-                    </el-table-column>
-                    <el-table-column
-                        prop="otherMeg"
-                        label="其他">
-                    </el-table-column>
-                    <el-table-column
-                        width="180"
-                        label="操作">
-                        <template slot-scope="scope">
-                            <el-button
-                                size="mini"
-                                type="danger"
-                                @click="handleTourListDelete(scope.$index, scope.row)">删除</el-button>
-                        </template>
-                    </el-table-column>
-                </el-table>
-                <br>
-                <el-button @click="isShowTourListAdd = true" type="primary">增加</el-button>
-                <el-dialog title="行程增加" :visible.sync="isShowTourListAdd">
-                    <el-form>
-                        <el-form-item label="集合地点" label-width="120px">
-                        <el-input v-model="tourListAdd.focusPlace"></el-input>
-                        </el-form-item>
-                        <el-form-item label="集合时间" label-width="120px">
-                        <el-date-picker v-model="tourListAdd.focusTime" type="datetime" placeholder="选择一个日期" />
-                        </el-form-item>
-                        <el-form-item label="返回地点" label-width="120px">
-                        <el-input v-model="tourListAdd.backPlace"></el-input>
-                        </el-form-item>
-                        <el-form-item label="其他" label-width="120px">
-                        <el-input v-model="tourListAdd.otherMeg"></el-input>
-                        </el-form-item>
-                    </el-form>
-                    <el-button @click="handleTourListAdd" type="primary">确定</el-button>
-                </el-dialog>
-            </div>
-            <div class=" currencyBoder">
-                <h4>沿途景点</h4>
-                <el-tag
-                    style="margin-left:0.5em"
-                    :key="scenery"
-                    v-for="scenery in uploadList.sceneryList"
-                    closable
-                    :disable-transitions="false"
-                    @close="handleCloseOfScenery(scenery)">
-                    {{scenery}}
-                </el-tag>
-                <el-input
-                    style="width: 20em; margin-left: 10px; vertical-align: bottom;"
-                    v-if="isShowInputScenery"
-                    v-model="inputValueOfScenery"
-                    ref="saveSceneryInput"
-                    size="small"
-                    @keyup.enter.native="handleInputConfirmOfScenery"
-                    @blur="handleInputConfirmOfScenery">
-                </el-input>
-                <el-button 
-                    v-else 
-                    style="margin-left: 10px; height: 32px; line-height: 30px; padding-top: 0; padding-bottom: 0;" size="small" 
-                    @click="showInputOfScenery">
-                    增加沿途景点</el-button>
-            </div>
-        </el-collapse-item>
+                <el-button
+                size="mini"
+                v-else
+                @click=" handleSceneryEdit(scope.$index, scope.row)">确认</el-button>
 
-        <el-collapse-item class="collapse-title-class" title="具体的行程介绍" name="exacttourIntro">          
-            <div class="tourList currencyBoder">
-                <h4>行程详情：</h4>
-                <!-- 直接将列表中的数据使用v-for显示在下面 -->
-                <div class="collapse-title-class-list">
-                      <div class="traveledit"  v-for="(item,index) in uploadList.exactTourList" :key="index">
-                        <!-- 先输入几个文本框控制其它数据的输入 -->
-                        <div class="traveldiv1">
-                            <!-- 这里是控制天数，起点，入住 -->
-                            <div class="traveldiv2">
-                                <div class="traveldiv4">
-                                    <span>第几天: </span>
-                                    <el-input placeholder="请输入第几天" v-model="item.nthdate"></el-input>
-                                </div>
-                                <div class="traveldiv4">
-                                    <span>起点: </span>
-                                    <el-input placeholder="请输入起点" v-model="item.startPlace"></el-input>
-                                </div>
-                                <div class="traveldiv4">
-                                    <span>终点: </span>
-                                    <el-input placeholder="请输入终点" v-model="item.endPlace"></el-input>
-                                </div>
-                                <div class="traveldiv4">
-                                    <span>入住: </span>
-                                    <el-input placeholder="请输入入住地点" v-model="item.hostel"></el-input>
-                                </div>
+                <el-button
+                size="mini"
+                type="danger"
+                @click=" handleSceneryDelete(scope.$index, scope.row)">删除</el-button>
+            </template>
+            </el-table-column>
+            </el-table> 
+
+            <div class="additem" v-if="isShowAddScenery">
+                <el-input v-model="addSceneryTemp" 
+                placeholder="请输入要添加的信息" 
+                type="textarea" 
+                :rows="2"
+                style="width:80%"></el-input>
+                <el-button type="primary" size="small" @click="handleSceneryAdd" style="margin:1em 1em">确认添加</el-button>
+                <el-button type="danger" size="small" @click="isShowSceneryAdd">取消</el-button>
+            </div>   
+        </div>
+    </div>
+
+    <div class="collapse-title-class box-class" title="具体的行程介绍" name="exacttourIntro">
+        <div class="box-title-class">具体的行程介绍</div><hr>          
+        <div class="tourList currencyBoder">
+            <h4>行程详情：</h4>
+            <!-- 直接将列表中的数据使用v-for显示在下面 -->
+            <div class="collapse-title-class-list">
+                    <div class="traveledit"  v-for="(item,index) in uploadList.exactTourList" :key="index">
+                    <!-- 先输入几个文本框控制其它数据的输入 -->
+                    <div class="traveldiv1">
+                        <!-- 这里是控制天数，起点，入住 -->
+                        <div class="traveldiv2">
+                            <div class="traveldiv4">
+                                <span>第几天: </span>
+                                <el-input placeholder="请输入第几天" v-model="item.nthdate"></el-input>
                             </div>
-
-                            <!-- 这里是控制早餐，午餐，晚餐 -->
-                            <div class="traveldiv3">
-                                <div class="traveldiv4">
-                                    <span>早餐: </span>
-                                      <el-autocomplete
-                                            class="inline-input"
-                                            v-model="item.breakfast"
-                                            :fetch-suggestions="querySearch"
-                                            placeholder="请输入早餐" 
-                                            ></el-autocomplete>
-                                </div>
-                                <div class="traveldiv4">
-                                    <span>午餐: </span>
-                                            <el-autocomplete
-                                            class="inline-input"
-                                            v-model="item.lunch"
-                                            :fetch-suggestions="querySearch"
-                                            placeholder="请输入午餐" 
-                                            ></el-autocomplete>
-                                </div>
-                                <div class="traveldiv4">
-                                    <span>晚餐: </span>
-                                            <el-autocomplete
-                                            class="inline-input"
-                                            v-model="item.dinner"
-                                            :fetch-suggestions="querySearch"
-                                            placeholder="请输入晚餐" 
-                                            ></el-autocomplete>
-                                </div>
-                            </div> 
+                            <div class="traveldiv4">
+                                <span>起点: </span>
+                                <el-input placeholder="请输入起点" v-model="item.startPlace"></el-input>
+                            </div>
+                            <div class="traveldiv4">
+                                <span>终点: </span>
+                                <el-input placeholder="请输入终点" v-model="item.endPlace"></el-input>
+                            </div>
+                            <div class="traveldiv4">
+                                <span>入住: </span>
+                                <el-input placeholder="请输入入住地点" v-model="item.hostel"></el-input>
+                            </div>
                         </div>
 
-                        <!-- 这里是控制富文本控制具体的每一条数据 -->
-                        <div class="traveldiv5">  
-                            <div>
-                            <quill-editor
-                            ref="myQuillEditor"
-                            :options="editorOption"
-                            v-model="item.exactTravel"
-                            />
-                        </div>
-                        </div>
-                        <!-- 先编写一个按钮控制页面的显示 -->
-                        <div class="lastdiv">
-                            <el-button type="primary" @click="deleteExactTeavelEdit(index,item)">删除本数据</el-button>
-                        </div>
+                        <!-- 这里是控制早餐，午餐，晚餐 -->
+                        <div class="traveldiv3">
+                            <div class="traveldiv4">
+                                <span>早餐: </span>
+                                    <el-autocomplete
+                                        class="inline-input"
+                                        v-model="item.breakfast"
+                                        :fetch-suggestions="querySearch"
+                                        placeholder="请输入早餐" 
+                                        ></el-autocomplete>
+                            </div>
+                            <div class="traveldiv4">
+                                <span>午餐: </span>
+                                        <el-autocomplete
+                                        class="inline-input"
+                                        v-model="item.lunch"
+                                        :fetch-suggestions="querySearch"
+                                        placeholder="请输入午餐" 
+                                        ></el-autocomplete>
+                            </div>
+                            <div class="traveldiv4">
+                                <span>晚餐: </span>
+                                        <el-autocomplete
+                                        class="inline-input"
+                                        v-model="item.dinner"
+                                        :fetch-suggestions="querySearch"
+                                        placeholder="请输入晚餐" 
+                                        ></el-autocomplete>
+                            </div>
+                        </div> 
+                    </div>
+
+                    <!-- 这里是控制富文本控制具体的每一条数据 -->
+                    <div class="traveldiv5">  
+                        <div>
+                        <quill-editor
+                        ref="myQuillEditor"
+                        :options="editorOption"
+                        v-model="item.exactTravel"
+                        />
+                    </div>
+                    </div>
+                    <!-- 先编写一个按钮控制页面的显示 -->
+                    <div class="lastdiv">
+                        <el-button type="primary" @click="deleteExactTeavelEdit(index,item)">删除本数据</el-button>
                     </div>
                 </div>
-                <!-- 直接编辑页面显示到这里，不再另外开启一个编辑 -->
-                <!-- 下面使新增数据的控制页面 -->
-                <div class="collapse-title-class-div" v-if="isShowTravelEdit">
-                    <h4>增加数据：</h4>
-                    <div class="traveledit" >
-                        <!-- 先输入几个文本框控制其它数据的输入 -->
-                        <div class="traveldiv1">
-                            <!-- 这里是控制天数，起点，入住 -->
-                            <div class="traveldiv2">
-                                <div class="traveldiv4">
-                                    <span>第几天: </span>
-                                    <el-input placeholder="请输入第几天" v-model="exactTravelTemp.nthdate"></el-input>
-                                </div>
-                                <div class="traveldiv4">
-                                    <span>起点: </span>
-                                    <el-input placeholder="请输入起点" v-model="exactTravelTemp.startPlace"></el-input>
-                                </div>
-                                <div class="traveldiv4">
-                                    <span>终点: </span>
-                                    <el-input placeholder="请输入终点" v-model="exactTravelTemp.endPlace"></el-input>
-                                </div>
-                                <div class="traveldiv4">
-                                    <span>入住: </span>
-                                    <el-input placeholder="请输入入住地点" v-model="exactTravelTemp.hostel"></el-input>
-                                </div>
+            </div>
+            <!-- 直接编辑页面显示到这里，不再另外开启一个编辑 -->
+            <!-- 下面使新增数据的控制页面 -->
+            <div class="collapse-title-class-div" v-if="isShowTravelEdit">
+                <h4>增加数据：</h4>
+                <div class="traveledit" >
+                    <!-- 先输入几个文本框控制其它数据的输入 -->
+                    <div class="traveldiv1">
+                        <!-- 这里是控制天数，起点，入住 -->
+                        <div class="traveldiv2">
+                            <div class="traveldiv4">
+                                <span>第几天: </span>
+                                <el-input placeholder="请输入第几天" v-model="exactTravelTemp.nthdate"></el-input>
                             </div>
-
-                            <!-- 这里是控制早餐，午餐，晚餐 -->
-                            <div class="traveldiv3">
-                                <div class="traveldiv4">
-                                    <span>早餐: </span>
-                                           <el-autocomplete
-                                            class="inline-input"
-                                            v-model="exactTravelTemp.breakfast"
-                                            :fetch-suggestions="querySearch"
-                                            placeholder="请输入早餐" 
-                                            ></el-autocomplete>
-                                </div>
-                                <div class="traveldiv4">
-                                    <span>午餐: </span>
-                                            <el-autocomplete
-                                            class="inline-input"
-                                            v-model="exactTravelTemp.lunch"
-                                            :fetch-suggestions="querySearch"
-                                            placeholder="请输入午餐" 
-                                            ></el-autocomplete>
-                                </div>
-                                <div class="traveldiv4">
-                                    <span>晚餐: </span>
-                                            <el-autocomplete
-                                            class="inline-input"
-                                            v-model="exactTravelTemp.dinner"
-                                            :fetch-suggestions="querySearch"
-                                            placeholder="请输入晚餐" 
-                                            ></el-autocomplete>
-                                </div>
-                            </div> 
+                            <div class="traveldiv4">
+                                <span>起点: </span>
+                                <el-input placeholder="请输入起点" v-model="exactTravelTemp.startPlace"></el-input>
+                            </div>
+                            <div class="traveldiv4">
+                                <span>终点: </span>
+                                <el-input placeholder="请输入终点" v-model="exactTravelTemp.endPlace"></el-input>
+                            </div>
+                            <div class="traveldiv4">
+                                <span>入住: </span>
+                                <el-input placeholder="请输入入住地点" v-model="exactTravelTemp.hostel"></el-input>
+                            </div>
                         </div>
 
-                        <!-- 这里是控制富文本控制具体的每一条数据 -->
-                        <div class="traveldiv5">  
-                            <div>
-                            <quill-editor
-                            ref="myQuillEditor"
-                            :options="editorOption"
-                            v-model="exactTravelTemp.exactTravel"
-                            />
-                        </div>
-                        </div>
-                        <!-- 先编写一个按钮控制页面的显示 -->
-                        <div class="lastdiv">
-                            <el-button type="primary" @click="isShowTravelEdit=!isShowTravelEdit">取消</el-button>
-                            <el-button type="primary" @click="saveExactTeavelEdit">保存</el-button>
-                        </div>
+                        <!-- 这里是控制早餐，午餐，晚餐 -->
+                        <div class="traveldiv3">
+                            <div class="traveldiv4">
+                                <span>早餐: </span>
+                                        <el-autocomplete
+                                        class="inline-input"
+                                        v-model="exactTravelTemp.breakfast"
+                                        :fetch-suggestions="querySearch"
+                                        placeholder="请输入早餐" 
+                                        ></el-autocomplete>
+                            </div>
+                            <div class="traveldiv4">
+                                <span>午餐: </span>
+                                        <el-autocomplete
+                                        class="inline-input"
+                                        v-model="exactTravelTemp.lunch"
+                                        :fetch-suggestions="querySearch"
+                                        placeholder="请输入午餐" 
+                                        ></el-autocomplete>
+                            </div>
+                            <div class="traveldiv4">
+                                <span>晚餐: </span>
+                                        <el-autocomplete
+                                        class="inline-input"
+                                        v-model="exactTravelTemp.dinner"
+                                        :fetch-suggestions="querySearch"
+                                        placeholder="请输入晚餐" 
+                                        ></el-autocomplete>
+                            </div>
+                        </div> 
+                    </div>
+
+                    <!-- 这里是控制富文本控制具体的每一条数据 -->
+                    <div class="traveldiv5">  
+                        <div>
+                        <quill-editor
+                        ref="myQuillEditor"
+                        :options="editorOption"
+                        v-model="exactTravelTemp.exactTravel"
+                        />
+                    </div>
+                    </div>
+                    <!-- 先编写一个按钮控制页面的显示 -->
+                    <div class="lastdiv">
+                        <el-button type="primary" @click="isShowTravelEdit=!isShowTravelEdit">取消</el-button>
+                        <el-button type="primary" @click="saveExactTeavelEdit">保存</el-button>
                     </div>
                 </div>
-
-                <br>
-                <el-button @click="addExactTeavelEdit()" type="primary">增加</el-button>          
             </div>
-        </el-collapse-item>
 
-        <el-collapse-item class="collapse-title-class" title="费用说明" name="costIntro">
-            <el-button type="primary" @click="enterEditor('costIntro')">编辑</el-button>
-            <div class="costIntr showHTML currencyBoder" v-html="uploadList.costIntro">
-                
-            </div>
-        </el-collapse-item>
+            <br>
+            <el-button @click="addExactTeavelEdit()" type="primary">增加</el-button>          
+        </div>
+    </div>
 
-        <el-collapse-item class="collapse-title-class" title="预订须知" name="bookNotice">
-            <el-button type="primary" @click="enterEditor('bookNotice')">编辑</el-button>
-            <div class="bookNotice showHTML currencyBoder" v-html="uploadList.bookNotice">
-                
-            </div>
-        </el-collapse-item>
-    </el-collapse>
+    <div class="collapse-title-class box-class" title="费用说明" name="costIntro">
+        <div class="box-title-class">费用说明</div><hr>
+        <el-button type="primary" @click="enterEditor('costIntro')">编辑</el-button>
+        <div class="costIntr showHTML currencyBoder" v-html="uploadList.costIntro">
+
+        </div>
+    </div>
+
+    <div class="collapse-title-class box-class" title="预订须知" name="bookNotice">
+        <div class="box-title-class">预订须知</div><hr>
+        <el-button type="primary" @click="enterEditor('bookNotice')">编辑</el-button>
+        <div class="bookNotice showHTML currencyBoder" v-html="uploadList.bookNotice">
+
+        </div>
+    </div>
+
     <div class="bottomBtn">
         <el-button type="primary" @click="quitTourismEdit">保存</el-button><el-button type="danger" @click="quxiaoTourismEdit">取消编辑</el-button>
     </div>
@@ -641,7 +702,7 @@ export default {
             isShowAddFeatures:false,//显示产品亮点文本框的状态
             isShowquillEditor:false, //显示富文本编辑器的状态
             isShowTourListAdd:false, //显示行程介绍列表的状态
-            isShowInputScenery:false, //显示行程沿途景点列表的状态
+            isShowAddScenery:false, //显示行程沿途景点文本框的状态
             isShowTravelEdit:false,//是否显示行程的具体编辑页面
 
             //这里存放临时的值，基本上用完就不用的
@@ -650,7 +711,7 @@ export default {
             addFeaturesTemp:'', //产品亮点临时输入
             quillEditorType:'', //富文本编辑器正在编辑的类型
             tourListAdd:{focusPlace:'',focusTime:'',backPlace:'',otherMeg:''}, //行程介绍列表新添加的临时变量
-            inputValueOfScenery:'', //行程沿途景点列新添加的临时变量
+            addSceneryTemp:'', //行程沿途景点临时输入
 
              //  富文本编辑器配置
             editorOption: {
@@ -852,29 +913,52 @@ export default {
             this.uploadList.tourList.splice(index,1);
         },
 
-        //以下是沿途风景相关的函数
-        //展示沿途风景列表
-        showInputOfScenery() {
-        this.isShowInputScenery = true;
-        this.$nextTick(_ => {
-          this.$refs.saveSceneryInput.$refs.input.focus();
-            });
+        //以下是沿途风景相关的函数（新的）
+        isShowSceneryAdd(){
+            this.isShowAddScenery=!this.isShowAddScenery;
         },
+        handleSceneryAdd(){
+            if(this.addSceneryTemp != ''){
+                this.uploadList.sceneryList.push({scenery:this.addSceneryTemp,isshow:true});
+                this.addSceneryTemp="";
+                this.isShowAddScenery=false;
+            }
+            else{
+                this.$message({
+                    message: '数据不能为空',
+                    type: 'warning'
+                });
+            }
+        },
+        handleSceneryEdit(index, row) {
+            row.isshow=!row.isshow;
+        },
+        handleSceneryDelete(index, row) {
+            this.uploadList.sceneryList.splice(index,1);
+        },
+        //以下是沿途风景相关的函数（旧的）
+        // //展示沿途风景列表
+        // showInputOfScenery() {
+        // this.isShowInputScenery = true;
+        // this.$nextTick(_ => {
+        //   this.$refs.saveSceneryInput.$refs.input.focus();
+        //     });
+        // },
 
-        //新增沿途风景列表的方法
-        handleInputConfirmOfScenery() {
-        let inputValueOfScenery = this.inputValueOfScenery;
-        if (inputValueOfScenery) {
-          this.uploadList.sceneryList.push(inputValueOfScenery);
-        }
-        this.isShowInputScenery = false;
-        this.inputValueOfScenery = '';
-        },
+        // //新增沿途风景列表的方法
+        // handleInputConfirmOfScenery() {
+        // let inputValueOfScenery = this.inputValueOfScenery;
+        // if (inputValueOfScenery) {
+        //   this.uploadList.sceneryList.push(inputValueOfScenery);
+        // }
+        // this.isShowInputScenery = false;
+        // this.inputValueOfScenery = '';
+        // },
 
-        //这是删除沿途风景列表的方法
-        handleCloseOfScenery(Scenery) {
-         this.uploadList.sceneryList.splice(this.uploadList.sceneryList.indexOf(Scenery), 1);
-        },
+        // //这是删除沿途风景列表的方法
+        // handleCloseOfScenery(Scenery) {
+        //  this.uploadList.sceneryList.splice(this.uploadList.sceneryList.indexOf(Scenery), 1);
+        // },
 
         // 富文本编辑器的方法
         // 退出编辑器
@@ -1065,6 +1149,25 @@ export default {
 </script>
 
 <style>
+    /* 整个组件的样式 */
+    .tourismedit{
+        background-color: #f0f2f5;
+    }
+
+    /* 块的样式 */
+    .box-class{
+        width:95%;
+        margin: 2em auto;
+        padding: 1em;
+        background-color: #ffffff;
+    }
+    /* 块标题的样式 */
+    .box-title-class{
+        font-size: 1.5em;
+        font-weight: 600;
+        color: #ff6d6d;
+    }
+
     /* 标签输入框的样式 */
     .el-tag + .el-tag {
     margin-left: 10px;
@@ -1119,8 +1222,8 @@ export default {
 
     /* 上传图片的按钮样式 */
     .tourismedit .uploadPic .uploadPicBtn .el-upload {
-        margin-top: 1em;
-        margin-left: 1em;
+        margin: 1em;
+        margin-top: 1.8em;
         border: 1px dashed #d9d9d9;
         border-radius: 6px;
         cursor: pointer;
@@ -1159,9 +1262,10 @@ export default {
 
     .tourismedit .calendarBtn{
         float:left;
+        font-size: 0.8em;
         width: 5em;
         background-color: #75baff;
-        padding-left:0.5em;
+        padding:0.3em 0.5em 0.3em;
         border-radius: 6px;
     }
     /* 富文本编辑后展示的区域的样式 */
