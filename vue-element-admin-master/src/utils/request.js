@@ -9,7 +9,7 @@ import { getToken } from '@/utils/auth'
 // 这里封装一个axios实例
 const service = axios.create({
   // 直接将这里的baseurl改为后端的baseurl即可
-  baseURL:"http://qzdsgu.natappfree.cc", // url = base url + request url
+  baseURL:"http://zqz3yk.natappfree.cc", // url = base url + request url
   
   // withCredentials: true, // send cookies when cross-domain requests
   timeout: 5000 // request timeout
