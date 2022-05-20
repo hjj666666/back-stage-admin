@@ -243,15 +243,19 @@
     </div>
 
     <div class="collapse-title-class box-class" title="图文详情" name="picAndText">
-        <div class="box-title-class">图文详情</div><hr>
-        <el-button type="primary" @click="enterEditor('imgAndText')">编辑</el-button>
+        <div class="box-title-class">图文详情
+            <el-button type="primary" @click="enterEditor('imgAndText')">编辑</el-button>
+        </div><hr>
+        
         <div class="picAndText showHTML currencyBoder" v-html="uploadList.imgAndText">
             
         </div>
     </div>
 
     <div class="collapse-title-class box-class" title="行程介绍" name="tourIntro">
-        <div class="box-title-class">行程介绍</div><hr>          
+        <div class="box-title-class">行程介绍
+             <el-button @click="isShowTourListAdd = true" type="primary">增加</el-button>
+        </div><hr>          
         <div class="tourList currencyBoder">
             <h4>行程列表</h4>
                 <el-table
@@ -294,7 +298,6 @@
                 </el-table-column>
             </el-table>
             <br>
-            <el-button @click="isShowTourListAdd = true" type="primary">增加</el-button>
             <el-dialog title="行程增加" :visible.sync="isShowTourListAdd">
                 <el-form>
                     <el-form-item label="集合地点" label-width="120px">
@@ -394,7 +397,9 @@
     </div>
 
     <div class="collapse-title-class box-class" title="具体的行程介绍" name="exacttourIntro">
-        <div class="box-title-class">具体的行程介绍</div><hr>          
+        <div class="box-title-class">具体的行程介绍
+             <el-button @click="addExactTeavelEdit()" type="primary">增加</el-button>          
+        </div><hr>          
         <div class="tourList currencyBoder">
             <h4>行程详情：</h4>
             <!-- 直接将列表中的数据使用v-for显示在下面 -->
@@ -546,23 +551,23 @@
                     </div>
                 </div>
             </div>
-
             <br>
-            <el-button @click="addExactTeavelEdit()" type="primary">增加</el-button>          
         </div>
     </div>
 
     <div class="collapse-title-class box-class" title="费用说明" name="costIntro">
-        <div class="box-title-class">费用说明</div><hr>
-        <el-button type="primary" @click="enterEditor('costIntro')">编辑</el-button>
+        <div class="box-title-class">费用说明
+              <el-button type="primary" @click="enterEditor('costIntro')">编辑</el-button>
+        </div><hr>
         <div class="costIntr showHTML currencyBoder" v-html="uploadList.costIntro">
 
         </div>
     </div>
 
     <div class="collapse-title-class box-class" title="预订须知" name="bookNotice">
-        <div class="box-title-class">预订须知</div><hr>
-        <el-button type="primary" @click="enterEditor('bookNotice')">编辑</el-button>
+        <div class="box-title-class">预订须知
+             <el-button type="primary" @click="enterEditor('bookNotice')">编辑</el-button>
+        </div><hr>
         <div class="bookNotice showHTML currencyBoder" v-html="uploadList.bookNotice">
 
         </div>
@@ -1166,6 +1171,8 @@ export default {
         font-size: 1.5em;
         font-weight: 600;
         color: #ff6d6d;
+        display: flex;
+        justify-content: space-between;
     }
 
     /* 标签输入框的样式 */
@@ -1286,7 +1293,7 @@ export default {
     /* 通用的边框样式 */
     .tourismedit .currencyBoder{
         margin: 0.5em;
-        border: 2px solid #6d6d6da8;
+        /* border: 2px solid #6d6d6da8; */
         padding: 0.5em;
     }
   /* 具体行程列表的样式 */

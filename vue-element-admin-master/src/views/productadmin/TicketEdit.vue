@@ -25,7 +25,6 @@
                     :on-change="changeUpload"
                     :auto-upload="false"
                      multiple
-                    :limit="3"
                     :on-exceed="handleExceed"
                     :file-list="fileList">
                     <el-button size="small" type="primary">点击上传</el-button>
@@ -83,6 +82,7 @@
            <!-- 这部分是上面的四个输入框 -->
            <!-- 数据已经和v-modle中的数据进行双向绑定 -->
            <div id="div1">
+                <span class="box-title-class" id="span111">基本信息</span>
                <div id="title">
                    <span>标题:</span>
                      <el-input
@@ -130,7 +130,7 @@
             <!-- 下面是产品介绍列表部分-->
             <div id="introitem">
                   <div id="introitemtop">
-                      <span>产品介绍</span>
+                      <span class="box-title-class">产品介绍</span>
                       <el-button type="primary" @click="handleintroedit">编辑</el-button>
                   </div>
                   <div id="introcontent" v-html="list.exactintro">
@@ -141,7 +141,7 @@
            <!-- 下面是预定需知部分 -->
             <div id="orderitem">
                    <div id="orderitemtop">
-                      <span>产品介绍</span>
+                      <span class="box-title-class">预定须知</span>
                       <el-button type="primary" @click="handleorderedit">编辑</el-button>
                   </div>
                   <div id="ordercontent" v-html="list.exactorder">
@@ -152,7 +152,7 @@
             <!-- 下面是费用说明部分 -->
             <div id="costitem">
                 <div id="costitemtop">
-                      <span>产品介绍</span>
+                      <span class="box-title-class">费用说明</span>
                       <el-button type="primary" @click="handlecostedit">编辑</el-button>
                   </div>
                   <div id="costcontent" v-html="list.exactcost">
@@ -227,7 +227,7 @@ export default {
                 // autoCropHeight: 200, // 默认生成截图框高度
                 fixedBox: false, // 固定截图框大小 不允许改变
                 fixed: true, // 是否开启截图框宽高固定比例
-                fixedNumber: [1270, 622], // 截图框的宽高比例
+                fixedNumber: [212, 132], // 截图框的宽高比例
                 full: true, // 是否输出原图比例的截图
                 canMoveBox: true, // 截图框能否拖动
                 original: false, // 上传图片按照原始比例渲染
@@ -352,7 +352,7 @@ export default {
             );
          this.$axios({
             //action="http://2uah4e.natappfree.cc/ticket/upLoadPhoto"
-            url: `http://qzdsgu.natappfree.cc/ticket/upLoadPhoto`,
+            url: `http://eebgkd.natappfree.cc/ticket/upLoadPhoto`,
             method: 'post',
             data: formData,
             headers:{
@@ -362,14 +362,12 @@ export default {
           }).then( res  => {
               console.log(res);
             if (res.data.code === 2000) {
-                res.data.data.forEach((item)=>{
                     let imgData={
                       ticketId:"",
                       ticketPhotoId:"",
-                      img:item
+                      img:res.data.data
                     }                  
                   this.list.imglist.push(imgData);
-                })
                  this.dialogVisible = false
             } else {
             }
@@ -492,6 +490,19 @@ export default {
 </script>
 
 <style>
+    /* 块标题的样式 */
+    .box-title-class{
+        font-size: 1.5em;
+        font-weight: 600;
+        color: #ff6d6d;
+    }
+    #span111{
+        width: 100%;
+        display: flex;
+        justify-content: flex-start;
+        margin-left: 30px;
+        margin-bottom: 20px;
+    }
   /* 截图 */
   .cropper {
     width: auto;
@@ -505,6 +516,7 @@ export default {
     align-items: center;
     justify-content: center;
     position: relative;
+     background-color: #ecf0f1;
 }
 
 /* 调整富文本编辑页面的样式 */
@@ -536,7 +548,7 @@ export default {
     justify-content: space-between;
     align-items: center;
     box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);
-    background-color: #ecf0f1;
+    background-color:white;
 }
 
 #ticketedit #imgadmin #imgcontrol{
@@ -574,14 +586,17 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #ecf0f1;
+    
+     background-color: #ecf0f1;
 }
 #ticketedit #form #div1{
-    width: 90%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     margin-top: 20px;
+    padding: 20PX;
+    background-color: white;
 }
 #ticketedit #form #div1 #title{
     width: 100%;
@@ -642,10 +657,11 @@ export default {
 /* 下面的是列表部分的样式*/
 #ticketedit #form #introitem{
     margin-top: 20px;
-    width: 90%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding: 20PX;
     background-color: white;
 }
 
@@ -673,10 +689,11 @@ export default {
 /* 下面的是预定需知的样式*/
 #ticketedit #form #orderitem{
     margin-top: 20px;
-    width: 90%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding: 20PX;
     background-color: white;
 }
 
@@ -702,10 +719,11 @@ export default {
 /* 下面的是费用说明的样式*/
 #ticketedit #form #costitem{
     margin-top: 20px;
-    width: 90%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding: 20PX;
     background-color: white;
 }
 
@@ -733,7 +751,9 @@ export default {
 #ticketedit #form #footer{
     margin-top: 10px;
     margin-bottom: 30px;
-    width: 90%; 
+    width: 100%; 
+    display: flex;
+    justify-content: space-around;
 }
 
 /* 富文本汉化样式 */
