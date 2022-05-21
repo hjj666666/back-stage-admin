@@ -206,6 +206,10 @@
 </template>
 
 <script>
+// 实现富文本基本引用
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
  // 从api中引入与后台交互的请求方法
 import { fetchList, createTicket,updateTicket,deleteTicket,chageStatus} from '@/api/ticket'
     // 引入水波纹

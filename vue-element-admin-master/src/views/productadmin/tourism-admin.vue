@@ -208,7 +208,7 @@
  <!-- 表单的列组件  label  显示的标题  prop  对应列内容的字段名  sortable 对应列是否可以排序  align 对齐方式 -->
       <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
         <template slot-scope="{row}">
-          <span>{{ row.id }}</span>
+          <span>{{ row.travelId}}</span>
         </template>
       </el-table-column>
 
@@ -284,6 +284,9 @@
 </template>
 
 <script>
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
  // 从api中引入与后台交互的请求方法
 import { fetchList, createArticle, updateArticle,deleteArticle,changeStatus} from '@/api/travel'
     // 引入水波纹

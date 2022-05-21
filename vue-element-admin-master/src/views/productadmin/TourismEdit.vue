@@ -37,13 +37,43 @@
             <div class="uploadPic">
                 <el-upload
                     class="uploadPicBtn"
-                    :headers="taken"
                     :on-success="onSuccess"
-                    action="http://qzdsgu.natappfree.cc/travel/upLoadPhoto"
+                     action
+                     :on-change="changeUpload"
+                    :auto-upload="false"
                     :show-file-list="false"
                     :before-upload="beforePicUpload">
                     <i class="el-icon-plus avatar-uploader-icon"></i>
                 </el-upload>
+
+                 <!-- 图片裁剪框 -->
+                <!-- vueCropper 剪裁图片实现-->
+                <el-dialog title="图片剪裁" :visible.sync="dialogVisible" append-to-body>
+                    <div class="cropper-content">
+                        <div class="cropper" style="text-align:center">
+                        <vueCropper 
+                            ref="cropper" 
+                            :img="option.img" 
+                            :outputSize="option.size" 
+                            :outputType="option.outputType"
+                            :info="true" 
+                            :full="option.full" 
+                            :canMove="option.canMove" 
+                            :canMoveBox="option.canMoveBox"
+                            :original="option.original" 
+                            :autoCrop="option.autoCrop" 
+                            :fixed="option.fixed"
+                            :fixedNumber="option.fixedNumber" 
+                            :centerBox="option.centerBox" 
+                            :infoTrue="option.infoTrue"
+                            :fixedBox="option.fixedBox"></vueCropper>
+                        </div>
+                    </div>
+                    <div slot="footer" class="dialog-footer">
+                        <el-button @click="dialogVisible = false">取 消</el-button>
+                        <el-button type="primary" @click="finish" >确认</el-button>
+                    </div>
+                </el-dialog>
             </div>
     </div>
     
@@ -472,12 +502,16 @@
                     <!-- 先编写一个按钮控制页面的显示 -->
                     <div class="lastdiv">
                         <el-button type="primary" @click="deleteExactTeavelEdit(index,item)">删除本数据</el-button>
+                        <el-button @click="addExactTeavelEdit()" type="primary">增加数据</el-button>      
                     </div>
                 </div>
             </div>
             <!-- 直接编辑页面显示到这里，不再另外开启一个编辑 -->
             <!-- 下面使新增数据的控制页面 -->
             <div class="collapse-title-class-div" v-if="isShowTravelEdit">
+            <div>
+                
+            </div>
                 <h4>增加数据：</h4>
                 <div class="traveledit" >
                     <!-- 先输入几个文本框控制其它数据的输入 -->
@@ -618,6 +652,28 @@ export default {
     },
     data() {
         return {
+              // 裁剪插件的相关数据
+            // 控制裁剪框是否显示
+                dialogVisible: false,
+            // 裁剪框的相关配置
+                option: {
+                img: '', // 裁剪图片的地址
+                info: true, // 裁剪框的大小信息
+                outputSize: 1, // 裁剪生成图片的质量
+                outputType: 'jpeg', // 裁剪生成图片的格式
+                canScale: false, // 图片是否允许滚轮缩放
+                autoCrop: true, // 是否默认生成截图框
+                // autoCropWidth: 300, // 默认生成截图框宽度
+                // autoCropHeight: 200, // 默认生成截图框高度
+                fixedBox: false, // 固定截图框大小 不允许改变
+                fixed: true, // 是否开启截图框宽高固定比例
+                fixedNumber: [212, 132], // 截图框的宽高比例
+                full: true, // 是否输出原图比例的截图
+                canMoveBox: true, // 截图框能否拖动
+                original: false, // 上传图片按照原始比例渲染
+                centerBox: false, // 截图框是否被限制在图片里面
+                infoTrue: true // true 为展示真实输出图片宽高 false 展示看到的截图框宽高
+            },
             // 默认打开的折叠部分
             openList:['uploadPic','baseInf'],
             taken:{'token': takentemp},
@@ -758,6 +814,66 @@ export default {
 
    },
     methods: {
+          // 裁剪框的相应回调函数
+        // 上传按钮   限制图片大小
+      changeUpload(file, fileList) {
+        //   限定上传图片的类型
+        if (!/\.(gif|jpg|jpeg|png|bmp|GIF|JPG|PNG)$/.test(file.raw.name)) {
+		alert('图片类型必须是.gif,jpeg,jpg,png,bmp中的一种')
+		return false
+           }
+        //  限定上传图片的大小
+        const isLt5M = file.size / 1024 / 1024 < 5;
+        if (!isLt5M) {
+		this.$message.error('上传文件大小不能超过 5MB!')
+		return false
+        }
+        var files = file.raw;
+        this.fileinfo = file; // 保存下当前文件的一些基本信息
+        let reader = new FileReader(); // 创建文件读取对象
+        reader.onload = async e => {
+            let data;
+            if (typeof e.target.result === 'object') {
+            // 把Array Buffer转化为blob 如果是base64不需要
+            data = window.URL.createObjectURL(new Blob([e.target.result])); 
+            } else {
+            data = e.target.result;
+            }
+            console.log(data);
+            this.option.img = data; // 设置option的初始image
+            this.dialogVisible = true;
+        };
+        reader.readAsArrayBuffer(files);
+     },
+       // 点击裁剪，这一步是可以拿到处理后的地址
+      finish() {
+        this.$refs.cropper.getCropBlob((data) => {
+          let formData = new FormData();
+            formData.append(
+            'file',data,"DX.jpg"
+            );
+         this.$axios({
+            //action="http://2uah4e.natappfree.cc/ticket/upLoadPhoto"
+            url: `http://as93bh.natappfree.cc/travel/upLoadPhoto`,
+            method: 'post',
+            data: formData,
+            headers:{
+                'Content-Type': 'multipart/form-data',
+                'token': takentemp
+            }
+          }).then( res  => {
+              console.log(res);
+            if (res.data.code === 2000) {
+                    let imgData={
+                      url:res.data.data
+                    }                  
+                  this.uploadList.imglist.push(imgData);
+                  this.dialogVisible = false
+            } else {
+            }
+          })
+        })
+      },
         // 地点标签的相应方法
         handleClose(tag) {
          this.uploadList.departurePlace.splice(this.uploadList.departurePlace.indexOf(tag), 1);
@@ -1154,6 +1270,12 @@ export default {
 </script>
 
 <style>
+/* 设置裁剪框样式 */
+  .cropper-content .cropper{
+      width: auto;
+      height: 300px;
+   }
+
     /* 整个组件的样式 */
     .tourismedit{
         background-color: #f0f2f5;
@@ -1169,6 +1291,7 @@ export default {
     /* 块标题的样式 */
     .box-title-class{
         font-size: 1.5em;
+        padding-right: 20px;
         font-weight: 600;
         color: #ff6d6d;
         display: flex;
@@ -1443,4 +1566,76 @@ export default {
         justify-content: space-around;
         align-items: center;
     }
+    /* 富文本汉化样式 */
+.ql-snow .ql-tooltip[data-mode="link"]::before {
+  content: "请输入链接地址:";
+}
+.ql-snow .ql-tooltip.ql-editing a.ql-action::after {
+  border-right: 0px;
+  content: "保存";
+  padding-right: 0px;
+}
+
+.ql-snow .ql-tooltip[data-mode="video"]::before {
+  content: "请输入视频地址:";
+}
+
+.ql-snow .ql-picker.ql-size .ql-picker-label::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item::before {
+  content: "14px";
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="small"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="small"]::before {
+  content: "10px";
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="large"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="large"]::before {
+  content: "18px";
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="huge"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="huge"]::before {
+  content: "32px";
+}
+
+.ql-snow .ql-picker.ql-header .ql-picker-label::before,
+.ql-snow .ql-picker.ql-header .ql-picker-item::before {
+  content: "文本";
+}
+.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="1"]::before,
+.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="1"]::before {
+  content: "标题1";
+}
+.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="2"]::before,
+.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="2"]::before {
+  content: "标题2";
+}
+.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="3"]::before,
+.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="3"]::before {
+  content: "标题3";
+}
+.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="4"]::before,
+.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="4"]::before {
+  content: "标题4";
+}
+.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="5"]::before,
+.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="5"]::before {
+  content: "标题5";
+}
+.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="6"]::before,
+.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="6"]::before {
+  content: "标题6";
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item::before {
+  content: "标准字体";
+}
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="serif"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="serif"]::before {
+  content: "衬线字体";
+}
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="monospace"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="monospace"]::before {
+  content: "等宽字体";
+}
 </style>

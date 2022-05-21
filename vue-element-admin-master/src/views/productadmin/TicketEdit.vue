@@ -290,8 +290,7 @@ export default {
                 exactcost:"",                   
             },
             // 这个数据是上传文本框的数据
-            fileList: [{name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'},
-             {name: 'food2.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}],
+            fileList: [],
         }
     },
     activated(){
@@ -352,7 +351,7 @@ export default {
             );
          this.$axios({
             //action="http://2uah4e.natappfree.cc/ticket/upLoadPhoto"
-            url: `http://eebgkd.natappfree.cc/ticket/upLoadPhoto`,
+            url: `http://as93bh.natappfree.cc/ticket/upLoadPhoto`,
             method: 'post',
             data: formData,
             headers:{
@@ -368,7 +367,7 @@ export default {
                       img:res.data.data
                     }                  
                   this.list.imglist.push(imgData);
-                 this.dialogVisible = false
+                  this.dialogVisible = false
             } else {
             }
           })
@@ -544,6 +543,7 @@ export default {
 #ticketedit #imgadmin{
     padding: 5px;
     width: 100%;
+    height: 130px;
     display: flex;
     justify-content: space-between;
     align-items: center;
