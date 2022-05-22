@@ -597,6 +597,12 @@ async  handleModifyStatus(row, status) {
       temp.amount=parseInt(temp.amount)
       //  这句代码是用来转换时间格式的，没有会出错
       temp.timestamp = +new Date(temp.timestamp) 
+        if(temp.status==="售罄"){
+          temp.status=0;
+        }
+        if(temp.status==="可购买"){
+          temp.status=1;
+        }
        //  先将temp转化为json格式
 
         // let temp1= JSON.stringify(temp)
@@ -676,6 +682,12 @@ handleUpdate(row){
       //this.$refs['dataForm'].validate((valid) => {if (valid) {}})
         const tempData = Object.assign({}, temp)
         //  这句代码是用来转换时间格式的，没有会出错
+        if(temp.status==="售罄"){
+          temp.status=0;
+        }
+        if(temp.status==="可购买"){
+          temp.status=1;
+        }
         tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
         let res= await updateTicket(tempData)
         if(res.code===2000){

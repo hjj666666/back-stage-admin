@@ -8,7 +8,8 @@
                     :options="editorOption"
                     v-model="list[edittype]"
                     class="ql-editor"
-                />   
+                /> 
+                <input type="file" @change="change" id="upload" style="display:none;" />  
               </div>
               <el-button type="success" @click="isshoweditor">取消文本编辑</el-button>
        </div>
@@ -133,7 +134,7 @@
                       <span class="box-title-class">产品介绍</span>
                       <el-button type="primary" @click="handleintroedit">编辑</el-button>
                   </div>
-                  <div id="introcontent" v-html="list.exactintro">
+                  <div id="introcontent" class="ql-editor" v-html="list.exactintro">
 
                   </div>
             </div>
@@ -144,7 +145,7 @@
                       <span class="box-title-class">预定须知</span>
                       <el-button type="primary" @click="handleorderedit">编辑</el-button>
                   </div>
-                  <div id="ordercontent" v-html="list.exactorder">
+                  <div id="ordercontent" class="ql-editor" v-html="list.exactorder">
 
                   </div>
             </div>
@@ -155,7 +156,7 @@
                       <span class="box-title-class">费用说明</span>
                       <el-button type="primary" @click="handlecostedit">编辑</el-button>
                   </div>
-                  <div id="costcontent" v-html="list.exactcost">
+                  <div id="costcontent" class="ql-editor" v-html="list.exactcost">
 
                   </div> 
             </div>
@@ -173,12 +174,15 @@
 <script>
 
 // 实现富文本基本引用
+import { uploadImage } from "@/api/base";  //上传接口
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 import { quillEditor } from 'vue-quill-editor'
+import { container,ImageExtend } from 'quill-image-extend-module'
 // 实现图片缩放编辑
 import Quill from "quill";
+Quill.register('modules/ImageExtend', ImageExtend)
 import ImageResize from "quill-image-resize-module";
 import { ImageDrop } from "quill-image-drop-module"
 Quill.register("modules/imageDrop", ImageDrop);
@@ -255,9 +259,38 @@ export default {
                         border: "none",
                         color: "white"
                     },
+                     ImageExtend: {
+                        loading: true,  // 可选参数 是否显示上传进度和提示语
+                        name: 'img',  // 图片参数名
+                        size: 3,  // 可选参数 图片大小，单位为M，1M = 1024kb
+                        action: uploadImage,  // 服务器地址, 如果action为空，则采用base64插入图片
+                        // response 为一个函数用来获取服务器返回的具体图片地址
+                        // 例如服务器返回{code: 200; data:{ url: 'xxx.com'}}
+                        // 则 return res.data.url
+                        response: (res) => {
+                            console.log(res);
+                            return data.url
+                        },
+                        headers: (xhr) => {},  // 可选参数 设置请求头部
+                        start: () => {},  // 可选参数 自定义开始上传触发事件
+                        end: () => {},  // 可选参数 自定义上传结束触发的事件，无论成功或者失败
+                        error: () => {},  // 可选参数 自定义网络错误触发的事件
+                        change: (xhr, formData) => {} // 可选参数 选择图片触发，也可用来设置头部，但比headers多了一个参数，可设置formData
+                    },
                     modules: ["Resize", "DisplaySize", "Toolbar"]
-                },
-                toolbar: toolbarOptions
+                  },
+                    toolbar: {
+                        container: toolbarOptions,  // container为工具栏，此次引入了全部工具栏，也可自行配置
+                        handlers: {
+                        image: function(value) {
+                            if (value) {
+                            document.querySelector('#upload').click()  // 劫持原来的图片点击按钮事件
+                            } else {
+                            this.quill.format('image', false)
+                            }
+                        }
+                        }
+                    }
                 },
            
             },
@@ -311,6 +344,27 @@ export default {
     }
    },
     methods: {
+    change(e) {
+      let file = e.target.files[0]
+      const formData = new FormData()
+      formData.append('file', file)
+      uploadImage(formData)
+        .then(res => {
+          let quill = this.$refs.myQuillEditor.quill
+          if (res.code === 2000) {
+              console.log(res);
+           // const formdata = _.extend({}, this.formdata)
+            let length = quill.getSelection().index//光标位置
+            // 插入图片  图片地址
+            quill.insertEmbed(length, 'image', res.data)
+            // 调整光标到最后
+            quill.setSelection(length + 1)//光标后移一位
+          }
+        })
+        .catch(err => {
+          console.error(err)
+        })
+    },
         // 裁剪框的相应回调函数
         // 上传按钮   限制图片大小
       changeUpload(file, fileList) {
@@ -351,7 +405,7 @@ export default {
             );
          this.$axios({
             //action="http://2uah4e.natappfree.cc/ticket/upLoadPhoto"
-            url: `http://as93bh.natappfree.cc/ticket/upLoadPhoto`,
+            url: `http://9iugn5.natappfree.cc/ticket/upLoadPhoto`,
             method: 'post',
             data: formData,
             headers:{

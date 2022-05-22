@@ -76,10 +76,11 @@
                     </div>
               </div>
 
+
                 <!-- 图文详情部分的样式 -->
                 <div class="previewimgAndText">
                       <span>图文详情</span>
-                      <div v-html="templist.imgAndText">
+                      <div  class="ql-editor" v-html="templist.imgAndText">
                       </div>
                 </div>
 
@@ -772,7 +773,7 @@ async  handleModifyStatus(row, status) {
     },
     // 这个是删除按钮的回调函数
  async  handleDelete(row,index) {
-      let res=await deleteArticle(row.id);
+      let res=await deleteArticle(row.travelId);
       if(res.code===2000){
         this.$notify({
         title: 'Success',
