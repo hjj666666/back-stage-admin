@@ -441,19 +441,19 @@
                         <!-- 这里是控制天数，起点，入住 -->
                         <div class="traveldiv2">
                             <div class="traveldiv4">
-                                <span>第几天: </span>
+                                <span class="beforeInput">第几天: </span>
                                 <el-input placeholder="请输入第几天" v-model="item.nthdate"></el-input>
                             </div>
                             <div class="traveldiv4">
-                                <span>起点: </span>
+                                <span class="beforeInput">起点: </span>
                                 <el-input placeholder="请输入起点" v-model="item.startPlace"></el-input>
                             </div>
                             <div class="traveldiv4">
-                                <span>终点: </span>
+                                <span class="beforeInput">终点: </span>
                                 <el-input placeholder="请输入终点" v-model="item.endPlace"></el-input>
                             </div>
                             <div class="traveldiv4">
-                                <span>入住: </span>
+                                <span class="beforeInput">入住: </span>
                                 <el-input placeholder="请输入入住地点" v-model="item.hostel"></el-input>
                             </div>
                         </div>
@@ -519,19 +519,19 @@
                     <div class="traveldiv1">
                         <!-- 这里是控制天数，起点，入住 -->
                         <div class="traveldiv2">
-                            <div class="traveldiv4">
+                            <div class="traveldiv4 upload">
                                 <span>第几天: </span>
                                 <el-input placeholder="请输入第几天" v-model="exactTravelTemp.nthdate"></el-input>
                             </div>
-                            <div class="traveldiv4">
+                            <div class="traveldiv4 upload">
                                 <span>起点: </span>
                                 <el-input placeholder="请输入起点" v-model="exactTravelTemp.startPlace"></el-input>
                             </div>
-                            <div class="traveldiv4">
+                            <div class="traveldiv4 upload">
                                 <span>终点: </span>
                                 <el-input placeholder="请输入终点" v-model="exactTravelTemp.endPlace"></el-input>
                             </div>
-                            <div class="traveldiv4">
+                            <div class="traveldiv4 upload">
                                 <span>入住: </span>
                                 <el-input placeholder="请输入入住地点" v-model="exactTravelTemp.hostel"></el-input>
                             </div>

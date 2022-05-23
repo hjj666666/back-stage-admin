@@ -9,7 +9,15 @@ import { getToken } from '@/utils/auth'
 // 这里封装一个axios实例
 const service = axios.create({
   // 直接将这里的baseurl改为后端的baseurl即可
+<<<<<<< HEAD
+<<<<<<< Updated upstream
+  baseURL:"http://g53a5r.natappfree.cc", // url = base url + request url
+=======
+  baseURL:"http://nwx4it.natappfree.cc", // url = base url + request url
+>>>>>>> Stashed changes
+=======
   baseURL:"http://9iugn5.natappfree.cc", // url = base url + request url
+>>>>>>> parent of 8b567a2 (解决滚动条问题)
   
   // withCredentials: true, // send cookies when cross-domain requests
   timeout: 50000 // request timeout

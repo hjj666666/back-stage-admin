@@ -80,7 +80,11 @@
                 <!-- 图文详情部分的样式 -->
                 <div class="previewimgAndText">
                       <span>图文详情</span>
+<<<<<<< Updated upstream
                       <div  class="ql-editor" v-html="templist.imgAndText">
+=======
+                      <div class="" v-html="templist.imgAndText">
+>>>>>>> Stashed changes
                       </div>
                 </div>
 
