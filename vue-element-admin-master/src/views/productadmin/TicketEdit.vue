@@ -8,7 +8,8 @@
                     :options="editorOption"
                     v-model="list[edittype]"
                     class="ql-editor"
-                />   
+                /> 
+                <input type="file" @change="change" id="upload" style="display:none;" />  
               </div>
               <el-button type="success" @click="isshoweditor">取消文本编辑</el-button>
        </div>
@@ -25,7 +26,6 @@
                     :on-change="changeUpload"
                     :auto-upload="false"
                      multiple
-                    :limit="3"
                     :on-exceed="handleExceed"
                     :file-list="fileList">
                     <el-button size="small" type="primary">点击上传</el-button>
@@ -83,6 +83,7 @@
            <!-- 这部分是上面的四个输入框 -->
            <!-- 数据已经和v-modle中的数据进行双向绑定 -->
            <div id="div1">
+                <span class="box-title-class" id="span111">基本信息</span>
                <div id="title">
                    <span>标题:</span>
                      <el-input
@@ -130,10 +131,10 @@
             <!-- 下面是产品介绍列表部分-->
             <div id="introitem">
                   <div id="introitemtop">
-                      <span>产品介绍</span>
+                      <span class="box-title-class">产品介绍</span>
                       <el-button type="primary" @click="handleintroedit">编辑</el-button>
                   </div>
-                  <div id="introcontent" v-html="list.exactintro">
+                  <div id="introcontent" class="ql-editor" v-html="list.exactintro">
 
                   </div>
             </div>
@@ -141,10 +142,10 @@
            <!-- 下面是预定需知部分 -->
             <div id="orderitem">
                    <div id="orderitemtop">
-                      <span>产品介绍</span>
+                      <span class="box-title-class">预定须知</span>
                       <el-button type="primary" @click="handleorderedit">编辑</el-button>
                   </div>
-                  <div id="ordercontent" v-html="list.exactorder">
+                  <div id="ordercontent" class="ql-editor" v-html="list.exactorder">
 
                   </div>
             </div>
@@ -152,10 +153,10 @@
             <!-- 下面是费用说明部分 -->
             <div id="costitem">
                 <div id="costitemtop">
-                      <span>产品介绍</span>
+                      <span class="box-title-class">费用说明</span>
                       <el-button type="primary" @click="handlecostedit">编辑</el-button>
                   </div>
-                  <div id="costcontent" v-html="list.exactcost">
+                  <div id="costcontent" class="ql-editor" v-html="list.exactcost">
 
                   </div> 
             </div>
@@ -173,12 +174,15 @@
 <script>
 
 // 实现富文本基本引用
+import { uploadImage } from "@/api/base";  //上传接口
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 import { quillEditor } from 'vue-quill-editor'
+import { container,ImageExtend } from 'quill-image-extend-module'
 // 实现图片缩放编辑
 import Quill from "quill";
+Quill.register('modules/ImageExtend', ImageExtend)
 import ImageResize from "quill-image-resize-module";
 import { ImageDrop } from "quill-image-drop-module"
 Quill.register("modules/imageDrop", ImageDrop);
@@ -212,6 +216,8 @@ export default {
     },
     data() {
         return {
+          //  保存当前页面的高度
+              scrollTop:0,
             // 裁剪插件的相关数据
             // 控制裁剪框是否显示
                 dialogVisible: false,
@@ -227,7 +233,7 @@ export default {
                 // autoCropHeight: 200, // 默认生成截图框高度
                 fixedBox: false, // 固定截图框大小 不允许改变
                 fixed: true, // 是否开启截图框宽高固定比例
-                fixedNumber: [1270, 622], // 截图框的宽高比例
+                fixedNumber: [212, 132], // 截图框的宽高比例
                 full: true, // 是否输出原图比例的截图
                 canMoveBox: true, // 截图框能否拖动
                 original: false, // 上传图片按照原始比例渲染
@@ -255,9 +261,38 @@ export default {
                         border: "none",
                         color: "white"
                     },
+                     ImageExtend: {
+                        loading: true,  // 可选参数 是否显示上传进度和提示语
+                        name: 'img',  // 图片参数名
+                        size: 3,  // 可选参数 图片大小，单位为M，1M = 1024kb
+                        action: uploadImage,  // 服务器地址, 如果action为空，则采用base64插入图片
+                        // response 为一个函数用来获取服务器返回的具体图片地址
+                        // 例如服务器返回{code: 200; data:{ url: 'xxx.com'}}
+                        // 则 return res.data.url
+                        response: (res) => {
+                            console.log(res);
+                            return data.url
+                        },
+                        headers: (xhr) => {},  // 可选参数 设置请求头部
+                        start: () => {},  // 可选参数 自定义开始上传触发事件
+                        end: () => {},  // 可选参数 自定义上传结束触发的事件，无论成功或者失败
+                        error: () => {},  // 可选参数 自定义网络错误触发的事件
+                        change: (xhr, formData) => {} // 可选参数 选择图片触发，也可用来设置头部，但比headers多了一个参数，可设置formData
+                    },
                     modules: ["Resize", "DisplaySize", "Toolbar"]
-                },
-                toolbar: toolbarOptions
+                  },
+                    toolbar: {
+                        container: toolbarOptions,  // container为工具栏，此次引入了全部工具栏，也可自行配置
+                        handlers: {
+                        image: function(value) {
+                            if (value) {
+                            document.querySelector('#upload').click()  // 劫持原来的图片点击按钮事件
+                            } else {
+                            this.quill.format('image', false)
+                            }
+                        }
+                        }
+                    }
                 },
            
             },
@@ -290,8 +325,7 @@ export default {
                 exactcost:"",                   
             },
             // 这个数据是上传文本框的数据
-            fileList: [{name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'},
-             {name: 'food2.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}],
+            fileList: [],
         }
     },
     activated(){
@@ -312,6 +346,27 @@ export default {
     }
    },
     methods: {
+    change(e) {
+      let file = e.target.files[0]
+      const formData = new FormData()
+      formData.append('file', file)
+      uploadImage(formData)
+        .then(res => {
+          let quill = this.$refs.myQuillEditor.quill
+          if (res.code === 2000) {
+              console.log(res);
+           // const formdata = _.extend({}, this.formdata)
+            let length = quill.getSelection().index//光标位置
+            // 插入图片  图片地址
+            quill.insertEmbed(length, 'image', res.data)
+            // 调整光标到最后
+            quill.setSelection(length + 1)//光标后移一位
+          }
+        })
+        .catch(err => {
+          console.error(err)
+        })
+    },
         // 裁剪框的相应回调函数
         // 上传按钮   限制图片大小
       changeUpload(file, fileList) {
@@ -352,7 +407,7 @@ export default {
             );
          this.$axios({
             //action="http://2uah4e.natappfree.cc/ticket/upLoadPhoto"
-            url: `http://qzdsgu.natappfree.cc/ticket/upLoadPhoto`,
+            url: `http://g53a5r.natappfree.cc/ticket/upLoadPhoto`,
             method: 'post',
             data: formData,
             headers:{
@@ -362,15 +417,13 @@ export default {
           }).then( res  => {
               console.log(res);
             if (res.data.code === 2000) {
-                res.data.data.forEach((item)=>{
                     let imgData={
                       ticketId:"",
                       ticketPhotoId:"",
-                      img:item
+                      img:res.data.data
                     }                  
                   this.list.imglist.push(imgData);
-                })
-                 this.dialogVisible = false
+                  this.dialogVisible = false
             } else {
             }
           })
@@ -390,6 +443,7 @@ export default {
         // 创建是否显示编辑页面的方法
         isshoweditor(){
               this.isshoweditor1=!this.isshoweditor1;
+              window.scrollTo(0,this.scrollTop)
         },
         // 创建一个清空页面的函数
         resetlist(){
@@ -432,24 +486,33 @@ export default {
         // 产品详情的方法
         //  首先为产品编辑绑定一个回调函数
         handleintroedit(){
+          // 获取当前的盒子的滚动条的高度
+            this.scrollTop = document.querySelector('#ticketedit').scrollTop || window.pageYOffset || document.body.scrollTop;
             // 首先将edittype修改为exactintro，然后显示文本编辑器
             this.edittype="exactintro";
             this.isshoweditor1=!this.isshoweditor1;
+            window.scrollTo(0,0)
         },
         // 须知详情表单的方法
         //  首先为产品编辑绑定一个回调函数
         handleorderedit(){
+            // 获取当前的盒子的滚动条的高度
+            this.scrollTop = document.querySelector('#ticketedit').scrollTop || window.pageYOffset || document.body.scrollTop;
             // 首先将edittype修改为exactintro，然后显示文本编辑器
             this.edittype="exactorder";
             this.isshoweditor1=!this.isshoweditor1;
+            window.scrollTo(0,0)
         },
    
         // 费用说明的方法
          //  首先为产品编辑绑定一个回调函数
         handlecostedit(){
+           // 获取当前的盒子的滚动条的高度
+            this.scrollTop = document.querySelector('#ticketedit').scrollTop || window.pageYOffset || document.body.scrollTop;
             // 首先将edittype修改为exactintro，然后显示文本编辑器
             this.edittype="exactcost";
             this.isshoweditor1=!this.isshoweditor1;
+             window.scrollTo(0,0)
         },   
 
         // 为整个表单的确认按钮绑定一个回调函数，用来触发我们接受过来的createData函数
@@ -492,6 +555,19 @@ export default {
 </script>
 
 <style>
+    /* 块标题的样式 */
+    .box-title-class{
+        font-size: 1.5em;
+        font-weight: 600;
+        color: #ff6d6d;
+    }
+    #span111{
+        width: 100%;
+        display: flex;
+        justify-content: flex-start;
+        margin-left: 30px;
+        margin-bottom: 20px;
+    }
   /* 截图 */
   .cropper {
     width: auto;
@@ -505,6 +581,7 @@ export default {
     align-items: center;
     justify-content: center;
     position: relative;
+     background-color: #ecf0f1;
 }
 
 /* 调整富文本编辑页面的样式 */
@@ -532,11 +609,12 @@ export default {
 #ticketedit #imgadmin{
     padding: 5px;
     width: 100%;
+    height: 130px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);
-    background-color: #ecf0f1;
+    background-color:white;
 }
 
 #ticketedit #imgadmin #imgcontrol{
@@ -574,14 +652,17 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #ecf0f1;
+    
+     background-color: #ecf0f1;
 }
 #ticketedit #form #div1{
-    width: 90%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     margin-top: 20px;
+    padding: 20PX;
+    background-color: white;
 }
 #ticketedit #form #div1 #title{
     width: 100%;
@@ -642,10 +723,11 @@ export default {
 /* 下面的是列表部分的样式*/
 #ticketedit #form #introitem{
     margin-top: 20px;
-    width: 90%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding: 20PX;
     background-color: white;
 }
 
@@ -673,10 +755,11 @@ export default {
 /* 下面的是预定需知的样式*/
 #ticketedit #form #orderitem{
     margin-top: 20px;
-    width: 90%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding: 20PX;
     background-color: white;
 }
 
@@ -702,10 +785,11 @@ export default {
 /* 下面的是费用说明的样式*/
 #ticketedit #form #costitem{
     margin-top: 20px;
-    width: 90%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding: 20PX;
     background-color: white;
 }
 
@@ -733,7 +817,9 @@ export default {
 #ticketedit #form #footer{
     margin-top: 10px;
     margin-bottom: 30px;
-    width: 90%; 
+    width: 100%; 
+    display: flex;
+    justify-content: space-around;
 }
 
 /* 富文本汉化样式 */
