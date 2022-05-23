@@ -131,7 +131,7 @@
                                     <span>{{item.startPlace}}</span>
                                     <span>{{item.endPlace}}</span>
                                 </div>
-                                <div class="exacttravel" v-html="item.exactTravel">
+                                <div class="exacttravel ql-editor" v-html="item.exactTravel">
                                      
                                 </div>
                                 <div class="eat">
@@ -149,13 +149,13 @@
                      <!-- 最后费用说明和预定须知-->
                 <div class="tourismcost">
                      <span>费用说明</span>
-                     <div  v-html="templist.costIntro">
+                     <div  class="ql-editor" v-html="templist.costIntro">
 
                      </div>
                 </div>
                 <div class="orderexact"  >
                       <span>预定须知</span>
-                     <div  v-html="templist.bookNotice">
+                     <div  class="ql-editor" v-html="templist.bookNotice">
 
                      </div>
                 </div>
