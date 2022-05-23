@@ -7,7 +7,6 @@
             :options="editorOption"
             v-model="uploadList[quillEditorType]"
         />
-        <input type="file" @change="change" id="upload" style="display:none;" />
         </div>
         <br>
         <el-button type="primary" @click="quitEditor">保存并退出</el-button>
@@ -38,43 +37,13 @@
             <div class="uploadPic">
                 <el-upload
                     class="uploadPicBtn"
+                    :headers="taken"
                     :on-success="onSuccess"
-                     action
-                     :on-change="changeUpload"
-                    :auto-upload="false"
+                    action="http://qzdsgu.natappfree.cc/travel/upLoadPhoto"
                     :show-file-list="false"
                     :before-upload="beforePicUpload">
                     <i class="el-icon-plus avatar-uploader-icon"></i>
                 </el-upload>
-
-                 <!-- 图片裁剪框 -->
-                <!-- vueCropper 剪裁图片实现-->
-                <el-dialog title="图片剪裁" :visible.sync="dialogVisible" append-to-body>
-                    <div class="cropper-content">
-                        <div class="cropper" style="text-align:center">
-                        <vueCropper 
-                            ref="cropper" 
-                            :img="option.img" 
-                            :outputSize="option.size" 
-                            :outputType="option.outputType"
-                            :info="true" 
-                            :full="option.full" 
-                            :canMove="option.canMove" 
-                            :canMoveBox="option.canMoveBox"
-                            :original="option.original" 
-                            :autoCrop="option.autoCrop" 
-                            :fixed="option.fixed"
-                            :fixedNumber="option.fixedNumber" 
-                            :centerBox="option.centerBox" 
-                            :infoTrue="option.infoTrue"
-                            :fixedBox="option.fixedBox"></vueCropper>
-                        </div>
-                    </div>
-                    <div slot="footer" class="dialog-footer">
-                        <el-button @click="dialogVisible = false">取 消</el-button>
-                        <el-button type="primary" @click="finish" >确认</el-button>
-                    </div>
-                </el-dialog>
             </div>
     </div>
     
@@ -274,19 +243,15 @@
     </div>
 
     <div class="collapse-title-class box-class" title="图文详情" name="picAndText">
-        <div class="box-title-class">图文详情
-            <el-button type="primary" @click="enterEditor('imgAndText')">编辑</el-button>
-        </div><hr>
-        
-        <div class="picAndText showHTML currencyBoder ql-editor" v-html="uploadList.imgAndText">
+        <div class="box-title-class">图文详情</div><hr>
+        <el-button type="primary" @click="enterEditor('imgAndText')">编辑</el-button>
+        <div class="picAndText showHTML currencyBoder" v-html="uploadList.imgAndText">
             
         </div>
     </div>
 
     <div class="collapse-title-class box-class" title="行程介绍" name="tourIntro">
-        <div class="box-title-class">行程介绍
-             <el-button @click="isShowTourListAdd = true" type="primary">增加</el-button>
-        </div><hr>          
+        <div class="box-title-class">行程介绍</div><hr>          
         <div class="tourList currencyBoder">
             <h4>行程列表</h4>
                 <el-table
@@ -329,6 +294,7 @@
                 </el-table-column>
             </el-table>
             <br>
+            <el-button @click="isShowTourListAdd = true" type="primary">增加</el-button>
             <el-dialog title="行程增加" :visible.sync="isShowTourListAdd">
                 <el-form>
                     <el-form-item label="集合地点" label-width="120px">
@@ -386,8 +352,8 @@
             label="沿途景点"
             prop="scenery">
             <template slot-scope="scope">
-                <!-- <span v-if="scope.row.isshow"  v-html="scope.row.scenery"></span> -->
-                <el-input v-model="scope.row"   :rows="1"></el-input>
+                <span v-if="scope.row.isshow"  v-html="scope.row.scenery"></span>
+                <el-input v-model="scope.row.scenery"  v-else   type="textarea" :rows="3"></el-input>              
                 </template>   
             </el-table-column>
             
@@ -428,9 +394,7 @@
     </div>
 
     <div class="collapse-title-class box-class" title="具体的行程介绍" name="exacttourIntro">
-        <div class="box-title-class">具体的行程介绍
-             <el-button @click="addExactTeavelEdit()" type="primary">增加</el-button>          
-        </div><hr>          
+        <div class="box-title-class">具体的行程介绍</div><hr>          
         <div class="tourList currencyBoder">
             <h4>行程详情：</h4>
             <!-- 直接将列表中的数据使用v-for显示在下面 -->
@@ -441,19 +405,19 @@
                         <!-- 这里是控制天数，起点，入住 -->
                         <div class="traveldiv2">
                             <div class="traveldiv4">
-                                <span class="beforeInput">第几天: </span>
+                                <span>第几天: </span>
                                 <el-input placeholder="请输入第几天" v-model="item.nthdate"></el-input>
                             </div>
                             <div class="traveldiv4">
-                                <span class="beforeInput">起点: </span>
+                                <span>起点: </span>
                                 <el-input placeholder="请输入起点" v-model="item.startPlace"></el-input>
                             </div>
                             <div class="traveldiv4">
-                                <span class="beforeInput">终点: </span>
+                                <span>终点: </span>
                                 <el-input placeholder="请输入终点" v-model="item.endPlace"></el-input>
                             </div>
                             <div class="traveldiv4">
-                                <span class="beforeInput">入住: </span>
+                                <span>入住: </span>
                                 <el-input placeholder="请输入入住地点" v-model="item.hostel"></el-input>
                             </div>
                         </div>
@@ -503,35 +467,31 @@
                     <!-- 先编写一个按钮控制页面的显示 -->
                     <div class="lastdiv">
                         <el-button type="primary" @click="deleteExactTeavelEdit(index,item)">删除本数据</el-button>
-                        <el-button @click="addExactTeavelEdit()" type="primary">增加数据</el-button>      
                     </div>
                 </div>
             </div>
             <!-- 直接编辑页面显示到这里，不再另外开启一个编辑 -->
             <!-- 下面使新增数据的控制页面 -->
             <div class="collapse-title-class-div" v-if="isShowTravelEdit">
-            <div>
-                
-            </div>
                 <h4>增加数据：</h4>
                 <div class="traveledit" >
                     <!-- 先输入几个文本框控制其它数据的输入 -->
                     <div class="traveldiv1">
                         <!-- 这里是控制天数，起点，入住 -->
                         <div class="traveldiv2">
-                            <div class="traveldiv4 upload">
+                            <div class="traveldiv4">
                                 <span>第几天: </span>
                                 <el-input placeholder="请输入第几天" v-model="exactTravelTemp.nthdate"></el-input>
                             </div>
-                            <div class="traveldiv4 upload">
+                            <div class="traveldiv4">
                                 <span>起点: </span>
                                 <el-input placeholder="请输入起点" v-model="exactTravelTemp.startPlace"></el-input>
                             </div>
-                            <div class="traveldiv4 upload">
+                            <div class="traveldiv4">
                                 <span>终点: </span>
                                 <el-input placeholder="请输入终点" v-model="exactTravelTemp.endPlace"></el-input>
                             </div>
-                            <div class="traveldiv4 upload">
+                            <div class="traveldiv4">
                                 <span>入住: </span>
                                 <el-input placeholder="请输入入住地点" v-model="exactTravelTemp.hostel"></el-input>
                             </div>
@@ -586,23 +546,23 @@
                     </div>
                 </div>
             </div>
+
             <br>
+            <el-button @click="addExactTeavelEdit()" type="primary">增加</el-button>          
         </div>
     </div>
 
     <div class="collapse-title-class box-class" title="费用说明" name="costIntro">
-        <div class="box-title-class">费用说明
-              <el-button type="primary" @click="enterEditor('costIntro')">编辑</el-button>
-        </div><hr>
-        <div class="picAndText showHTML currencyBoder ql-editor" v-html="uploadList.costIntro">
+        <div class="box-title-class">费用说明</div><hr>
+        <el-button type="primary" @click="enterEditor('costIntro')">编辑</el-button>
+        <div class="costIntr showHTML currencyBoder" v-html="uploadList.costIntro">
 
         </div>
     </div>
 
-    <div class="picAndText showHTML currencyBoder  collapse-title-class  box-class  ql-editor" title="预订须知" name="bookNotice">
-        <div class="box-title-class">预订须知
-             <el-button type="primary" @click="enterEditor('bookNotice')">编辑</el-button>
-        </div><hr>
+    <div class="collapse-title-class box-class" title="预订须知" name="bookNotice">
+        <div class="box-title-class">预订须知</div><hr>
+        <el-button type="primary" @click="enterEditor('bookNotice')">编辑</el-button>
         <div class="bookNotice showHTML currencyBoder" v-html="uploadList.bookNotice">
 
         </div>
@@ -616,15 +576,12 @@
 
 <script>
 // 实现富文本基本引用
-import '../../../node_modules/quill/dist/quill.core.css'
-import '../../../node_modules/quill/dist/quill.snow.css'
-import '../../../node_modules/quill/dist/quill.bubble.css'
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
 import { quillEditor } from 'vue-quill-editor'
-import { uploadImage } from "@/api/base";  //上传接口
-import { container, ImageExtend } from 'quill-image-extend-module'
 // 实现图片缩放编辑
 import Quill from "quill";
-Quill.register('modules/ImageExtend', ImageExtend)
 import ImageResize from "quill-image-resize-module";
 import { ImageDrop } from "quill-image-drop-module"
 Quill.register("modules/imageDrop", ImageDrop);
@@ -656,28 +613,6 @@ export default {
     },
     data() {
         return {
-              // 裁剪插件的相关数据
-            // 控制裁剪框是否显示
-                dialogVisible: false,
-            // 裁剪框的相关配置
-                option: {
-                img: '', // 裁剪图片的地址
-                info: true, // 裁剪框的大小信息
-                outputSize: 1, // 裁剪生成图片的质量
-                outputType: 'jpeg', // 裁剪生成图片的格式
-                canScale: false, // 图片是否允许滚轮缩放
-                autoCrop: true, // 是否默认生成截图框
-                // autoCropWidth: 300, // 默认生成截图框宽度
-                // autoCropHeight: 200, // 默认生成截图框高度
-                fixedBox: false, // 固定截图框大小 不允许改变
-                fixed: true, // 是否开启截图框宽高固定比例
-                fixedNumber: [212, 132], // 截图框的宽高比例
-                full: true, // 是否输出原图比例的截图
-                canMoveBox: true, // 截图框能否拖动
-                original: false, // 上传图片按照原始比例渲染
-                centerBox: false, // 截图框是否被限制在图片里面
-                infoTrue: true // true 为展示真实输出图片宽高 false 展示看到的截图框宽高
-            },
             // 默认打开的折叠部分
             openList:['uploadPic','baseInf'],
             taken:{'token': takentemp},
@@ -722,7 +657,7 @@ export default {
                 price: undefined,  //原价
                 limitprice: undefined, //限时价格
                 status: 1,
-                departurePlace:[],
+                departurePlace:["深圳","上海","广州"],
                 adultPrice:999,
                 childPrice:88,
                 differPrice:88,
@@ -793,37 +728,8 @@ export default {
                     },
                     modules: ["Resize", "DisplaySize", "Toolbar"],
                     },
-                    toolbar: {
-                        container:toolbarOptions,
-                        handlers: {
-                    image: function(value) {
-                        if (value) {
-                        document.querySelector('#upload').click()  // 劫持原来的图片点击按钮事件
-                        } else {
-                        this.quill.format('image', false)
-                        }
-                    }
-                    }
-                    },
-                     ImageExtend: {
-                        loading: true,  // 可选参数 是否显示上传进度和提示语
-                        name: 'img',  // 图片参数名
-                        size: 3,  // 可选参数 图片大小，单位为M，1M = 1024kb
-                        action: uploadImage,  // 服务器地址, 如果action为空，则采用base64插入图片
-                        // response 为一个函数用来获取服务器返回的具体图片地址
-                        // 例如服务器返回{code: 200; data:{ url: 'xxx.com'}}
-                        // 则 return res.data.url
-                        response: (res) => {
-                            console.log(res);
-                            return data.url
-                        },
-                        headers: (xhr) => {},  // 可选参数 设置请求头部
-                        start: () => {},  // 可选参数 自定义开始上传触发事件
-                        end: () => {},  // 可选参数 自定义上传结束触发的事件，无论成功或者失败
-                        error: () => {},  // 可选参数 自定义网络错误触发的事件
-                        change: (xhr, formData) => {} // 可选参数 选择图片触发，也可用来设置头部，但比headers多了一个参数，可设置formData
-                    },
-            },
+                    toolbar: toolbarOptions
+                },
            
             },
         }
@@ -847,86 +753,6 @@ export default {
 
    },
     methods: {
-            change(e) {
-      let file = e.target.files[0]
-      const formData = new FormData()
-      formData.append('file', file)
-      uploadImage(formData)
-        .then(res => {
-          let quill = this.$refs.myQuillEditor.quill
-          if (res.code === 2000) {
-            //const formdata = _.extend({}, this.formdata)
-            let length = quill.getSelection().index//光标位置
-            // 插入图片  图片地址
-            quill.insertEmbed(length, 'image', res.data)
-            // 调整光标到最后
-            quill.setSelection(length + 1)//光标后移一位
-          }
-        })
-        .catch(err => {
-          console.error(err)
-        })
-    },
-          // 裁剪框的相应回调函数
-        // 上传按钮   限制图片大小
-      changeUpload(file, fileList) {
-        //   限定上传图片的类型
-        if (!/\.(gif|jpg|jpeg|png|bmp|GIF|JPG|PNG)$/.test(file.raw.name)) {
-		alert('图片类型必须是.gif,jpeg,jpg,png,bmp中的一种')
-		return false
-           }
-        //  限定上传图片的大小
-        const isLt5M = file.size / 1024 / 1024 < 5;
-        if (!isLt5M) {
-		this.$message.error('上传文件大小不能超过 5MB!')
-		return false
-        }
-        var files = file.raw;
-        this.fileinfo = file; // 保存下当前文件的一些基本信息
-        let reader = new FileReader(); // 创建文件读取对象
-        reader.onload = async e => {
-            let data;
-            if (typeof e.target.result === 'object') {
-            // 把Array Buffer转化为blob 如果是base64不需要
-            data = window.URL.createObjectURL(new Blob([e.target.result])); 
-            } else {
-            data = e.target.result;
-            }
-            console.log(data);
-            this.option.img = data; // 设置option的初始image
-            this.dialogVisible = true;
-        };
-        reader.readAsArrayBuffer(files);
-     },
-       // 点击裁剪，这一步是可以拿到处理后的地址
-      finish() {
-        this.$refs.cropper.getCropBlob((data) => {
-          let formData = new FormData();
-            formData.append(
-            'file',data,"DX.jpg"
-            );
-         this.$axios({
-            //action="http://2uah4e.natappfree.cc/ticket/upLoadPhoto"
-            url: `http://9iugn5.natappfree.cc/travel/upLoadPhoto`,
-            method: 'post',
-            data: formData,
-            headers:{
-                'Content-Type': 'multipart/form-data',
-                'token': takentemp
-            }
-          }).then( res  => {
-              console.log(res);
-            if (res.data.code === 2000) {
-                    let imgData={
-                      url:res.data.data
-                    }                  
-                  this.uploadList.imglist.push(imgData);
-                  this.dialogVisible = false
-            } else {
-            }
-          })
-        })
-      },
         // 地点标签的相应方法
         handleClose(tag) {
          this.uploadList.departurePlace.splice(this.uploadList.departurePlace.indexOf(tag), 1);
@@ -1093,7 +919,7 @@ export default {
         },
         handleSceneryAdd(){
             if(this.addSceneryTemp != ''){
-                this.uploadList.sceneryList.push(this.addSceneryTemp);
+                this.uploadList.sceneryList.push({scenery:this.addSceneryTemp,isshow:true});
                 this.addSceneryTemp="";
                 this.isShowAddScenery=false;
             }
@@ -1215,7 +1041,7 @@ export default {
             this.uploadList.price= undefined  //原价
             this.uploadList.limitprice= undefined //限时价格
             this.uploadList.status=0
-            this.uploadList.departurePlace=[],
+            this.uploadList.departurePlace="",
             this.uploadList.adultPrice=undefined,
             this.uploadList.childPrice=undefined,
             this.uploadList.differPrice=undefined,
@@ -1323,12 +1149,6 @@ export default {
 </script>
 
 <style>
-/* 设置裁剪框样式 */
-  .cropper-content .cropper{
-      width: auto;
-      height: 300px;
-   }
-
     /* 整个组件的样式 */
     .tourismedit{
         background-color: #f0f2f5;
@@ -1344,11 +1164,8 @@ export default {
     /* 块标题的样式 */
     .box-title-class{
         font-size: 1.5em;
-        padding-right: 20px;
         font-weight: 600;
         color: #ff6d6d;
-        display: flex;
-        justify-content: space-between;
     }
 
     /* 标签输入框的样式 */
@@ -1469,7 +1286,7 @@ export default {
     /* 通用的边框样式 */
     .tourismedit .currencyBoder{
         margin: 0.5em;
-        /* border: 2px solid #6d6d6da8; */
+        border: 2px solid #6d6d6da8;
         padding: 0.5em;
     }
   /* 具体行程列表的样式 */
@@ -1619,76 +1436,4 @@ export default {
         justify-content: space-around;
         align-items: center;
     }
-    /* 富文本汉化样式 */
-.ql-snow .ql-tooltip[data-mode="link"]::before {
-  content: "请输入链接地址:";
-}
-.ql-snow .ql-tooltip.ql-editing a.ql-action::after {
-  border-right: 0px;
-  content: "保存";
-  padding-right: 0px;
-}
-
-.ql-snow .ql-tooltip[data-mode="video"]::before {
-  content: "请输入视频地址:";
-}
-
-.ql-snow .ql-picker.ql-size .ql-picker-label::before,
-.ql-snow .ql-picker.ql-size .ql-picker-item::before {
-  content: "14px";
-}
-.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="small"]::before,
-.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="small"]::before {
-  content: "10px";
-}
-.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="large"]::before,
-.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="large"]::before {
-  content: "18px";
-}
-.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="huge"]::before,
-.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="huge"]::before {
-  content: "32px";
-}
-
-.ql-snow .ql-picker.ql-header .ql-picker-label::before,
-.ql-snow .ql-picker.ql-header .ql-picker-item::before {
-  content: "文本";
-}
-.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="1"]::before,
-.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="1"]::before {
-  content: "标题1";
-}
-.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="2"]::before,
-.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="2"]::before {
-  content: "标题2";
-}
-.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="3"]::before,
-.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="3"]::before {
-  content: "标题3";
-}
-.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="4"]::before,
-.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="4"]::before {
-  content: "标题4";
-}
-.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="5"]::before,
-.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="5"]::before {
-  content: "标题5";
-}
-.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="6"]::before,
-.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="6"]::before {
-  content: "标题6";
-}
-
-.ql-snow .ql-picker.ql-font .ql-picker-label::before,
-.ql-snow .ql-picker.ql-font .ql-picker-item::before {
-  content: "标准字体";
-}
-.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="serif"]::before,
-.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="serif"]::before {
-  content: "衬线字体";
-}
-.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="monospace"]::before,
-.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="monospace"]::before {
-  content: "等宽字体";
-}
 </style>

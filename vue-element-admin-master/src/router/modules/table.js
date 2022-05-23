@@ -26,21 +26,18 @@ const tableRouter = {
     },
     {
       path: 'table-ck',
-      hidden: true,
       component: () => import('@/views/productadmin/table-ck'),
       name: 'TableCk',
       meta: { title: '参考模版' }
     },
     {
       path: 'tableedit',
-      hidden: true,
       component: () => import('@/views/productadmin/TicketEdit'),
       name: 'TicketEdit',
       meta: { title: '门票编辑'}
     },
     {
       path: 'tableedit01',
-      hidden: true,
       component: () => import('@/views/productadmin/TicketEdit01'),
       name: 'TicketEdit01',
       meta: { title: '门票编辑01'}
