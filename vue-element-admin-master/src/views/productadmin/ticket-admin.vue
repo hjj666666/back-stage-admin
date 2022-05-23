@@ -64,16 +64,16 @@
                   </div>
 
                   <!-- 分别将我们的要点展示出来 -->
-                  <div class="intropoint"  v-html="templist.exactintro">
+                  <div class="intropoint ql-editor"  v-html="templist.exactintro">
                      
                   </div>
 
                    <div class="orderpoint">
-                        <div  class="point"  v-html="templist.exactorder"></div>
+                        <div  class="point ql-editor"  v-html="templist.exactorder"></div>
                   </div>
 
                   <div class="costpoint">
-                        <div  class="point"  v-html="templist.exactcost"></div>
+                        <div  class="point ql-editor"  v-html="templist.exactcost"></div>
                   </div>
                  
               </div>

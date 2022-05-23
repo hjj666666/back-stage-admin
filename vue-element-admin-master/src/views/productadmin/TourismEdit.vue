@@ -439,7 +439,35 @@
                     <!-- 先输入几个文本框控制其它数据的输入 -->
                     <div class="traveldiv1">
                         <!-- 这里是控制天数，起点，入住 -->
-                        <div class="traveldiv2">
+
+                        <el-row :gutter="20">
+                                <el-col :span="6">
+                                    <div class="uploadIntro upload">
+                                        <span class="beforeInput">第几天: </span>
+                                        <el-input  v-model="item.nthdate" placeholder="请输入第几天"></el-input>
+                                    </div>
+                                </el-col>
+                                <el-col :span="6">
+                                    <div class="uploadAmount upload">
+                                        <span class="span1">起点: </span>
+                                        <el-input placeholder="请输入起点" v-model="item.startPlace"></el-input>
+                                    </div>
+                                </el-col>
+                                <el-col :span="6">
+                                    <div class="uploadAmount upload">
+                                        <span class="beforeInput">终点: </span>
+                                        <el-input placeholder="请输入终点" v-model="item.endPlace"></el-input>
+                                    </div>
+                                </el-col>
+                                 <el-col :span="6">
+                                    <div class="uploadAmount upload">
+                                        <span class="beforeInput">入住: </span>
+                                         <el-input placeholder="请输入入住地点" v-model="item.hostel"></el-input>
+                                    </div>
+                                </el-col>
+                        </el-row>
+
+                        <!-- <div class="traveldiv2">
                             <div class="traveldiv4">
                                 <span>第几天: </span>
                                 <el-input placeholder="请输入第几天" v-model="item.nthdate"></el-input>
@@ -456,10 +484,47 @@
                                 <span>入住: </span>
                                 <el-input placeholder="请输入入住地点" v-model="item.hostel"></el-input>
                             </div>
-                        </div>
+                        </div> -->
 
                         <!-- 这里是控制早餐，午餐，晚餐 -->
-                        <div class="traveldiv3">
+
+                        <el-row :gutter="20">
+                                <el-col :span="8">
+                                    <div class="uploadIntro upload">
+                                        <span class="beforeInput">早餐: </span>
+                                        <el-autocomplete
+                                        class="inline-input"
+                                        v-model="item.breakfast"
+                                        :fetch-suggestions="querySearch"
+                                        placeholder="请输入早餐" 
+                                        ></el-autocomplete>
+                                    </div>
+                                </el-col>
+                                <el-col :span="8">
+                                    <div class="uploadAmount upload">
+                                        <span class="span1">午餐: </span>
+                                        <el-autocomplete
+                                        class="inline-input"
+                                        v-model="item.lunch"
+                                        :fetch-suggestions="querySearch"
+                                        placeholder="请输入午餐" 
+                                        ></el-autocomplete>
+                                    </div>
+                                </el-col>
+                                <el-col :span="8">
+                                    <div class="uploadAmount upload">
+                                        <span class="beforeInput">晚餐: </span>
+                                        <el-autocomplete
+                                        class="inline-input"
+                                        v-model="item.dinner"
+                                        :fetch-suggestions="querySearch"
+                                        placeholder="请输入晚餐" 
+                                        ></el-autocomplete>
+                                    </div>
+                                </el-col>
+                        </el-row>
+
+                        <!-- <div class="traveldiv3">
                             <div class="traveldiv4">
                                 <span>早餐: </span>
                                     <el-autocomplete
@@ -487,7 +552,7 @@
                                         placeholder="请输入晚餐" 
                                         ></el-autocomplete>
                             </div>
-                        </div> 
+                        </div>  -->
                     </div>
 
                     <!-- 这里是控制富文本控制具体的每一条数据 -->
