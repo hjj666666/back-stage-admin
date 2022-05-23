@@ -664,11 +664,11 @@
         </div>
     </div>
 
-    <div class="picAndText showHTML currencyBoder  collapse-title-class  box-class  ql-editor" title="预订须知" name="bookNotice">
+    <div class="collapse-title-class  box-class" title="预订须知" name="bookNotice">
         <div class="box-title-class">预订须知
              <el-button type="primary" @click="enterEditor('bookNotice')">编辑</el-button>
         </div><hr>
-        <div class="bookNotice showHTML currencyBoder" v-html="uploadList.bookNotice">
+        <div class="bookNotice showHTML currencyBoder ql-editor" v-html="uploadList.bookNotice">
 
         </div>
     </div>
