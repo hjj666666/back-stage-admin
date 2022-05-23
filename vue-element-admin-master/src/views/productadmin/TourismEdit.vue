@@ -449,7 +449,7 @@
                                 </el-col>
                                 <el-col :span="6">
                                     <div class="uploadAmount upload">
-                                        <span class="span1">起点: </span>
+                                        <span class="beforeInput">起点: </span>
                                         <el-input placeholder="请输入起点" v-model="item.startPlace"></el-input>
                                     </div>
                                 </el-col>
@@ -502,7 +502,7 @@
                                 </el-col>
                                 <el-col :span="8">
                                     <div class="uploadAmount upload">
-                                        <span class="span1">午餐: </span>
+                                        <span class="beforeInput">午餐: </span>
                                         <el-autocomplete
                                         class="inline-input"
                                         v-model="item.lunch"
